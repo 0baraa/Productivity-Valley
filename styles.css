@@ -1,0 +1,21 @@
+*{
+    box-sizing: border-box;
+}
+
+body{
+    background-color: grey;
+    margin: 0;
+    padding: 0;
+}
+
+.game-container{
+    position: relative;
+    width: 500px;
+    height: 800px;
+    outline: 1px solid white;
+    margin: 0 auto;
+}
+
+.game-container canvas {
+    image-rendering: pixelated;
+}
