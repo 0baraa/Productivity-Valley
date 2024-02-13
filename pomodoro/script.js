@@ -3,10 +3,14 @@
 let workTitle = document.getElementById('work');
 let breakTitle = document.getElementById('break');
 
+////////////////////////////////////////////////////////////
+// fetch from database //
 let workTime = 2;
 let breakTime = 5;
 
 let seconds = 30;
+
+/////////////////////////////////////////////////////////////
 
 let stop = true;
 
