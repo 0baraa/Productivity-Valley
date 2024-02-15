@@ -73,15 +73,14 @@ body {
     object-fit: contain;
   }
 
-.welcome-text-container {
+.logo-container {
   display: flex;
   justify-content: center;
 }
 
-.welcome-text{
-  font-family: 'custom-pixel-font', serif;
-  font-size: 1.25rem;
-  animation: fadeIn 3s ease-in-out;
+.logo {
+  width: 25rem;
+  animation: fadeIn 3s ease-in-out forwards;
 }
 
 @keyframes fadeIn {
