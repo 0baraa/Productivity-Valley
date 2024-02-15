@@ -1,0 +1,90 @@
+* {
+    box-sizing: border-box;
+}
+
+img {
+    image-rendering: pixelated;
+}
+
+html {
+  font-size: 2vw;
+}
+
+@font-face {
+  font-family: 'custom-pixel-font';
+  src: url('../fonts/pixel-font.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #e5a724;
+  }
+  
+#background {
+    position: relative;
+    image-rendering: pixelated;
+
+    width: 177.78vh; /* 100/9*16 = 177.78 */
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 56.25vw; /* 100/16*9 = 56.25 */
+    background-image: url(../images/farm-background.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+.sprite {
+    position: absolute;
+    transform-origin: 0 0;
+    transform: scale(var(--scale-value));
+}
+
+.farmhouse {
+    left: var(--left-value);
+    top: var(--top-value);
+}
+
+.top-button-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.button {
+  border: none;
+  cursor: pointer;
+  appearance: none;
+  background-color: inherit;
+  width: 5vw;
+  height: 5vw;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.button img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+.welcome-text-container {
+  display: flex;
+  justify-content: center;
+}
+
+.welcome-text{
+  font-family: 'custom-pixel-font', serif;
+  font-size: 1.25rem;
+  animation: fadeIn 3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
