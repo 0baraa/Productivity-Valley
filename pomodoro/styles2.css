@@ -3,6 +3,7 @@
 
     --color-primary: hsl(235, 35%, 19%);
     --color-secondary: hsl(358, 78%, 69%);
+    --color-tertiary: hsl(72, 65%, 71%);
     --color-font: hsla(0, 0%, 100%, 0.902);
 
     --color-shadow: hsl(235, 36%, 35%);
@@ -85,6 +86,7 @@ section {
     background-color: var(--color-primary);
 }
 
+
 .time {
     position: relative;
     display: flex;
@@ -102,13 +104,18 @@ section {
 }
 
 .controls {
+    display: flex;
     margin-top: 3rem;
+    justify-content: center;
+    align-items: center;
 }
 
 .controls button {
     border: none;
     background-color: transparent;
     cursor: pointer;
+    margin-right: 30%;
+    margin-left: 30%;
 }
 
 .controls #reset {
