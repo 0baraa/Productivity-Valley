@@ -7,6 +7,7 @@ let breakTitle = document.getElementById('break');
 // fetch from database //
 let workTime = 0;
 let breakTime = 0;
+let autoRest = true; // global settings
 
 let seconds = "15";
 
@@ -103,9 +104,17 @@ function pause(){
     seconds = document.getElementById('seconds').innerHTML;
 }
 
-function rest(){}
+function rest(){
+    if (autoRest){
+        
+    }
+    else{
+
+    }
+}
 
 function skip(){
+    //switch colour
     colourSwitcher();
     breakState = !breakState;
     if (breakState == true){
