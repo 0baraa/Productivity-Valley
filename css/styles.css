@@ -19,3 +19,8 @@ body {
     font-family: 'pixel-font';
     src: url('../fonts/pixel-font.ttf') format('truetype');
 }
+
+/* Custom cursor */
+/* body {
+    cursor: url('../assets/cursor.png'), auto;
+} */

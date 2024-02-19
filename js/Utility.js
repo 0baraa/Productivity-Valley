@@ -1,4 +1,4 @@
-export default class Utils {
+export default class Utility {
 
     static toggleFullscreen() {
         if(!document.fullscreenElement){

@@ -8,6 +8,12 @@ const config = {
     width: 640,
     height: 1200,
     pixelArt: true,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 0 }, // Top down game, no gravity
+        }
+    },
     scene: [FarmScene, InsideFarmhouseScene, MarketScene],
     scale: {
         mode: Phaser.Scale.ENVELOP,
