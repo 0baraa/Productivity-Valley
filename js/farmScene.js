@@ -15,6 +15,7 @@ export default class FarmScene extends Phaser.Scene {
         this.load.spritesheet('farmhouseSpritesheet', '../assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });
         this.load.image('market', '../assets/market.png');
         this.load.image('sun', '../assets/sun.png');
+        this.load.image('plot', '../assets/plot.png');
 
         this.load.image('cloud1', '../assets/clouds/cloud1.png');
         this.load.image('cloud2', '../assets/clouds/cloud2.png');
@@ -29,7 +30,9 @@ export default class FarmScene extends Phaser.Scene {
 
         this.add.image(320, 570, 'mountains')
 
-        this.add.image(320, 490, 'sun');
+        this.sun = this.add.sprite(320, 490, 'sun');
+        this.sun.setInteractive();
+        Utility.addTintOnHover(this.sun);
 
         this.clouds = [];
         this.cloudImages = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
@@ -46,6 +49,8 @@ export default class FarmScene extends Phaser.Scene {
         });
 
         this.add.image(320, 610, 'fence');
+
+
 
         this.anims.create({
             key: 'farmhouseAnimation',
@@ -66,6 +71,27 @@ export default class FarmScene extends Phaser.Scene {
         Utility.addTintOnHover(this.market);
         // Make market invisible for now until we have a nice market sprite
         this.market.setVisible(false);
+
+
+
+        this.plots = [];  // Create an array to store the plots
+
+        this.plots.push(this.add.sprite(200, 660, 'plot'));
+        this.plots.push(this.add.sprite(275, 660, 'plot'));
+        this.plots.push(this.add.sprite(350, 660, 'plot'));
+        this.plots.push(this.add.sprite(425, 660, 'plot'));
+        this.plots.push(this.add.sprite(200, 727, 'plot'));
+        this.plots.push(this.add.sprite(275, 727, 'plot'));
+        this.plots.push(this.add.sprite(350, 727, 'plot'));
+        this.plots.push(this.add.sprite(425, 727, 'plot'));
+        
+        this.plots.forEach((plot) => {
+            plot.setInteractive();
+            Utility.addTintOnHover(plot);
+        });
+
+
+        
 
 
 
