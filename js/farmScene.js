@@ -14,6 +14,7 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('fence', '../assets/fence.png');
         this.load.spritesheet('farmhouseSpritesheet', '../assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });
         this.load.image('market', '../assets/market.png');
+        this.load.image('sun', '../assets/sun.png');
 
         this.load.image('cloud1', '../assets/clouds/cloud1.png');
         this.load.image('cloud2', '../assets/clouds/cloud2.png');
@@ -27,6 +28,8 @@ export default class FarmScene extends Phaser.Scene {
         this.add.image(320, 600, 'farmBackground').setDepth(-2);
 
         this.add.image(320, 570, 'mountains')
+
+        this.add.image(320, 490, 'sun');
 
         this.clouds = [];
         this.cloudImages = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
