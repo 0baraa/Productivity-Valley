@@ -40,21 +40,15 @@ export default class FarmScene extends Phaser.Scene {
 
 
 
-        //When F key is pressed toggle fullscreen
-        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', function (event) {
-            if(!document.fullscreenElement){
-                document.documentElement.requestFullscreen();
-            }
-            else {
-                document.exitFullscreen();
-            }
-        });
+        //When F key is pressed call toggleFullscreen function
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', this.toggleFullscreen);
 
 
 
 
-        this.farmhouse.on('pointerdown', function () {
-            alert('Farmhouse clicked');
+        //Switch to inside farmhouse scene when farmhouse is clicked
+        this.farmhouse.on('pointerdown', () => {
+            this.scene.launch('InsideFarmhouseScene');
         });
         
 
@@ -63,9 +57,16 @@ export default class FarmScene extends Phaser.Scene {
 
 
 
+    toggleFullscreen() {
+        if(!document.fullscreenElement){
+            document.documentElement.requestFullscreen();
+        }
+        else {
+            document.exitFullscreen();
+        }
+    }
 
-
-
+    //Add tint to sprite when hovered over with cursor
     addTintOnHover(sprite) {
         sprite.on('pointerover', () => {
             sprite.setTint(0xdddddd); // Set tint to light grey

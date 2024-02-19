@@ -1,11 +1,14 @@
-import FarmScene from "./farmScene.js";
+import FarmScene from "./FarmScene.js";
+import InsideFarmhouseScene from "./InsideFarmhouseScene.js";
+import MarketScene from "./MarketScene.js";
+
 
 const config = {
     type: Phaser.AUTO,
     width: 640,
     height: 1200,
     pixelArt: true,
-    scene: [FarmScene],
+    scene: [FarmScene, InsideFarmhouseScene, MarketScene],
     scale: {
         mode: Phaser.Scale.ENVELOP,
         autoCenter: Phaser.Scale.CENTER_BOTH
