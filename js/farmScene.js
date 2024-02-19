@@ -1,3 +1,5 @@
+import Utils from "./Utils.js";
+
 export default class FarmScene extends Phaser.Scene {
     constructor() {
         super({ key: 'FarmScene' });
@@ -28,7 +30,7 @@ export default class FarmScene extends Phaser.Scene {
         this.farmhouse = this.add.sprite(128, 624, 'farmhouseSpritesheet');
         this.farmhouse.anims.play('farmhouseAnimation');
         this.farmhouse.setInteractive();
-        this.addTintOnHover(this.farmhouse);
+        Utils.addTintOnHover(this.farmhouse);
 
         this.add.image(280, 440, 'cloud1');
         this.add.image(140, 460, 'cloud2');
@@ -41,14 +43,14 @@ export default class FarmScene extends Phaser.Scene {
 
 
         //When F key is pressed call toggleFullscreen function
-        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', this.toggleFullscreen);
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', Utils.toggleFullscreen);
 
 
 
 
         //Switch to inside farmhouse scene when farmhouse is clicked
         this.farmhouse.on('pointerdown', () => {
-            this.scene.launch('InsideFarmhouseScene');
+            this.scene.start('InsideFarmhouseScene');
         });
         
 
@@ -57,24 +59,24 @@ export default class FarmScene extends Phaser.Scene {
 
 
 
-    toggleFullscreen() {
-        if(!document.fullscreenElement){
-            document.documentElement.requestFullscreen();
-        }
-        else {
-            document.exitFullscreen();
-        }
-    }
+    // toggleFullscreen() {
+    //     if(!document.fullscreenElement){
+    //         document.documentElement.requestFullscreen();
+    //     }
+    //     else {
+    //         document.exitFullscreen();
+    //     }
+    // }
 
     //Add tint to sprite when hovered over with cursor
-    addTintOnHover(sprite) {
-        sprite.on('pointerover', () => {
-            sprite.setTint(0xdddddd); // Set tint to light grey
-        });
+    // addTintOnHover(sprite) {
+    //     sprite.on('pointerover', () => {
+    //         sprite.setTint(0xdddddd); // Set tint to light grey
+    //     });
         
-        sprite.on('pointerout', () => {
-            sprite.clearTint(); // Clear tint
-        });
-    }
+    //     sprite.on('pointerout', () => {
+    //         sprite.clearTint(); // Clear tint
+    //     });
+    // }
 
 }
