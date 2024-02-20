@@ -5,13 +5,17 @@
 }
 
 body{
+    background-image: url('login_screen.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
     background-color: grey; /*insert image*/
     margin: 0;
     padding: 0;
 }
 
 h1{
-    color: aliceblue;
+    color: purple;
     font-size: xx-large;
     font-family: pixelArtFont;
 }
@@ -20,7 +24,7 @@ h1{
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 10%;
+    margin-top: 15%;
     text-align: center;
 }
 
