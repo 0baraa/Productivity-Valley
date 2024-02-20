@@ -22,3 +22,13 @@ const config = {
 };
 
 let game = new Phaser.Game(config);
+
+
+
+
+// Prevent spacebar from scrolling down the page
+window.addEventListener('keydown', function(e) {
+    if(e.key === ' ' && e.target === document.body) {
+        e.preventDefault();
+    }
+});
