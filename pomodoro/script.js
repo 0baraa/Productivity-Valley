@@ -6,7 +6,7 @@ let breakTitle = document.getElementById('break');
 ////////////////////////////////////////////////////////////
 // fetch from database //
 let workTime = 0;
-let breakTime = 0;
+let breakTime = 1;
 let autoRest = true; // global settings
 
 let seconds = "15";
@@ -45,8 +45,6 @@ function start() {
         breakMinutes = breakTime - 1;
     }
 
-    breakCount = 0;
-
     // countdown
     let timerFunction = () => {
         //change the display
@@ -65,19 +63,27 @@ function start() {
         if(seconds == 0) {
             workMinutes = workMinutes - 1;
             if(workMinutes == -1){
-                if(breakCount % 2 == 0) {
-                    // start break
-                    workMinutes = breakMinutes;
-                    colourSwitcher();
-                    breakCount++
-
-                }else {
-                    // continue work
+                if (breakState == false){
                     workMinutes = workTime;
-                    colourSwitcher();
-                    breakCount++
+                    skip();
                 }
-            }
+                else{ //breakState == true
+                    workMinutes = breakTime;
+                    skip();
+                }
+                // if(breakCount % 2 == 0) {
+                //     // start break
+                //     workMinutes = breakMinutes;
+                //     colourSwitcher();
+                //     breakCount++}
+            //     }else {
+            //         // continue work
+            //         workMinutes = workTime;
+            //         colourSwitcher();
+            //         breakCount++
+            //     }
+            // }
+                }
             seconds = 60;
         }
     }
@@ -104,7 +110,7 @@ function pause(){
     seconds = document.getElementById('seconds').innerHTML;
 }
 
-function rest(){
+function rest(){ //break
     if (autoRest){
         
     }
@@ -118,7 +124,13 @@ function skip(){
     colourSwitcher();
     breakState = !breakState;
     if (breakState == true){
+        console.log("change 1!");
+        workMinutes = breakTime;
         rest();
+    }
+    else{
+        console.log("change 2!");
+        workMinutes = workTime;
     }
 }
 
