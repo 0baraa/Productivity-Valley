@@ -110,11 +110,15 @@ export default class FarmScene extends Phaser.Scene {
 
         // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
         this.market.on('pointerdown', () => {
+            // Disable input for FarmScene
+            this.input.enabled = false;
             this.scene.launch('MarketScene');
         });
 
         // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
         this.farmhouse.on('pointerdown', () => {
+            // Disable input for FarmScene
+            this.input.enabled = false;
             this.scene.launch('InsideFarmhouseScene');
         });
 
