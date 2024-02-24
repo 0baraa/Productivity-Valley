@@ -78,16 +78,27 @@ export default class FarmScene extends Phaser.Scene {
 
 
         // might replace this with group? but it's harder to access
-        const plots = [];  // Create an array to store the plots
+        this.plots = [];  // Create an array to store the plots
 
-        plots.push(this.add.sprite(170, 627, 'plot'));
-        plots.push(this.add.sprite(270, 627, 'plot'));
-        plots.push(this.add.sprite(370, 627, 'plot'));
-        plots.push(this.add.sprite(470, 627, 'plot'));
-        plots.push(this.add.sprite(170, 727, 'plot'));
-        plots.push(this.add.sprite(270, 727, 'plot'));
-        plots.push(this.add.sprite(370, 727, 'plot'));
-        plots.push(this.add.sprite(470, 727, 'plot'));
+        // plots.push(this.add.sprite(170, 627, 'plot'));
+        // plots.push(this.add.sprite(270, 627, 'plot'));
+        // plots.push(this.add.sprite(370, 627, 'plot'));
+        // plots.push(this.add.sprite(470, 627, 'plot'));
+        // plots.push(this.add.sprite(170, 727, 'plot'));
+        // plots.push(this.add.sprite(270, 727, 'plot'));
+        // plots.push(this.add.sprite(370, 727, 'plot'));
+        // plots.push(this.add.sprite(470, 727, 'plot'));
+
+
+        this.plots.push(new Plot({scene: this, x: 170, y: 627, key: 'crop', id: "0"}));
+        this.plots.push(new Plot({scene: this, x: 270, y: 627, key: 'crop', id: "1"}));
+        this.plots.push(new Plot({scene: this, x: 370, y: 627, key: 'crop', id: "2"}));
+        this.plots.push(new Plot({scene: this, x: 470, y: 627, key: 'crop', id: "3"}));
+        this.plots.push(new Plot({scene: this, x: 170, y: 727, key: 'crop', id: "4"}));
+        this.plots.push(new Plot({scene: this, x: 270, y: 727, key: 'crop', id: "5"}));
+        this.plots.push(new Plot({scene: this, x: 370, y: 727, key: 'crop', id: "6"}));
+        this.plots.push(new Plot({scene: this, x: 470, y: 727, key: 'crop', id: "7"}));
+
 
         // create crop animations
         this.anims.create({
@@ -103,17 +114,6 @@ export default class FarmScene extends Phaser.Scene {
             repeat: 0
         })
 
-        // set interactivity and event to ask for crop type.
-        let base = "plot";
-        for (let i = 0; i < 8; i++) {
-            plots[i].setInteractive();
-            Utility.addTintOnHover(plots[i]);
-            let name = base + String(i);
-            plots[i].setName(name)
-            plots[i].on('pointerdown', () => {
-                this.setupPomodoro(plots[i].name)
-            })
-        }
 
         //When F key is pressed call toggleFullscreen function
         this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', Utility.toggleFullscreen);
@@ -167,13 +167,34 @@ export default class FarmScene extends Phaser.Scene {
         }
     }
 
-    setupPomodoro(plotName) {
+    setupPomodoro() {
         // add functionality for giving page of crop choices.
-        this.plantCrops(2, plotName);
+        let id = 2;
+        return id;
+    }
+}
+
+export class Plot extends Phaser.GameObjects.Sprite{
+    constructor(config) {
+        super(config.scene, config.x, config.y, 'plot')
+        this.growing = false;
+        this.id = config.id;
+        this.scene = config.scene;
+        this.plotSprite = this.scene.add.existing(this);
+        this.plotSprite.setInteractive()
+        Utility.addTintOnHover(this.plotSprite);
+        this.plotSprite.on('pointerdown', () => {
+            if (!this.growing) {
+                let cId = this.scene.setupPomodoro();
+                this.plantCrops(cId);
+            } else {
+                this.harvestCrops();
+            }
+        })
     }
 
-    plantCrops(id, key) {
-        //plants the crops
+    plantCrops(id) {
+        this.growing = true;
         let cropType = "";
         let cropAnim = "";
         let yoffset = 0;
@@ -192,18 +213,18 @@ export default class FarmScene extends Phaser.Scene {
         }
 
         // get spacing for the crops
-        let plotTex = this.textures.get('plot').getSourceImage();
+        let plotTex = this.scene.textures.get('plot').getSourceImage();
         let wSpace = plotTex.width/6 + 2;
         let hSpace = plotTex.height/5;
-        let xBase = this.children.getByName(key).x;
-        let yBase = this.children.getByName(key).y;
+        let xBase = this.plotSprite.x;
+        let yBase = this.plotSprite.y;
         yBase += yoffset;
         
         // place the crops
-        let crops = this.add.group();
+        this.crops = this.scene.add.group();
         for (let i = -2; i < 3; i++) {
             for (let j = -3; j < 2; j++) {
-                crops.add(this.add.sprite((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0, cropType));
+                this.crops.add(this.scene.add.sprite((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0, cropType));
                 
                 //console.log((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0);
                 
@@ -211,9 +232,12 @@ export default class FarmScene extends Phaser.Scene {
         }
 
         // to be replaced with an update crop method
-        this.anims.play(cropAnim, crops.getChildren(), 0);
+        this.scene.anims.play(cropAnim, this.crops.getChildren(), 0);
 
-        // animations.getFrameAt(index);
-        //
     }
+
+    harvestCrops() {
+        this.crops.destroy(true);
+    }
+
 }
