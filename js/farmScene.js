@@ -15,7 +15,7 @@ export default class FarmScene extends Phaser.Scene {
         this.load.spritesheet('farmhouseSpritesheet', '../assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });
         this.load.image('market', '../assets/market.png');
         this.load.image('sun', '../assets/sun.png');
-        this.load.image('plot', '../assets/plot.png');
+        this.load.image('plot', '../assets/larger_plot.png');
 
         this.load.image('cloud1', '../assets/clouds/cloud1.png');
         this.load.image('cloud2', '../assets/clouds/cloud2.png');
@@ -23,14 +23,18 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('cloud4', '../assets/clouds/cloud4.png');
         this.load.image('cloud5', '../assets/clouds/cloud5.png');
         this.load.image('cloud6', '../assets/clouds/cloud6.png');
+
+        this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
+        this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
+        
     }
 
     create () {
-        this.add.image(320, 600, 'farmBackground').setDepth(-2);
+        this.add.image(320, 550, 'farmBackground').setDepth(-2);
 
-        this.add.image(320, 570, 'mountains')
+        this.add.image(320, 520, 'mountains');
 
-        this.sun = this.add.sprite(320, 490, 'sun');
+        this.sun = this.add.sprite(320, 390, 'sun');
         this.sun.setInteractive();
         Utility.addTintOnHover(this.sun);
 
@@ -48,7 +52,7 @@ export default class FarmScene extends Phaser.Scene {
             loop: true
         });
 
-        this.add.image(320, 610, 'fence');
+        this.add.image(320, 560, 'fence');
 
 
 
@@ -60,40 +64,56 @@ export default class FarmScene extends Phaser.Scene {
         });
 
         //Add farmhouse image and make it interactive
-        this.farmhouse = this.add.sprite(64, 624, 'farmhouseSpritesheet');
+        this.farmhouse = this.add.sprite(64, 574, 'farmhouseSpritesheet');
         this.farmhouse.anims.play('farmhouseAnimation');
         this.farmhouse.setInteractive();
         Utility.addTintOnHover(this.farmhouse);
 
         //Add market image and make it interactive
-        this.market = this.add.image(580, 624, 'market');
+        this.market = this.add.image(580, 614, 'market');
         this.market.setInteractive();
         Utility.addTintOnHover(this.market);
         // Make market invisible for now until we have a nice market sprite
         this.market.setVisible(false);
 
 
+        // might replace this with group? but it's harder to access
+        const plots = [];  // Create an array to store the plots
 
-        this.plots = [];  // Create an array to store the plots
+        plots.push(this.add.sprite(170, 627, 'plot'));
+        plots.push(this.add.sprite(270, 627, 'plot'));
+        plots.push(this.add.sprite(370, 627, 'plot'));
+        plots.push(this.add.sprite(470, 627, 'plot'));
+        plots.push(this.add.sprite(170, 727, 'plot'));
+        plots.push(this.add.sprite(270, 727, 'plot'));
+        plots.push(this.add.sprite(370, 727, 'plot'));
+        plots.push(this.add.sprite(470, 727, 'plot'));
 
-        this.plots.push(this.add.sprite(200, 660, 'plot'));
-        this.plots.push(this.add.sprite(275, 660, 'plot'));
-        this.plots.push(this.add.sprite(350, 660, 'plot'));
-        this.plots.push(this.add.sprite(425, 660, 'plot'));
-        this.plots.push(this.add.sprite(200, 727, 'plot'));
-        this.plots.push(this.add.sprite(275, 727, 'plot'));
-        this.plots.push(this.add.sprite(350, 727, 'plot'));
-        this.plots.push(this.add.sprite(425, 727, 'plot'));
-        
-        this.plots.forEach((plot) => {
-            plot.setInteractive();
-            Utility.addTintOnHover(plot);
-        });
+        // create crop animations
+        this.anims.create({
+            key: 'carrotAnimation',
+            frames: this.anims.generateFrameNumbers("carrotGrowth", {start: 0, end: 10,}),
+            frameRate: 1,
+            repeat: 0
+        })
+        this.anims.create({
+            key: 'sunflowerAnimation',
+            frames: this.anims.generateFrameNumbers("sunflowerGrowth", {start: 0, end: 10,}),
+            frameRate: 1,
+            repeat: 0
+        })
 
-
-        
-
-
+        // set interactivity and event to ask for crop type.
+        let base = "plot";
+        for (let i = 0; i < 8; i++) {
+            plots[i].setInteractive();
+            Utility.addTintOnHover(plots[i]);
+            let name = base + String(i);
+            plots[i].setName(name)
+            plots[i].on('pointerdown', () => {
+                this.setupPomodoro(plots[i].name)
+            })
+        }
 
         //When F key is pressed call toggleFullscreen function
         this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', Utility.toggleFullscreen);
@@ -123,7 +143,7 @@ export default class FarmScene extends Phaser.Scene {
 
     generateCloud() {
         // Generate a random y position
-        let y = Phaser.Math.Between(100, 560);
+        let y = Phaser.Math.Between(100, 460);
 
         // Select a random cloud image
         let randomIndex = Phaser.Math.Between(0, this.cloudImages.length - 1);
@@ -147,4 +167,53 @@ export default class FarmScene extends Phaser.Scene {
         }
     }
 
+    setupPomodoro(plotName) {
+        // add functionality for giving page of crop choices.
+        this.plantCrops(2, plotName);
+    }
+
+    plantCrops(id, key) {
+        //plants the crops
+        let cropType = "";
+        let cropAnim = "";
+        let yoffset = 0;
+        //crop choice
+        switch (id) {
+            case 1: // carrots
+                cropType = 'carrotGrowth';
+                cropAnim = 'carrotAnimation';
+                yoffset = 1;
+                break;
+            case 2: // sunflowers
+                cropType = 'sunflowerGrowth';
+                cropAnim = 'sunflowerAnimation';
+                yoffset = 0;
+                break;
+        }
+
+        // get spacing for the crops
+        let plotTex = this.textures.get('plot').getSourceImage();
+        let wSpace = plotTex.width/6 + 2;
+        let hSpace = plotTex.height/5;
+        let xBase = this.children.getByName(key).x;
+        let yBase = this.children.getByName(key).y;
+        yBase += yoffset;
+        
+        // place the crops
+        let crops = this.add.group();
+        for (let i = -2; i < 3; i++) {
+            for (let j = -3; j < 2; j++) {
+                crops.add(this.add.sprite((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0, cropType));
+                
+                //console.log((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0);
+                
+            }
+        }
+
+        // to be replaced with an update crop method
+        this.anims.play(cropAnim, crops.getChildren(), 0);
+
+        // animations.getFrameAt(index);
+        //
+    }
 }
