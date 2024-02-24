@@ -1,3 +1,5 @@
+//import { Phaser } from "./libs/phaser.js";
+
 export default class Utility {
 
     static toggleFullscreen() {

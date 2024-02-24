@@ -1,4 +1,6 @@
 import Utility from "./Utility.js";
+import Phaser from 'phaser'
+//import { Phaser } from "./libs/phaser.js";
 
 export default class InsideFarmhouseScene extends Phaser.Scene { 
     constructor() {

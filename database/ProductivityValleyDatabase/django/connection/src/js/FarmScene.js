@@ -1,3 +1,5 @@
+//import { Phaser } from "./libs/phaser.js";
+import Phaser from 'phaser'
 import Utility from "./Utility.js";
 
 export default class FarmScene extends Phaser.Scene {
