@@ -34,7 +34,7 @@ export default class FarmScene extends Phaser.Scene {
 
         this.add.image(320, 520, 'mountains');
 
-        this.sun = this.add.sprite(320, 390, 'sun');
+        this.sun = this.add.sprite(320, 440, 'sun');
         this.sun.setInteractive();
         Utility.addTintOnHover(this.sun);
 
