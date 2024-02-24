@@ -237,6 +237,7 @@ export class Plot extends Phaser.GameObjects.Sprite{
     }
 
     harvestCrops() {
+        this.growing = false;
         this.crops.destroy(true);
     }
 
