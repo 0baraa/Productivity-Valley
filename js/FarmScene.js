@@ -30,6 +30,9 @@ export default class FarmScene extends Phaser.Scene {
     }
 
     create () {
+        let plotsAcross = 4;
+        let plotsDown = 2;
+
         this.add.image(320, 550, 'farmBackground').setDepth(-2);
 
         this.add.image(320, 520, 'mountains');
@@ -77,28 +80,14 @@ export default class FarmScene extends Phaser.Scene {
         this.market.setVisible(false);
 
 
-        // might replace this with group? but it's harder to access
-        this.plots = [];  // Create an array to store the plots
+        this.plots = [];  // Create an array to store the plot objects
 
-        // plots.push(this.add.sprite(170, 627, 'plot'));
-        // plots.push(this.add.sprite(270, 627, 'plot'));
-        // plots.push(this.add.sprite(370, 627, 'plot'));
-        // plots.push(this.add.sprite(470, 627, 'plot'));
-        // plots.push(this.add.sprite(170, 727, 'plot'));
-        // plots.push(this.add.sprite(270, 727, 'plot'));
-        // plots.push(this.add.sprite(370, 727, 'plot'));
-        // plots.push(this.add.sprite(470, 727, 'plot'));
-
-
-        this.plots.push(new Plot({scene: this, x: 170, y: 627, key: 'crop', id: "0"}));
-        this.plots.push(new Plot({scene: this, x: 270, y: 627, key: 'crop', id: "1"}));
-        this.plots.push(new Plot({scene: this, x: 370, y: 627, key: 'crop', id: "2"}));
-        this.plots.push(new Plot({scene: this, x: 470, y: 627, key: 'crop', id: "3"}));
-        this.plots.push(new Plot({scene: this, x: 170, y: 727, key: 'crop', id: "4"}));
-        this.plots.push(new Plot({scene: this, x: 270, y: 727, key: 'crop', id: "5"}));
-        this.plots.push(new Plot({scene: this, x: 370, y: 727, key: 'crop', id: "6"}));
-        this.plots.push(new Plot({scene: this, x: 470, y: 727, key: 'crop', id: "7"}));
-
+        //create the plots
+        for (let i = 0; i < plotsDown; i++) {
+            for (let j = 0; j < plotsAcross; j++) {
+            this.plots.push(new Plot({scene: this, x: 170 + j*100, y: 627 + i*100, key: 'crop', id: (j + i * plotsAcross)}))
+            }
+        }
 
         // create crop animations
         this.anims.create({
