@@ -30,6 +30,7 @@ export default class FarmScene extends Phaser.Scene {
     }
 
     create () {
+        this.id = 1;
         let plotsAcross = 4;
         let plotsDown = 2;
 
@@ -83,9 +84,9 @@ export default class FarmScene extends Phaser.Scene {
         this.plots = [];  // Create an array to store the plot objects
 
         //create the plots
-        for (let i = 0; i < plotsDown; i++) {
-            for (let j = 0; j < plotsAcross; j++) {
-            this.plots.push(new Plot({scene: this, x: 170 + j*100, y: 627 + i*100, key: 'crop', id: (j + i * plotsAcross)}))
+        for (let i = 0; i < plotsAcross; i++) {
+            for (let j = 0; j < plotsDown; j++) {
+            this.plots.push(new Plot({scene: this, x: 170 + i*100, y: 627 + j*100, key: 'crop', id: (j + i * plotsDown)}))
             }
         }
 
@@ -158,16 +159,39 @@ export default class FarmScene extends Phaser.Scene {
 
     setupPomodoro() {
         // add functionality for giving page of crop choices.
-        let id = 2;
-        return id;
+        if (this.id == 2) {
+            this.id = 1;
+        } else {
+            this.id = 2;
+        }
+        return this.id;
     }
+
+    setChildrenDepth(children, depth) {
+        for (let i = 0; i < children.length; i ++ ) {
+            children[i].setDepth(depth);
+        }
+    }
+
+    progressAnimation(sprite) {
+        console.log(sprite);
+        sprite.anims.next(1);
+    }
+
 }
 
 export class Plot extends Phaser.GameObjects.Sprite{
     constructor(config) {
         super(config.scene, config.x, config.y, 'plot')
         this.growing = false;
+        this.alternating = false;
+        this.size = 5;
         this.id = config.id;
+        if (this.id % 2 == 0) { // make sure plots below don't overlap ones above.
+            this.cropDepth = 1;
+        } else {
+            this.cropDepth = 2;
+        }
         this.scene = config.scene;
         this.plotSprite = this.scene.add.existing(this);
         this.plotSprite.setInteractive()
@@ -186,48 +210,69 @@ export class Plot extends Phaser.GameObjects.Sprite{
         this.growing = true;
         let cropType = "";
         let cropAnim = "";
+        console.log(this.id)
+
+        // prepare for spacing of the crops
+        let plotTex = this.scene.textures.get('plot').getSourceImage();
+        
         let yoffset = 0;
+        let xoffset = 0;
+
         //crop choice
         switch (id) {
             case 1: // carrots
                 cropType = 'carrotGrowth';
                 cropAnim = 'carrotAnimation';
-                yoffset = 1;
+                yoffset = 0;
+                this.size = 4;
+                xoffset = plotTex.width/this.size/2; 
                 break;
             case 2: // sunflowers
                 cropType = 'sunflowerGrowth';
                 cropAnim = 'sunflowerAnimation';
-                yoffset = 0;
+                yoffset = -plotTex.height/this.size/2;
+                this.size = 5;
+                xoffset = plotTex.width/this.size/2;
                 break;
         }
+        let wSpace = plotTex.width/this.size;
+        let hSpace = plotTex.height/this.size;
+        let xBase = this.plotSprite.x - plotTex.width/2;
+        let yBase = this.plotSprite.y - plotTex.height/2;
 
-        // get spacing for the crops
-        let plotTex = this.scene.textures.get('plot').getSourceImage();
-        let wSpace = plotTex.width/6 + 2;
-        let hSpace = plotTex.height/5;
-        let xBase = this.plotSprite.x;
-        let yBase = this.plotSprite.y;
-        yBase += yoffset;
         
+        yBase += yoffset;
+        xBase += xoffset;
         // place the crops
         this.crops = this.scene.add.group();
-        for (let i = -2; i < 3; i++) {
-            for (let j = -3; j < 2; j++) {
-                this.crops.add(this.scene.add.sprite((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0, cropType));
-                
-                //console.log((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0);
-                
+        for (let j = 0; j < this.size; j++) {
+            if (this.alternating) { // places crops in alternating pattern
+                if (j%2 != 0) {
+                    for (let i = 0; i < this.size; i++) {
+                        this.crops.add(this.scene.add.sprite((xBase + i*wSpace + wSpace/2) | 0, (yBase + j*hSpace) | 0, cropType));
+                    }
+                }
+                else {
+                    for (let i = -2; i < 3; i++) {
+                        this.crops.add(this.scene.add.sprite((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0, cropType));
+                    }
+                }
+
+            } else { //standard grid pattern
+                for (let i = 0; i < this.size; i += 1) {
+                    this.crops.add(this.scene.add.sprite((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0, cropType));
+                }
             }
         }
 
         // to be replaced with an update crop method
         this.scene.anims.play(cropAnim, this.crops.getChildren(), 0);
-
+        //this.scene.progressAnimation(this.crops.getChildren()[1])
+        this.scene.setChildrenDepth(this.crops.getChildren(), this.cropDepth);
     }
 
     harvestCrops() {
         this.growing = false;
         this.crops.destroy(true);
     }
-
 }
