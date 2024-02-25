@@ -77,45 +77,22 @@ export default class FarmScene extends Phaser.Scene {
         Utility.addTintOnHover(this.marketSign);
 
 
-        // this.plots = [];  // Create an array to store the plot objects
-
-        // //create the plots
-        // for (let i = 0; i < plotsDown; i++) {
-        //     for (let j = 0; j < plotsAcross; j++) {
-        //     this.plots.push(new Plot({scene: this, x: 170 + j*100, y: 627 + i*100, key: 'crop', id: (j + i * plotsAcross)}))
-        //     }
-        // }
-
         let plots = [];
-        let plot = new Plot(0, "sunflower", 0);
+        let plot = new Plot(0, "sunflower", [], 5);
         plots.push(plot);
-        let plot2 = new Plot(0, "sunflower", 0);
+        let plot2 = new Plot(0, "sunflower", [], 9);
         plots.push(plot2);
-        let plot3 = new Plot(0, "sunflower", 0);
+        let plot3 = new Plot(0, "carrot", [], 9);
         plots.push(plot3);
-        let plot4 = new Plot(0, "sunflower", 0);
+        let plot4 = new Plot(0, "sunflower", [], 4);
         plots.push(plot4);
-        let plot5 = new Plot(0, "sunflower", 0);
+        let plot5 = new Plot(0, "carrot", [], 10);
         plots.push(plot5);
-        let plot6 = new Plot(0, "sunflower", 0);
+        let plot6 = new Plot(0, "sunflower", [], 7);
         plots.push(plot6);
 
         let farm = new PlayerFarm(0,plots,0,0,0,0);
         farm.createFarm(this);
-
-        // create crop animations
-        this.anims.create({
-            key: 'carrotAnimation',
-            frames: this.anims.generateFrameNumbers("carrotGrowth", {start: 0, end: 10,}),
-            frameRate: 1,
-            repeat: 0
-        })
-        this.anims.create({
-            key: 'sunflowerAnimation',
-            frames: this.anims.generateFrameNumbers("sunflowerGrowth", {start: 0, end: 10,}),
-            frameRate: 1,
-            repeat: 0
-        })
 
 
         //When F key is pressed call toggleFullscreen function
@@ -149,12 +126,6 @@ export default class FarmScene extends Phaser.Scene {
 
 
 
-
-    setupPomodoro() {
-        // add functionality for giving page of crop choices.
-        let id = 2;
-        return id;
-    }
 }
 
 function generateCloud(scene) {
@@ -184,84 +155,20 @@ function generateCloud(scene) {
 }
 
 
-// export class Plot extends Phaser.GameObjects.Sprite{
-//     constructor(config) {
-//         super(config.scene, config.x, config.y, 'plot')
-//         this.growing = false;
-//         this.id = config.id;
-//         this.scene = config.scene;
-//         this.plotSprite = this.scene.add.existing(this);
-//         this.plotSprite.setInteractive()
-//         Utility.addTintOnHover(this.plotSprite);
-//         this.plotSprite.on('pointerdown', () => {
-//             if (!this.growing) {
-//                 let cId = this.scene.setupPomodoro();
-//                 this.plantCrops(cId);
-//             } else {
-//                 this.harvestCrops();
-//             }
-//         })
-//     }
 
-//     plantCrops(id) {
-//         this.growing = true;
-//         let cropType = "";
-//         let cropAnim = "";
-//         let yoffset = 0;
-//         //crop choice
-//         switch (id) {
-//             case 1: // carrots
-//                 cropType = 'carrotGrowth';
-//                 cropAnim = 'carrotAnimation';
-//                 yoffset = 1;
-//                 break;
-//             case 2: // sunflowers
-//                 cropType = 'sunflowerGrowth';
-//                 cropAnim = 'sunflowerAnimation';
-//                 yoffset = 0;
-//                 break;
-//         }
-
-//         // get spacing for the crops
-//         let plotTex = this.scene.textures.get('plot').getSourceImage();
-//         let wSpace = plotTex.width/6 + 2;
-//         let hSpace = plotTex.height/5;
-//         let xBase = this.plotSprite.x;
-//         let yBase = this.plotSprite.y;
-//         yBase += yoffset;
-        
-//         // place the crops
-//         this.crops = this.scene.add.group();
-//         for (let i = -2; i < 3; i++) {
-//             for (let j = -3; j < 2; j++) {
-//                 this.crops.add(this.scene.add.sprite((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0, cropType));
-                
-//                 //console.log((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0);
-                
-//             }
-//         }
-
-//         // to be replaced with an update crop method
-//         this.scene.anims.play(cropAnim, this.crops.getChildren(), 0);
-
-//     }
-
-//     harvestCrops() {
-//         this.growing = false;
-//         this.crops.destroy(true);
-//     }
-
-// }
-
-
-
-
+function getUserData() {
+    // Called in create method of FarmScene
+    // Fetches user data from the backend
+    // Then formats data in appropriate way
+    // This data is used to create a PlayerFarm object, which is then displayed
+}
 
 
 class PlayerFarm {
     constructor(coins, plots, crops, decorations, furniture, animals){
         this.coins = coins;
         this.plots = plots;
+        //owned crops
         this.crops = crops;
         this.decorations = decorations;
         this.furniture = furniture;
@@ -271,22 +178,54 @@ class PlayerFarm {
     createFarm(scene){
 
         for(let i = 0; i < this.plots.length; i++) {
-            let x = 165 + (100 * (i % 4));
-            let y = 610 + (100 * Math.floor(i / 4));
-            let plot = scene.add.sprite(x, y, 'plot');
+
+            let currentPlot = this.plots[i];
+
+            let plotX = 165 + (100 * (i % 4));
+            let plotY = 610 + (100 * Math.floor(i / 4));
+
+            let plotContainer = scene.add.container(plotX, plotY);
+            let plot = scene.add.sprite(0, 0, 'plot');
             plot.setInteractive();
             Utility.addTintOnHover(plot);
+            plotContainer.add(plot);
+
+            let gridSize = 5;
+            let cellWidth = plot.width / gridSize;
+            let cellHeight = plot.height / gridSize;
+
+            for (let row = 0; row < gridSize; row++) {
+                for (let col = 0; col < gridSize; col++) {
+                    let x = col * cellWidth + cellWidth / 2;
+                    let y = row * cellHeight + cellHeight / 2;
+                    let crop = scene.add.sprite(x - (plot.width / 2), y - (plot.height / 2), currentPlot.crop + "Growth").setOrigin(0.5, 0.9);
+                    crop.setFrame(currentPlot.growthStage);
+                    plotContainer.add(crop);
+                    currentPlot.cropSprites.push(crop);
+                }
+            }
+
         }
+
 
     }
 
 }
 
 class Plot {
-    constructor(id, plant, growthStage){
+    constructor(id, crop, cropSprites, growthStage){
         this.id = id;
-        this.plant = plant;
+        this.crop = crop;
+        //crop sprites on the plot
+        this.cropSprites = cropSprites;
         this.growthStage = growthStage;
+    }
+
+    grow(){
+        for(let cropSprite of this.cropSprites){
+            this.growthStage++;
+            cropSprite.setFrame(this.growthStage);
+        }
     }
 }
 
