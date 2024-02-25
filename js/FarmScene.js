@@ -7,7 +7,7 @@ export default class FarmScene extends Phaser.Scene {
 
 
     preload () {
-        // this.load.bitmapFont('pixelFont', '../fonts/pixeloperatorbitmap.png', '../fonts/pixeloperatorbitmap.xml');
+        this.load.bitmapFont('pixelFont', '../fonts/pixeloperatorbitmap.png', '../fonts/pixeloperatorbitmap.xml');
 
         this.load.image('farmBackground', '../assets/farm-background.png');
         this.load.image('mountains', '../assets/mountains.png');
@@ -77,22 +77,13 @@ export default class FarmScene extends Phaser.Scene {
         Utility.addTintOnHover(this.marketSign);
 
 
-        let plots = [];
-        let plot = new Plot(0, "sunflower", [], 5);
-        plots.push(plot);
-        let plot2 = new Plot(0, "sunflower", [], 9);
-        plots.push(plot2);
-        let plot3 = new Plot(0, "carrot", [], 9);
-        plots.push(plot3);
-        let plot4 = new Plot(0, "sunflower", [], 4);
-        plots.push(plot4);
-        let plot5 = new Plot(0, "carrot", [], 10);
-        plots.push(plot5);
-        let plot6 = new Plot(0, "sunflower", [], 7);
-        plots.push(plot6);
-
-        let farm = new PlayerFarm(0,plots,0,0,0,0);
+        let farm = new PlayerFarm(0,0,0,0,0);
         farm.createFarm(this);
+
+
+
+
+
 
 
         //When F key is pressed call toggleFullscreen function
@@ -116,10 +107,10 @@ export default class FarmScene extends Phaser.Scene {
 
 
 
-        // this.add.text(300, 500, 'Hello, world!', {fontSize: 20, fill: '#000000'});
+        // this.add.text(50, 450, 'Coins: ' + farm.coins , {fontSize: 20, fill: '#000000'});
 
-        // let text = this.add.bitmapText(150, 500, 'pixelFont', 'Time: 12040', 16);
-        // text.setTint(0x000000);
+        // this.text = this.add.bitmapText(50, 480, 'pixelFont', 'Coins: ' + farm.coins, 32);
+        // this.text.setTint(0x000000);
         
 
     }
@@ -165,9 +156,9 @@ function getUserData() {
 
 
 class PlayerFarm {
-    constructor(coins, plots, crops, decorations, furniture, animals){
+    constructor(coins, crops, decorations, furniture, animals){
         this.coins = coins;
-        this.plots = plots;
+        this.plots = [];
         //owned crops
         this.crops = crops;
         this.decorations = decorations;
@@ -177,56 +168,82 @@ class PlayerFarm {
 
     createFarm(scene){
 
-        for(let i = 0; i < this.plots.length; i++) {
-
-            let currentPlot = this.plots[i];
-
+        for(let i = 0; i < 6; i++){
             let plotX = 165 + (100 * (i % 4));
             let plotY = 610 + (100 * Math.floor(i / 4));
-
-            let plotContainer = scene.add.container(plotX, plotY);
-            let plot = scene.add.sprite(0, 0, 'plot');
-            plot.setInteractive();
-            Utility.addTintOnHover(plot);
-            plotContainer.add(plot);
-
-            let gridSize = 5;
-            let cellWidth = plot.width / gridSize;
-            let cellHeight = plot.height / gridSize;
-
-            for (let row = 0; row < gridSize; row++) {
-                for (let col = 0; col < gridSize; col++) {
-                    let x = col * cellWidth + cellWidth / 2;
-                    let y = row * cellHeight + cellHeight / 2;
-                    let crop = scene.add.sprite(x - (plot.width / 2), y - (plot.height / 2), currentPlot.crop + "Growth").setOrigin(0.5, 0.9);
-                    crop.setFrame(currentPlot.growthStage);
-                    plotContainer.add(crop);
-                    currentPlot.cropSprites.push(crop);
-                }
-            }
-
+            let plot = new Plot(scene, plotX, plotY, i + 1, "sunflower", 9);
+            this.plots.push(plot);
         }
-
 
     }
 
 }
 
-class Plot {
-    constructor(id, crop, cropSprites, growthStage){
+class Plot extends Phaser.GameObjects.Container{
+    constructor(scene, x, y, id, crop, growthStage) {
+        super(scene, x, y);
+
         this.id = id;
         this.crop = crop;
-        //crop sprites on the plot
-        this.cropSprites = cropSprites;
         this.growthStage = growthStage;
+        this.cropSprites = [];
+
+
+
+        // Create the plot sprite and add it to the container
+        this.plotSprite = scene.add.sprite(0, 0, 'plot');
+        Utility.addTintOnHover(this.plotSprite);
+        this.add(this.plotSprite);
+
+        if(this.crop !== "nothing"){
+
+            let gridSize = 5;
+            let cellWidth = this.plotSprite.width / gridSize;
+            let cellHeight = this.plotSprite.height / gridSize;
+
+            for (let row = 0; row < gridSize; row++) {
+                for (let col = 0; col < gridSize; col++) {
+                    let x = col * cellWidth + cellWidth / 2;
+                    let y = row * cellHeight + cellHeight / 2;
+                    let crop = scene.add.sprite(x - (this.plotSprite.width / 2), y - (this.plotSprite.height / 2), this.crop + "Growth").setOrigin(0.5, 0.9);
+                    crop.setFrame(this.growthStage);
+                    this.cropSprites.push(crop);
+                    this.add(crop);
+                }
+            }
+        }
+
+        // Make the container interactive
+        this.setInteractive(new Phaser.Geom.Rectangle(-this.plotSprite.width/2, -this.plotSprite.height/2, this.plotSprite.width, this.plotSprite.height), Phaser.Geom.Rectangle.Contains);
+
+        // Add a hover effect to the plot sprite (for some reason Utility.addTintOnHover doesn't work here)
+        this.on('pointerover', () => {
+            this.plotSprite.setTint(0xdddddd); // Change the color to your liking
+        });
+
+        this.on('pointerout', () => {
+            this.plotSprite.clearTint();
+        });
+
+        // Add a click event listener
+        this.on('pointerdown', () => {
+            alert(`Plot id: ${this.id}`);
+            this.harvest();
+        });
+        
+        // Add the container to the scene
+        scene.add.existing(this);
+                
+
     }
 
-    grow(){
+    harvest(){
         for(let cropSprite of this.cropSprites){
-            this.growthStage++;
-            cropSprite.setFrame(this.growthStage);
+            cropSprite.destroy();
         }
+    
     }
+    
 }
 
 
