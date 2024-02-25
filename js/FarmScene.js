@@ -45,13 +45,12 @@ export default class FarmScene extends Phaser.Scene {
         this.cloudImages = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
         
         //Generate initial cloud
-        this.generateCloud();
+        generateCloud(this);
 
         //Generate a new cloud every 5 seconds
         this.time.addEvent({
             delay: 5000,
-            callback: this.generateCloud,
-            callbackScope: this,
+            callback: () => generateCloud(this),
             loop: true
         });
 
@@ -149,31 +148,7 @@ export default class FarmScene extends Phaser.Scene {
     }
 
 
-    generateCloud() {
-        // Generate a random y position
-        let y = Phaser.Math.Between(100, 460);
 
-        // Select a random cloud image
-        let randomIndex = Phaser.Math.Between(0, this.cloudImages.length - 1);
-        let randomImage = this.cloudImages[randomIndex];
-
-        // Create a new cloud at left edge of the screen and at the random y position, setDepth(-1) to make sure the clouds are behind the mountains
-        let cloud = this.physics.add.image(-50, y, randomImage).setDepth(-1);
-
-        // Set the cloud's velocity to the right
-        cloud.setVelocityX(20);
-
-        // Add the cloud to the clouds array
-        this.clouds.push(cloud);
-
-        // Loop through every cloud. If a cloud's x coordinate is greater than the canvas width, destroy it and remove it from the array
-        for (let i = this.clouds.length - 1; i >= 0; i--) {
-            if (this.clouds[i].x > this.game.config.width) {
-                this.clouds[i].destroy();
-                this.clouds.splice(i, 1);
-            }
-        }
-    }
 
     setupPomodoro() {
         // add functionality for giving page of crop choices.
@@ -181,6 +156,33 @@ export default class FarmScene extends Phaser.Scene {
         return id;
     }
 }
+
+function generateCloud(scene) {
+    // Generate a random y position
+    let y = Phaser.Math.Between(100, 460);
+
+    // Select a random cloud image
+    let randomIndex = Phaser.Math.Between(0, scene.cloudImages.length - 1);
+    let randomImage = scene.cloudImages[randomIndex];
+
+    // Create a new cloud at left edge of the screen and at the random y position, setDepth(-1) to make sure the clouds are behind the mountains
+    let cloud = scene.physics.add.image(-50, y, randomImage).setDepth(-1);
+
+    // Set the cloud's velocity to the right
+    cloud.setVelocityX(20);
+
+    // Add the cloud to the clouds array
+    scene.clouds.push(cloud);
+
+    // Loop through every cloud. If a cloud's x coordinate is greater than the canvas width, destroy it and remove it from the array
+    for (let i = scene.clouds.length - 1; i >= 0; i--) {
+        if (scene.clouds[i].x > scene.game.config.width) {
+            scene.clouds[i].destroy();
+            scene.clouds.splice(i, 1);
+        }
+    }
+}
+
 
 // export class Plot extends Phaser.GameObjects.Sprite{
 //     constructor(config) {
