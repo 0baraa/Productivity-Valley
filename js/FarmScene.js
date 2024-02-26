@@ -25,7 +25,7 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('cloud6', '../assets/clouds/cloud6.png');
 
         this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
-        this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS2.png", {frameWidth: 19, frameHeight: 41});
+        this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
         
     }
 
@@ -197,7 +197,9 @@ class Plot extends Phaser.GameObjects.Container{
 
         if(this.crop !== "nothing"){
 
+            // 5x5 grid of crop sprites
             let gridSize = 5;
+
             let cellWidth = this.plotSprite.width / gridSize;
             let cellHeight = this.plotSprite.height / gridSize;
 
@@ -206,9 +208,12 @@ class Plot extends Phaser.GameObjects.Container{
                     let x = col * cellWidth + cellWidth / 2;
                     let y = row * cellHeight + cellHeight / 2;
                     //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
-                    let crop = scene.add.sprite(x - 35, y - 42, this.crop + "Growth").setOrigin(1, 1);
+                    let crop = scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1);
+                    //Set the frame of the crop sprite to the the current growth stage of the plot
                     crop.setFrame(this.growthStage);
+                    //Push the crop sprite to the cropSprites array of the plot
                     this.cropSprites.push(crop);
+                    //Add the crop sprite to the plot container
                     this.add(crop);
                 }
             }
@@ -217,7 +222,7 @@ class Plot extends Phaser.GameObjects.Container{
         // Make the container interactive
         this.setInteractive(new Phaser.Geom.Rectangle(-this.plotSprite.width/2, -this.plotSprite.height/2, this.plotSprite.width, this.plotSprite.height), Phaser.Geom.Rectangle.Contains);
 
-        // Add a hover effect to the plot sprite (for some reason Utility.addTintOnHover doesn't work here)
+        // Add a hover effect to the plot sprite of the container(for some reason Utility.addTintOnHover doesn't work here)
         this.on('pointerover', () => {
             this.plotSprite.setTint(0xdddddd); // Change the color to your liking
         });
@@ -258,10 +263,3 @@ class Plot extends Phaser.GameObjects.Container{
     }
     
 }
-
-
-// plots = []
-// create appropriate plots with correct plant and growth stage etc
-// add plots to plots array
-// pass plots array to Farm object
-// Farm object creates the plots in the scene
