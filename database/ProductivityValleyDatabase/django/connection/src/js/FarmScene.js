@@ -11,7 +11,7 @@ export default class FarmScene extends Phaser.Scene {
     preload () {
         // this.load.bitmapFont('pixelFont', '../fonts/pixeloperatorbitmap.png', '../fonts/pixeloperatorbitmap.xml');
 
-        this.load.image('farmBackground', '../assets/farm-background.png');
+        this.load.image('farmBackground', "../assets/farm-background.png");
         this.load.image('mountains', '../assets/mountains.png');
         this.load.image('fence', '../assets/fence.png');
         this.load.spritesheet('farmhouseSpritesheet', '../assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });

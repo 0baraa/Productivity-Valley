@@ -17,9 +17,11 @@ Including another URLconf
 
 from django.contrib import admin 
 from django.urls import path, include 
-#from django.conf.urls import url 
 from PVdb.views import *
 urlpatterns = [
 path('admin/', admin.site.urls),
-path('', UsersView.as_view(), name='Users')
+path('users', UsersView.as_view(), name='Users'),
+path('tasks', TasksView.as_view(), name='Tasks'),
+path('decorations', DecorationsView.as_view(), name='Decorations'),
+path('crops', CropsView.as_view(), name='Crops')
 ]
