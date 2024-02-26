@@ -303,6 +303,7 @@ export class Plot extends Phaser.GameObjects.Sprite{
         
     }
 
+    // Fisher-Yates shuffle method : https://bost.ocks.org/mike/shuffle/
     shuffle(array) {
         let randomScope = array.length;
         let i, endV;
@@ -310,7 +311,7 @@ export class Plot extends Phaser.GameObjects.Sprite{
             i = (Math.random() * randomScope--) | 0;
             endV = array[randomScope];
             array[randomScope] = array[i];
-            array[i] =  endV;
+            array[i] = endV;
         }
         return array;
     }
