@@ -25,7 +25,7 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('cloud6', '../assets/clouds/cloud6.png');
 
         this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
-        this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
+        this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS2.png", {frameWidth: 19, frameHeight: 41});
         
     }
 
@@ -77,8 +77,8 @@ export default class FarmScene extends Phaser.Scene {
         Utility.addTintOnHover(this.marketSign);
 
 
-        let farm = new PlayerFarm(0,0,0,0,0);
-        farm.createFarm(this);
+        this.farm = new PlayerFarm(0,0,0,0,0);
+        this.farm.createFarm(this);
 
 
 
@@ -109,8 +109,8 @@ export default class FarmScene extends Phaser.Scene {
 
         // this.add.text(50, 450, 'Coins: ' + farm.coins , {fontSize: 20, fill: '#000000'});
 
-        // this.text = this.add.bitmapText(50, 480, 'pixelFont', 'Coins: ' + farm.coins, 32);
-        // this.text.setTint(0x000000);
+        this.coinsText = this.add.bitmapText(50, 480, 'pixelFont', 'Coins: ' + this.farm.coins, 32);
+        this.coinsText.setTint(0x000000);
         
 
     }
@@ -171,7 +171,7 @@ class PlayerFarm {
         for(let i = 0; i < 6; i++){
             let plotX = 165 + (100 * (i % 4));
             let plotY = 610 + (100 * Math.floor(i / 4));
-            let plot = new Plot(scene, plotX, plotY, i + 1, "sunflower", 9);
+            let plot = new Plot(scene, plotX, plotY, i + 1, "sunflower", 10);
             this.plots.push(plot);
         }
 
@@ -205,7 +205,8 @@ class Plot extends Phaser.GameObjects.Container{
                 for (let col = 0; col < gridSize; col++) {
                     let x = col * cellWidth + cellWidth / 2;
                     let y = row * cellHeight + cellHeight / 2;
-                    let crop = scene.add.sprite(x - (this.plotSprite.width / 2), y - (this.plotSprite.height / 2), this.crop + "Growth").setOrigin(0.5, 0.9);
+                    //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
+                    let crop = scene.add.sprite(x - 35, y - 42, this.crop + "Growth").setOrigin(1, 1);
                     crop.setFrame(this.growthStage);
                     this.cropSprites.push(crop);
                     this.add(crop);
@@ -228,7 +229,7 @@ class Plot extends Phaser.GameObjects.Container{
         // Add a click event listener
         this.on('pointerdown', () => {
             alert(`Plot id: ${this.id}`);
-            this.harvest();
+            this.harvest(scene);
         });
         
         // Add the container to the scene
@@ -237,9 +238,21 @@ class Plot extends Phaser.GameObjects.Container{
 
     }
 
-    harvest(){
+    harvest(scene){
         for(let cropSprite of this.cropSprites){
             cropSprite.destroy();
+            switch(this.crop){
+                case "sunflower":
+                    scene.farm.coins += 100 * 1.2;
+                    scene.coinsText.setText('Coins: ' + scene.farm.coins);
+                    break;
+                case "carrot":
+                    scene.farm.coins += 100 * 1.5;
+                    scene.coinsText.setText('Coins: ' + scene.farm.coins);
+                    break;
+            }
+            this.growthStage = 0;
+            this.crop = "nothing";
         }
     
     }
