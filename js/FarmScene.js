@@ -255,8 +255,6 @@ class Plot extends Phaser.GameObjects.Container{
         
         // Add the container to the scene
         scene.add.existing(this);
-                
-
     }
 
     harvest(scene){
@@ -278,4 +276,22 @@ class Plot extends Phaser.GameObjects.Container{
     
     }
     
+}
+
+class Furniture extends Phaser.GameObjects.Sprite {
+    constructor(scene, x, y, texture, type) {
+        super(scene, x, y, texture);
+
+        // Set the type of this furniture
+        this.type = type;
+
+        // Enable input for this object
+        this.setInteractive({ draggable: true });
+
+        // Add a hover effect to the furniture
+        Utility.addTintOnHover(this.fireplace);
+
+        // Add this object to the scene
+        scene.add.existing(this);
+    }
 }
