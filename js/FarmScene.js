@@ -175,7 +175,7 @@ export default class FarmScene extends Phaser.Scene {
 
     progressAnimation(sprite) {
         console.log(sprite);
-        sprite.anims.next(1);
+        sprite.anims.currentFrame.nextFrame(1);
     }
 
 }
@@ -187,7 +187,7 @@ export class Plot extends Phaser.GameObjects.Sprite{
         this.alternating = false;
         this.size = 5;
         this.id = config.id;
-        if (this.id % 2 == 0) { // make sure plots below don't overlap ones above.
+        if (this.id % 2 === 0) { // make sure plots below don't overlap ones above.
             this.cropDepth = 1;
         } else {
             this.cropDepth = 2;
@@ -207,6 +207,7 @@ export class Plot extends Phaser.GameObjects.Sprite{
     }
 
     plantCrops(id) {
+        this.updateCount = 0;
         this.growing = true;
         let cropType = "";
         let cropAnim = "";
@@ -247,7 +248,7 @@ export class Plot extends Phaser.GameObjects.Sprite{
         this.crops = this.scene.add.group();
         for (let j = 0; j < this.size; j++) {
             if (this.alternating) { // places crops in alternating pattern
-                if (j%2 != 0) {
+                if (j%2 !== 0) {
                     for (let i = 0; i < this.size; i++) {
                         this.crops.add(this.scene.add.sprite((xBase + i*wSpace + wSpace/2) | 0, (yBase + j*hSpace) | 0, cropType));
                     }
@@ -264,15 +265,53 @@ export class Plot extends Phaser.GameObjects.Sprite{
                 }
             }
         }
-
-        // to be replaced with an update crop method
+        
+        this.randomCrops = this.crops.getChildren();
         this.scene.anims.play(cropAnim, this.crops.getChildren(), 0);
-        //this.scene.progressAnimation(this.crops.getChildren()[1])
+        this.randomCrops.forEach((crop) => crop.stop());
+        this.randomCrops = this.shuffle(this.randomCrops);
+        console.log(this.updateCount);
+        const self = this;
+
+        let tick = setInterval(function (){
+            console.log(self.updateCount);
+            if (self.updateCount === self.size * self.size) {
+                self.updateCount = 0;
+            }
+            self.progressAnimation(self.randomCrops[self.updateCount]);
+            self.updateCount += 1;
+        }, 500);
+        
+        //this.progressAnimation(this.crops.getChildren()[1])
         this.scene.setChildrenDepth(this.crops.getChildren(), this.cropDepth);
+        
+        
     }
 
+    
     harvestCrops() {
         this.growing = false;
         this.crops.destroy(true);
+    }
+    
+
+
+    progressAnimation(sprite) {
+        if (!sprite.anims.isLast) {
+            sprite.anims.nextFrame(1);
+        }
+        
+    }
+
+    shuffle(array) {
+        let randomScope = array.length;
+        let i, endV;
+        while (randomScope != 0) {
+            i = (Math.random() * randomScope--) | 0;
+            endV = array[randomScope];
+            array[randomScope] = array[i];
+            array[i] =  endV;
+        }
+        return array;
     }
 }
