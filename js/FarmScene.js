@@ -154,7 +154,7 @@ function getUserData() {
     // This data is used to create a PlayerFarm object, which is then displayed
 }
 
-
+// A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
     constructor(coins, crops, decorations, furniture, animals){
         this.coins = coins;
@@ -220,7 +220,11 @@ class Plot extends Phaser.GameObjects.Container{
         }
 
         // Make the container interactive
-        this.setInteractive(new Phaser.Geom.Rectangle(-this.plotSprite.width/2, -this.plotSprite.height/2, this.plotSprite.width, this.plotSprite.height), Phaser.Geom.Rectangle.Contains);
+        this.setInteractive({
+            hitArea: new Phaser.Geom.Rectangle(-this.plotSprite.width/2, -this.plotSprite.height/2, this.plotSprite.width, this.plotSprite.height),
+            hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+            draggable: false
+        });
 
         // Add a hover effect to the plot sprite of the container(for some reason Utility.addTintOnHover doesn't work here)
         this.on('pointerover', () => {
@@ -236,6 +240,18 @@ class Plot extends Phaser.GameObjects.Container{
             alert(`Plot id: ${this.id}`);
             this.harvest(scene);
         });
+
+        // Dragging code (set draggable to true in setInteractive to enable dragging)
+
+        // scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+        //     gameObject.x = dragX;
+        //     gameObject.y = dragY;
+        // });
+
+        // scene.input.on('dragstart', function (pointer, gameObject) {
+        //     // Bring the gameObject to the top of the display list
+        //     this.children.bringToTop(gameObject);
+        // }, scene);
         
         // Add the container to the scene
         scene.add.existing(this);
