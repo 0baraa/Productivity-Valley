@@ -46,7 +46,7 @@ export default class FarmScene extends Phaser.Scene {
 
         //Generate a new cloud every 5 seconds
         this.time.addEvent({
-            delay: 5000,
+            delay: 2500,
             callback: () => generateCloud(this),
             loop: true
         });
@@ -126,6 +126,7 @@ function generateCloud(scene) {
 
     // Create a new cloud at left edge of the screen and at the random y position, setDepth(-1) to make sure the clouds are behind the mountains
     let cloud = scene.physics.add.image(-50, y, randomImage).setDepth(-1);
+    cloud.setScale(Phaser.Math.Between(50, 75) / 100);
 
     // Set the cloud's velocity to the right
     cloud.setVelocityX(20);
