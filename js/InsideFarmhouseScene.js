@@ -20,7 +20,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         this.load.image('fridge', '../assets/house/furniture/fridge.png');
         this.load.image('grandfatherClock', '../assets/house/furniture/grandfather-clock.png');
         this.load.image('kitchenSink', '../assets/house/furniture/kitchen-sink.png');
-        this.load.image('lamp', '../assets/house/furniture/lamp.png');
+        this.load.image('lampOff', '../assets/house/furniture/lamp.png');
         this.load.image('lampOn', '../assets/house/furniture/lamp-on.png');
         this.load.image('table', '../assets/house/furniture/table.png');
 
@@ -66,7 +66,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         this.table = this.add.sprite(192, 650, 'table');
         this.table.setInteractive();
 
-        this.lamp = this.add.sprite(345, 580, 'lamp');
+        this.lamp = this.add.sprite(345, 580, 'lampOff');
         this.lamp.setInteractive();
         Utility.addTintOnHover(this.lamp);
 
@@ -120,7 +120,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
                 this.lampTurnedOn = true;
             }
             else {
-                this.lamp.setTexture('lamp');
+                this.lamp.setTexture('lampOff');
                 this.lampTurnedOn = false;
             }
         });
