@@ -63,11 +63,36 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
 
         this.add.image(210, 640, 'chair');
         this.add.image(210, 656, 'chair');
-        this.add.image(192, 650, 'table');
+        this.table = this.add.sprite(192, 650, 'table');
+        this.table.setInteractive();
 
         this.lamp = this.add.sprite(345, 580, 'lamp');
         this.lamp.setInteractive();
         Utility.addTintOnHover(this.lamp);
+
+
+        // Initial dragging code (must have setInteractive({draggable: true});)
+
+        // this.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+        //     gameObject.x = dragX;
+        //     gameObject.y = dragY;
+        // });
+
+        // let gameObjectOrder = [chair1, couch, table, object4];
+
+        // this.input.on('dragstart', function (pointer, gameObject) {
+        //     // Bring the gameObject to the top of the display list
+        //     this.children.bringToTop(gameObject);
+        
+        //     // Remove the gameObject from the array
+        //     let index = gameObjectOrder.indexOf(gameObject);
+        //     if (index !== -1) {
+        //         gameObjectOrder.splice(index, 1);
+        //     }
+        
+        //     // Add the gameObject back at the end of the array
+        //     gameObjectOrder.push(gameObject);
+        // }, this);
 
         this.lampTurnedOn = false;
 
