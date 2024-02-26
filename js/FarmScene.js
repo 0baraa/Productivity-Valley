@@ -213,7 +213,6 @@ export class Plot extends Phaser.GameObjects.Sprite{
         this.growing = true;
         let cropType = "";
         let cropAnim = "";
-        console.log(this.id)
 
         // prepare for spacing of the crops
         let plotTex = this.scene.textures.get('plot').getSourceImage();
@@ -272,11 +271,9 @@ export class Plot extends Phaser.GameObjects.Sprite{
         this.scene.anims.play(cropAnim, this.crops.getChildren(), 0);
         this.randomCrops.forEach((crop) => crop.stop());
         this.randomCrops = this.shuffle(this.randomCrops);
-        console.log(this.updateCount);
         const self = this;
 
         let tick = setInterval(function (){
-            console.log(self.updateCount);
             if (self.updateCount === self.size * self.size) {
                 self.updateCount = 0;
             }
