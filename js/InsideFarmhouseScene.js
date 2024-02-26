@@ -120,6 +120,8 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         //Swtich to farm scene when door is clicked
         this.door.on('pointerdown', () => {
             this.scene.stop();
+            //Re-enable input for farm scene
+            this.scene.get('FarmScene').input.enabled = true;
         });
 
 

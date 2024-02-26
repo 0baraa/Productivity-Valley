@@ -13,7 +13,7 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('mountains', '../assets/mountains.png');
         this.load.image('fence', '../assets/fence.png');
         this.load.spritesheet('farmhouseSpritesheet', '../assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });
-        this.load.image('market', '../assets/market.png');
+        this.load.image('marketSign', '../assets/market-sign.png');
         this.load.image('sun', '../assets/sun.png');
         this.load.image('plot', '../assets/larger_plot.png');
 
@@ -73,12 +73,10 @@ export default class FarmScene extends Phaser.Scene {
         this.farmhouse.setInteractive();
         Utility.addTintOnHover(this.farmhouse);
 
-        //Add market image and make it interactive
-        this.market = this.add.image(580, 614, 'market');
-        this.market.setInteractive();
-        Utility.addTintOnHover(this.market);
-        // Make market invisible for now until we have a nice market sprite
-        this.market.setVisible(false);
+        //Add market sign image and make it interactive
+        this.marketSign = this.add.image(600, 560, 'marketSign');
+        this.marketSign.setInteractive();
+        Utility.addTintOnHover(this.marketSign);
 
 
         this.plots = [];  // Create an array to store the plot objects
@@ -110,12 +108,16 @@ export default class FarmScene extends Phaser.Scene {
 
 
         // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
-        this.market.on('pointerdown', () => {
+        this.marketSign.on('pointerdown', () => {
+            // Disable input for FarmScene
+            this.input.enabled = false;
             this.scene.launch('MarketScene');
         });
 
         // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
         this.farmhouse.on('pointerdown', () => {
+            // Disable input for FarmScene
+            this.input.enabled = false;
             this.scene.launch('InsideFarmhouseScene');
         });
 

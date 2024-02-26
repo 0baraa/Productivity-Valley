@@ -7,8 +7,8 @@ export default class MarketScene extends Phaser.Scene {
 
 
     preload () {
-        this.load.image('insideFarmhouseBackground', '../assets/farmhouse-background.png');
-        this.load.image('door', '../assets/door.png');
+        this.load.image('marketBackground', '../assets/market-background.png');
+        this.load.image('farmSign', '../assets/farm-sign.png');
     }
 
 
@@ -18,15 +18,23 @@ export default class MarketScene extends Phaser.Scene {
         //When F key is pressed call toggleFullscreen function
         this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', Utility.toggleFullscreen);
 
-        this.add.image(320, 600, 'insideFarmhouseBackground');
+        this.add.image(320, 600, 'marketBackground');
 
-        this.door = this.add.sprite(430, 560, 'door');
-        this.door.setInteractive();
-        Utility.addTintOnHover(this.door);
+        this.farmSign = this.add.sprite(200, 630, 'farmSign');
+        this.farmSign.setInteractive();
+        Utility.addTintOnHover(this.farmSign);
+
+
+
+
+
+
 
         //Swtich to farm scene when door is clicked
-        this.door.on('pointerdown', () => {
+        this.farmSign.on('pointerdown', () => {
             this.scene.stop();
+            //Re-enable input for farm scene
+            this.scene.get('FarmScene').input.enabled = true;
         });
 
 
