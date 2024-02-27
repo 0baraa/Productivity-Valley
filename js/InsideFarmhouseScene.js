@@ -23,6 +23,8 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         this.load.image('lamp', '../assets/house/furniture/lamp.png');
         this.load.image('lampOn', '../assets/house/furniture/lamp-on.png');
         this.load.image('table', '../assets/house/furniture/table.png');
+        this.load.image('bathtub', '../assets/house/furniture/bathtub.png');
+        this.load.image('toilet', '../assets/house/furniture/toilet.png');
 
         this.load.image('fireplace', '../assets/house/furniture/fireplace.png');
         this.load.spritesheet('fireplaceSpritesheet', '../assets/house/furniture/fireplace-animation.png', { frameWidth: 24, frameHeight: 78 });
@@ -33,8 +35,9 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
     create () {
         //Set camera zoom to 2x as canvas size of farmhouse interior is 320px wide, rather than 640px
         this.cameras.main.setZoom(2);
-        //When F key is pressed call toggleFullscreen function
-        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', Utility.toggleFullscreen);
+        
+        this.lampTurnedOn = false;
+        this.fireplaceTurnedOn = true;
 
         this.add.image(320, 600, 'insideFarmhouseBackground');
 
@@ -50,28 +53,6 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         this.door.setInteractive();
         Utility.addTintOnHover(this.door);
 
-        this.add.image(320, 612, 'carpet1');
-
-        this.add.image(281, 580, 'bookshelf');
-
-        // this.add.image(320, 570, 'couch');
-
-
-        this.add.image(193, 580, 'fridge');
-        this.add.image(246, 580, 'grandfatherClock');
-        this.add.image(408, 600, 'kitchenSink');
-
-        this.add.image(210, 640, 'chair');
-        this.add.image(210, 656, 'chair');
-        this.add.image(192, 650, 'table');
-
-        this.lamp = this.add.sprite(345, 580, 'lamp');
-        this.lamp.setInteractive();
-        Utility.addTintOnHover(this.lamp);
-
-        this.lampTurnedOn = false;
-
-
         // Create fireplace animation
         this.anims.create({
             key: 'fireplaceAnimation',
@@ -79,39 +60,15 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
             frameRate: 6,
             repeat: -1 // Repeat indefinitely
         });
-
-        //Add fireplace image, play animation and make it interactive
-        this.fireplace = this.add.sprite(221, 565, 'fireplaceSpritesheet');
-        this.fireplace.anims.play('fireplaceAnimation');
-        this.fireplace.setInteractive();
-        Utility.addTintOnHover(this.fireplace);
-        this.fireplaceTurnedOn = true;
+        
+        let FarmScene = this.scene.get('FarmScene');
+        FarmScene.farm.createFurniture(this);
 
 
-        //Turn lamp on and off when clicked
-        this.lamp.on('pointerdown', () => {
-            if(!this.lampTurnedOn) {
-                this.lamp.setTexture('lampOn');
-                this.lampTurnedOn = true;
-            }
-            else {
-                this.lamp.setTexture('lamp');
-                this.lampTurnedOn = false;
-            }
-        });
 
-        //Turn fireplace on and off when clicked
-        this.fireplace.on('pointerdown', () => {
-            if(!this.fireplaceTurnedOn) {
-                this.fireplace.anims.resume();
-                this.fireplaceTurnedOn = true
-            }
-            else {
-                this.fireplace.anims.pause();
-                this.fireplace.setTexture('fireplace');
-                this.fireplaceTurnedOn = false;
-            }
-        });
+
+
+
 
 
 
@@ -123,9 +80,33 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
             //Re-enable input for farm scene
             this.scene.get('FarmScene').input.enabled = true;
         });
-
-
-
-
     }
 }
+
+
+
+
+
+
+// Initial dragging code (must have setInteractive({draggable: true});)
+
+// this.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+//     gameObject.x = dragX;
+//     gameObject.y = dragY;
+// });
+
+// let gameObjectOrder = [chair1, couch, table, object4];
+
+// this.input.on('dragstart', function (pointer, gameObject) {
+//     // Bring the gameObject to the top of the display list
+//     this.children.bringToTop(gameObject);
+
+//     // Remove the gameObject from the array
+//     let index = gameObjectOrder.indexOf(gameObject);
+//     if (index !== -1) {
+//         gameObjectOrder.splice(index, 1);
+//     }
+
+//     // Add the gameObject back at the end of the array
+//     gameObjectOrder.push(gameObject);
+// }, this);

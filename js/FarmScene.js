@@ -1,5 +1,6 @@
 import Utility from "./Utility.js";
 
+
 export default class FarmScene extends Phaser.Scene {
     constructor() {
         super({ key: 'FarmScene' });
@@ -7,7 +8,7 @@ export default class FarmScene extends Phaser.Scene {
 
 
     preload () {
-        // this.load.bitmapFont('pixelFont', '../fonts/pixeloperatorbitmap.png', '../fonts/pixeloperatorbitmap.xml');
+        this.load.bitmapFont('pixelFont', '../fonts/pixeloperatorbitmap.png', '../fonts/pixeloperatorbitmap.xml');
 
         this.load.image('farmBackground', '../assets/farm-background.png');
         this.load.image('mountains', '../assets/mountains.png');
@@ -30,15 +31,11 @@ export default class FarmScene extends Phaser.Scene {
     }
 
     create () {
-        this.id = 1;
-        let plotsAcross = 4;
-        let plotsDown = 2;
-
-        this.add.image(320, 550, 'farmBackground').setDepth(-2);
+        this.add.image(320, 550, 'farmBackground').setDepth(-1);
 
         this.add.image(320, 520, 'mountains');
 
-        this.sun = this.add.sprite(320, 440, 'sun');
+        this.sun = this.add.sprite(320, 455, 'sun').setDepth(-1);
         this.sun.setInteractive();
         Utility.addTintOnHover(this.sun);
 
@@ -46,17 +43,16 @@ export default class FarmScene extends Phaser.Scene {
         this.cloudImages = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
         
         //Generate initial cloud
-        this.generateCloud();
+        generateCloud(this);
 
         //Generate a new cloud every 5 seconds
         this.time.addEvent({
-            delay: 5000,
-            callback: this.generateCloud,
-            callbackScope: this,
+            delay: 2500,
+            callback: () => generateCloud(this),
             loop: true
         });
 
-        this.add.image(320, 560, 'fence');
+        this.add.image(320, 550, 'fence');
 
 
 
@@ -68,7 +64,7 @@ export default class FarmScene extends Phaser.Scene {
         });
 
         //Add farmhouse image and make it interactive
-        this.farmhouse = this.add.sprite(64, 574, 'farmhouseSpritesheet');
+        this.farmhouse = this.add.sprite(64, 560, 'farmhouseSpritesheet');
         this.farmhouse.anims.play('farmhouseAnimation');
         this.farmhouse.setInteractive();
         Utility.addTintOnHover(this.farmhouse);
@@ -79,28 +75,13 @@ export default class FarmScene extends Phaser.Scene {
         Utility.addTintOnHover(this.marketSign);
 
 
-        this.plots = [];  // Create an array to store the plot objects
+        this.farm = new PlayerFarm(0,0,0,0,0);
+        this.farm.createPlots(this);
 
-        //create the plots
-        for (let i = 0; i < plotsAcross; i++) {
-            for (let j = 0; j < plotsDown; j++) {
-            this.plots.push(new Plot({scene: this, x: 170 + i*100, y: 627 + j*100, key: 'crop', id: (j + i * plotsDown)}))
-            }
-        }
 
-        // create crop animations
-        this.anims.create({
-            key: 'carrotAnimation',
-            frames: this.anims.generateFrameNumbers("carrotGrowth", {start: 0, end: 10,}),
-            frameRate: 1,
-            repeat: 0
-        })
-        this.anims.create({
-            key: 'sunflowerAnimation',
-            frames: this.anims.generateFrameNumbers("sunflowerGrowth", {start: 0, end: 10,}),
-            frameRate: 1,
-            repeat: 0
-        })
+
+
+
 
 
         //When F key is pressed call toggleFullscreen function
@@ -124,194 +105,285 @@ export default class FarmScene extends Phaser.Scene {
 
 
 
-        // this.add.text(300, 500, 'Hello, world!', {fontSize: 20, fill: '#000000'});
-
-        // let text = this.add.bitmapText(150, 500, 'pixelFont', 'Time: 12040', 16);
-        // text.setTint(0x000000);
+        // this.add.text(50, 450, 'Coins: ' + farm.coins , {fontSize: 20, fill: '#000000'});
+        // this.coinsText = this.add.bitmapText(50, 480, 'pixelFont', 'Coins: ' + this.farm.coins, 32);
+        // this.coinsText.setTint(0x000000);
         
 
     }
 
 
-    generateCloud() {
-        // Generate a random y position
-        let y = Phaser.Math.Between(100, 460);
 
-        // Select a random cloud image
-        let randomIndex = Phaser.Math.Between(0, this.cloudImages.length - 1);
-        let randomImage = this.cloudImages[randomIndex];
+}
 
-        // Create a new cloud at left edge of the screen and at the random y position, setDepth(-1) to make sure the clouds are behind the mountains
-        let cloud = this.physics.add.image(-50, y, randomImage).setDepth(-1);
+function generateCloud(scene) {
+    // Generate a random y position
+    let y = Phaser.Math.Between(100, 460);
 
-        // Set the cloud's velocity to the right
-        cloud.setVelocityX(20);
+    // Select a random cloud image
+    let randomIndex = Phaser.Math.Between(0, scene.cloudImages.length - 1);
+    let randomImage = scene.cloudImages[randomIndex];
 
-        // Add the cloud to the clouds array
-        this.clouds.push(cloud);
+    // Create a new cloud at left edge of the screen and at the random y position, setDepth(-1) to make sure the clouds are behind the mountains
+    let cloud = scene.physics.add.image(-50, y, randomImage).setDepth(-1);
+    cloud.setScale(Phaser.Math.Between(50, 75) / 100);
 
-        // Loop through every cloud. If a cloud's x coordinate is greater than the canvas width, destroy it and remove it from the array
-        for (let i = this.clouds.length - 1; i >= 0; i--) {
-            if (this.clouds[i].x > this.game.config.width) {
-                this.clouds[i].destroy();
-                this.clouds.splice(i, 1);
-            }
+    // Set the cloud's velocity to the right
+    cloud.setVelocityX(20);
+
+    // Add the cloud to the clouds array
+    scene.clouds.push(cloud);
+
+    // Loop through every cloud. If a cloud's x coordinate is greater than the canvas width, destroy it and remove it from the array
+    for (let i = scene.clouds.length - 1; i >= 0; i--) {
+        if (scene.clouds[i].x > scene.game.config.width) {
+            scene.clouds[i].destroy();
+            scene.clouds.splice(i, 1);
         }
     }
+}
 
-    setupPomodoro() {
-        // add functionality for giving page of crop choices.
-        if (this.id == 2) {
-            this.id = 1;
-        } else {
-            this.id = 2;
-        }
-        return this.id;
+
+
+function getUserData() {
+    // Called in create method of FarmScene
+    // Fetches user data from the backend
+    // Then formats data in appropriate way
+    // This data is used to create a PlayerFarm object, which is then displayed
+
+
+    // Using mock data for now until backend is implemented
+    let data = {
+        "coins": 300,
+        "cropsOwned": ["tomato", "sunflower", "carrot", "potato"],
+        "plots": [
+          {"id": 1, "crop": "sunflower", "growthStage": 3}, 
+          {"id": 2, "crop": "sunflower", "growthStage": 9}, 
+          {"id": 3, "crop": "carrot", "growthStage": 2}, 
+          {"id": 4, "crop": "carrot", "growthStage": 6},
+          {"id": 5, "crop": "nothing", "growthStage": 0}, 
+          {"id": 6, "crop": "sunflower", "growthStage": 6}, 
+          {"id": 7, "crop": "nothing", "growthStage": 9},
+          {"id": 100, "crop": "sunflower", "growthStage": 10} 
+        ],
+        "furniture": [
+          {"type": "carpet1", "x": 320, "y": 612},
+          {"type": "bookshelf", "x": 281, "y": 580},
+          {"type": "fridge", "x": 193, "y": 580},
+          {"type": "grandfatherClock", "x": 246, "y": 580},
+          {"type": "kitchenSink", "x": 408, "y": 600},
+          {"type": "chair", "x": 210, "y": 650},
+          {"type": "table", "x": 192, "y": 650},
+          {"type": "lamp", "x": 345, "y": 580},
+          {"type": "toilet", "x": 452, "y": 658},
+          {"type": "bathtub", "x": 370, "y": 660},
+          {"type": "fireplace", "x": 221, "y": 565}
+        ]
+      }
+
+      return data;
+}
+
+// A PlayerFarm object will store the state of everything specific to a user on the website
+class PlayerFarm {
+    constructor(coins, cropsOwned, decorationsOwned, decorationsPlaced, furnitureOwned, animals){
+        this.coins = coins;
+        this.plots = [];
+        this.furniturePlaced = [];
+        this.cropsOwned = cropsOwned;
+        this.decorationsOwned = decorationsOwned;
+        this.decorationsPlaced = decorationsPlaced;
+        this.furnitureOwned = furnitureOwned;
+        this.animals = animals;
     }
 
-    setChildrenDepth(children, depth) {
-        for (let i = 0; i < children.length; i ++ ) {
-            children[i].setDepth(depth);
+    createPlots(scene){
+        let data = getUserData();
+
+        for(let i = 0; i < data.plots.length; i++){
+            let plotX = 165 + (100 * (i % 4));
+            let plotY = 610 + (100 * Math.floor(i / 4));
+            let plot = new Plot(scene, plotX, plotY, data.plots[i].id , data.plots[i].crop, data.plots[i].growthStage);
+            this.plots.push(plot);
         }
+
     }
 
-    progressAnimation(sprite) {
-        console.log(sprite);
-        sprite.anims.currentFrame.nextFrame(1);
+    createFurniture(scene){
+        let data = getUserData();
+
+        for(let i = 0; i < data.furniture.length; i++){
+            let furniture = new Furniture(scene, data.furniture[i].x, data.furniture[i].y, data.furniture[i].type, data.furniture[i].type);
+            this.furniturePlaced.push(furniture);
+        }
     }
 
 }
 
-export class Plot extends Phaser.GameObjects.Sprite{
-    constructor(config) {
-        super(config.scene, config.x, config.y, 'plot')
-        this.growing = false;
-        this.alternating = false;
-        this.size = 5;
-        this.id = config.id;
-        if (this.id % 2 === 0) { // make sure plots below don't overlap ones above.
-            this.cropDepth = 1;
-        } else {
-            this.cropDepth = 2;
-        }
-        this.scene = config.scene;
-        this.plotSprite = this.scene.add.existing(this);
-        this.plotSprite.setInteractive()
+class Plot extends Phaser.GameObjects.Container{
+    constructor(scene, x, y, id, crop, growthStage) {
+        super(scene, x, y);
+
+        this.id = id;
+        this.crop = crop;
+        this.growthStage = growthStage;
+        this.cropSprites = [];
+
+
+
+        // Create the plot sprite and add it to the container
+        this.plotSprite = scene.add.sprite(0, 0, 'plot');
         Utility.addTintOnHover(this.plotSprite);
-        this.plotSprite.on('pointerdown', () => {
-            if (!this.growing) {
-                let cId = this.scene.setupPomodoro();
-                this.plantCrops(cId);
-            } else {
-                this.harvestCrops();
-            }
-        })
-    }
+        this.add(this.plotSprite);
 
-    plantCrops(id) {
-        this.updateCount = 0;
-        this.growing = true;
-        let cropType = "";
-        let cropAnim = "";
+        if(this.crop !== "nothing"){
 
-        // prepare for spacing of the crops
-        let plotTex = this.scene.textures.get('plot').getSourceImage();
-        
-        let yoffset = 0;
-        let xoffset = 0;
+            // 5x5 grid of crop sprites
+            let gridSize = 5;
 
-        //crop choice
-        switch (id) {
-            case 1: // carrots
-                cropType = 'carrotGrowth';
-                cropAnim = 'carrotAnimation';
-                yoffset = 0;
-                this.size = 4;
-                xoffset = plotTex.width/this.size/2; 
-                break;
-            case 2: // sunflowers
-                cropType = 'sunflowerGrowth';
-                cropAnim = 'sunflowerAnimation';
-                yoffset = -plotTex.height/this.size/2;
-                this.size = 5;
-                xoffset = plotTex.width/this.size/2;
-                break;
-        }
-        let wSpace = plotTex.width/this.size;
-        let hSpace = plotTex.height/this.size;
-        let xBase = this.plotSprite.x - plotTex.width/2;
-        let yBase = this.plotSprite.y - plotTex.height/2;
+            let cellWidth = this.plotSprite.width / gridSize;
+            let cellHeight = this.plotSprite.height / gridSize;
 
-        
-        yBase += yoffset;
-        xBase += xoffset;
-        // place the crops
-        this.crops = this.scene.add.group();
-        for (let j = 0; j < this.size; j++) {
-            if (this.alternating) { // places crops in alternating pattern
-                if (j%2 !== 0) {
-                    for (let i = 0; i < this.size; i++) {
-                        this.crops.add(this.scene.add.sprite((xBase + i*wSpace + wSpace/2) | 0, (yBase + j*hSpace) | 0, cropType));
-                    }
-                }
-                else {
-                    for (let i = -2; i < 3; i++) {
-                        this.crops.add(this.scene.add.sprite((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0, cropType));
-                    }
-                }
-
-            } else { //standard grid pattern
-                for (let i = 0; i < this.size; i += 1) {
-                    this.crops.add(this.scene.add.sprite((xBase + i*wSpace) | 0, (yBase + j*hSpace) | 0, cropType));
+            for (let row = 0; row < gridSize; row++) {
+                for (let col = 0; col < gridSize; col++) {
+                    let x = col * cellWidth + cellWidth / 2;
+                    let y = row * cellHeight + cellHeight / 2;
+                    //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
+                    let crop = scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1);
+                    //Set the frame of the crop sprite to the the current growth stage of the plot
+                    crop.setFrame(this.growthStage);
+                    //Push the crop sprite to the cropSprites array of the plot
+                    this.cropSprites.push(crop);
+                    //Add the crop sprite to the plot container
+                    this.add(crop);
                 }
             }
         }
-        
-        this.randomCrops = this.crops.getChildren();
-        this.scene.anims.play(cropAnim, this.crops.getChildren(), 0);
-        this.randomCrops.forEach((crop) => crop.stop());
-        this.randomCrops = this.shuffle(this.randomCrops);
-        const self = this;
 
-        let tick = setInterval(function (){
-            if (self.updateCount === self.size * self.size) {
-                self.updateCount = 0;
-            }
-            self.progressAnimation(self.randomCrops[self.updateCount]);
-            self.updateCount += 1;
-        }, 500);
+        // Make the container interactive
+        this.setInteractive({
+            hitArea: new Phaser.Geom.Rectangle(-this.plotSprite.width/2, -this.plotSprite.height/2, this.plotSprite.width, this.plotSprite.height),
+            hitAreaCallback: Phaser.Geom.Rectangle.Contains,
+            draggable: false
+        });
+
+        // Add a hover effect to the plot sprite of the container(for some reason Utility.addTintOnHover doesn't work here)
+        this.on('pointerover', () => {
+            this.plotSprite.setTint(0xdddddd); // Change the color to your liking
+        });
+
+        this.on('pointerout', () => {
+            this.plotSprite.clearTint();
+        });
+
+        // Add a click event listener
+        this.on('pointerdown', () => {
+            alert(`Plot id: ${this.id}`);
+            this.harvest(scene);
+        });
+
+        // Dragging code (set draggable to true in setInteractive to enable dragging)
+
+        // scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+        //     gameObject.x = dragX;
+        //     gameObject.y = dragY;
+        // });
+
+        // scene.input.on('dragstart', function (pointer, gameObject) {
+        //     // Bring the gameObject to the top of the display list
+        //     this.children.bringToTop(gameObject);
+        // }, scene);
         
-        //this.progressAnimation(this.crops.getChildren()[1])
-        this.scene.setChildrenDepth(this.crops.getChildren(), this.cropDepth);
-        
-        
+        // Add the container to the scene
+        scene.add.existing(this);
     }
 
+    harvest(scene){
+        for(let cropSprite of this.cropSprites){
+            cropSprite.destroy();
+            switch(this.crop){
+                case "sunflower":
+                    scene.farm.coins += 100 * 1.2;
+                    // scene.coinsText.setText('Coins: ' + scene.farm.coins);
+                    break;
+                case "carrot":
+                    scene.farm.coins += 100 * 1.5;
+                    // scene.coinsText.setText('Coins: ' + scene.farm.coins);
+                    break;
+            }
+            this.growthStage = 0;
+            this.crop = "nothing";
+        }
     
-    harvestCrops() {
-        this.growing = false;
-        this.crops.destroy(true);
     }
     
+}
 
 
-    progressAnimation(sprite) {
-        if (!sprite.anims.isLast) {
-            sprite.anims.nextFrame(1);
+
+class Furniture extends Phaser.GameObjects.Sprite {
+    constructor(scene, x, y, texture, type) {
+        super(scene, x, y, texture);
+
+        // Set the type of this furniture
+        this.type = type;
+
+        // Store a reference to the scene
+        this.scene = scene;
+
+        // Enable input for this object
+        this.setInteractive({ draggable: true });
+
+        // Add a hover effect to the furniture
+        Utility.addTintOnHover(this);
+
+        // Add this object to the scene
+        scene.add.existing(this);
+
+        // Add a pointerdown event listener
+        this.on('pointerdown', this.handleClick, this);
+
+        this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+            gameObject.x = dragX;
+            gameObject.y = dragY;
+        });
+
+        scene.input.on('dragstart', function (pointer, gameObject) {
+            // Bring the gameObject to the top of the display list
+            this.children.bringToTop(gameObject);
+        }, scene);
+
+        if(this.type === "fireplace") {
+            this.anims.play('fireplaceAnimation');
         }
-        
+
     }
 
-    // Fisher-Yates shuffle method : https://bost.ocks.org/mike/shuffle/
-    shuffle(array) {
-        let randomScope = array.length;
-        let i, endV;
-        while (randomScope != 0) {
-            i = (Math.random() * randomScope--) | 0;
-            endV = array[randomScope];
-            array[randomScope] = array[i];
-            array[i] = endV;
+    handleClick() {
+        if(this.type === "fireplace"){
+            if(!this.scene.fireplaceTurnedOn) {
+                this.anims.resume();
+                this.scene.fireplaceTurnedOn = true
+            }
+            else {
+                this.anims.pause();
+                this.setTexture('fireplace');
+                this.scene.fireplaceTurnedOn = false;
+            }
         }
-        return array;
+
+        else if(this.type === "lamp") {
+            if(!this.scene.lampTurnedOn) {
+                this.setTexture('lampOn');
+                this.scene.lampTurnedOn = true;
+            }
+            else {
+                this.setTexture('lamp');
+                this.scene.lampTurnedOn = false;
+            }
+        }
     }
+
+
+
 }
