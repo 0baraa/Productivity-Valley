@@ -1,5 +1,6 @@
 import Utility from "./Utility.js";
 
+
 export default class FarmScene extends Phaser.Scene {
     constructor() {
         super({ key: 'FarmScene' });
@@ -75,7 +76,7 @@ export default class FarmScene extends Phaser.Scene {
 
 
         this.farm = new PlayerFarm(0,0,0,0,0);
-        this.farm.createFarm(this);
+        this.farm.createPlots(this);
 
 
 
@@ -105,9 +106,8 @@ export default class FarmScene extends Phaser.Scene {
 
 
         // this.add.text(50, 450, 'Coins: ' + farm.coins , {fontSize: 20, fill: '#000000'});
-
-        this.coinsText = this.add.bitmapText(50, 480, 'pixelFont', 'Coins: ' + this.farm.coins, 32);
-        this.coinsText.setTint(0x000000);
+        // this.coinsText = this.add.bitmapText(50, 480, 'pixelFont', 'Coins: ' + this.farm.coins, 32);
+        // this.coinsText.setTint(0x000000);
         
 
     }
@@ -150,29 +150,72 @@ function getUserData() {
     // Fetches user data from the backend
     // Then formats data in appropriate way
     // This data is used to create a PlayerFarm object, which is then displayed
+
+
+    // Using mock data for now until backend is implemented
+    let data = {
+        "coins": 300,
+        "cropsOwned": ["tomato", "sunflower", "carrot", "potato"],
+        "plots": [
+          {"id": 1, "crop": "sunflower", "growthStage": 3}, 
+          {"id": 2, "crop": "sunflower", "growthStage": 9}, 
+          {"id": 3, "crop": "carrot", "growthStage": 2}, 
+          {"id": 4, "crop": "carrot", "growthStage": 6},
+          {"id": 5, "crop": "nothing", "growthStage": 0}, 
+          {"id": 6, "crop": "sunflower", "growthStage": 6}, 
+          {"id": 7, "crop": "nothing", "growthStage": 9},
+          {"id": 100, "crop": "sunflower", "growthStage": 10} 
+        ],
+        "furniture": [
+          {"type": "carpet1", "x": 320, "y": 612},
+          {"type": "bookshelf", "x": 281, "y": 580},
+          {"type": "fridge", "x": 193, "y": 580},
+          {"type": "grandfatherClock", "x": 246, "y": 580},
+          {"type": "kitchenSink", "x": 408, "y": 600},
+          {"type": "chair", "x": 210, "y": 650},
+          {"type": "table", "x": 192, "y": 650},
+          {"type": "lamp", "x": 345, "y": 580},
+          {"type": "toilet", "x": 452, "y": 658},
+          {"type": "bathtub", "x": 370, "y": 660},
+          {"type": "fireplace", "x": 221, "y": 565}
+        ]
+      }
+
+      return data;
 }
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
-    constructor(coins, crops, decorations, furniture, animals){
+    constructor(coins, cropsOwned, decorationsOwned, decorationsPlaced, furnitureOwned, animals){
         this.coins = coins;
         this.plots = [];
-        //owned crops
-        this.crops = crops;
-        this.decorations = decorations;
-        this.furniture = furniture;
+        this.furniturePlaced = [];
+        this.cropsOwned = cropsOwned;
+        this.decorationsOwned = decorationsOwned;
+        this.decorationsPlaced = decorationsPlaced;
+        this.furnitureOwned = furnitureOwned;
         this.animals = animals;
     }
 
-    createFarm(scene){
+    createPlots(scene){
+        let data = getUserData();
 
-        for(let i = 0; i < 6; i++){
+        for(let i = 0; i < data.plots.length; i++){
             let plotX = 165 + (100 * (i % 4));
             let plotY = 610 + (100 * Math.floor(i / 4));
-            let plot = new Plot(scene, plotX, plotY, i + 1, "sunflower", 10);
+            let plot = new Plot(scene, plotX, plotY, data.plots[i].id , data.plots[i].crop, data.plots[i].growthStage);
             this.plots.push(plot);
         }
 
+    }
+
+    createFurniture(scene){
+        let data = getUserData();
+
+        for(let i = 0; i < data.furniture.length; i++){
+            let furniture = new Furniture(scene, data.furniture[i].x, data.furniture[i].y, data.furniture[i].type, data.furniture[i].type);
+            this.furniturePlaced.push(furniture);
+        }
     }
 
 }
@@ -261,11 +304,11 @@ class Plot extends Phaser.GameObjects.Container{
             switch(this.crop){
                 case "sunflower":
                     scene.farm.coins += 100 * 1.2;
-                    scene.coinsText.setText('Coins: ' + scene.farm.coins);
+                    // scene.coinsText.setText('Coins: ' + scene.farm.coins);
                     break;
                 case "carrot":
                     scene.farm.coins += 100 * 1.5;
-                    scene.coinsText.setText('Coins: ' + scene.farm.coins);
+                    // scene.coinsText.setText('Coins: ' + scene.farm.coins);
                     break;
             }
             this.growthStage = 0;
@@ -274,4 +317,73 @@ class Plot extends Phaser.GameObjects.Container{
     
     }
     
+}
+
+
+
+class Furniture extends Phaser.GameObjects.Sprite {
+    constructor(scene, x, y, texture, type) {
+        super(scene, x, y, texture);
+
+        // Set the type of this furniture
+        this.type = type;
+
+        // Store a reference to the scene
+        this.scene = scene;
+
+        // Enable input for this object
+        this.setInteractive({ draggable: true });
+
+        // Add a hover effect to the furniture
+        Utility.addTintOnHover(this);
+
+        // Add this object to the scene
+        scene.add.existing(this);
+
+        // Add a pointerdown event listener
+        this.on('pointerdown', this.handleClick, this);
+
+        this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+            gameObject.x = dragX;
+            gameObject.y = dragY;
+        });
+
+        scene.input.on('dragstart', function (pointer, gameObject) {
+            // Bring the gameObject to the top of the display list
+            this.children.bringToTop(gameObject);
+        }, scene);
+
+        if(this.type === "fireplace") {
+            this.anims.play('fireplaceAnimation');
+        }
+
+    }
+
+    handleClick() {
+        if(this.type === "fireplace"){
+            if(!this.scene.fireplaceTurnedOn) {
+                this.anims.resume();
+                this.scene.fireplaceTurnedOn = true
+            }
+            else {
+                this.anims.pause();
+                this.setTexture('fireplace');
+                this.scene.fireplaceTurnedOn = false;
+            }
+        }
+
+        else if(this.type === "lamp") {
+            if(!this.scene.lampTurnedOn) {
+                this.setTexture('lampOn');
+                this.scene.lampTurnedOn = true;
+            }
+            else {
+                this.setTexture('lamp');
+                this.scene.lampTurnedOn = false;
+            }
+        }
+    }
+
+
+
 }
