@@ -75,6 +75,20 @@ export default class FarmScene extends Phaser.Scene {
         Utility.addTintOnHover(this.marketSign);
 
 
+        //Create crop animations.
+        this.anims.create({
+            key: 'carrotAnim',
+            frames: this.anims.generateFrameNumbers("carrotGrowth", {start: 0, end: 10,}),
+            frameRate: 1,
+            repeat: 0
+        })
+        this.anims.create({
+            key: 'sunflowerAnim',
+            frames: this.anims.generateFrameNumbers("sunflowerGrowth", {start: 0, end: 10,}),
+            frameRate: 1,
+            repeat: 0
+        })
+
         this.farm = new PlayerFarm(0,0,0,0,0);
         this.farm.createPlots(this);
 
@@ -163,7 +177,7 @@ function getUserData() {
           {"id": 4, "crop": "carrot", "growthStage": 6},
           {"id": 5, "crop": "nothing", "growthStage": 0}, 
           {"id": 6, "crop": "sunflower", "growthStage": 6}, 
-          {"id": 7, "crop": "nothing", "growthStage": 9},
+          {"id": 7, "crop": "nothing", "growthStage": 0},
           {"id": 100, "crop": "sunflower", "growthStage": 10} 
         ],
         "furniture": [
@@ -228,7 +242,15 @@ class Plot extends Phaser.GameObjects.Container{
         this.id = config.id;
         this.crop = config.crop || "nothing";
         this.growthStage = config.gs || 0;
+        this.growthStep = 0;
         this.cropSprites = [];
+
+
+        if (this.crop === "nothing") {
+            this.occupied = false;
+        } else {
+            this.occupied = true;
+        }
 
         // Create the plot sprite and add it to the container
         this.plotSprite = this.scene.add.sprite(0, 0, 'plot');
@@ -258,8 +280,20 @@ class Plot extends Phaser.GameObjects.Container{
 
         // Add a click event listener
         this.on('pointerdown', () => {
-            alert(`Plot id: ${this.id}`);
-            this.harvest();
+            //alert(`Plot id: ${this.id}`);
+            if (this.occupied) {
+                this.harvest();
+                this.occupied = false;
+            }
+            else {
+
+                // ask for crop type etc.
+                this.crop = "sunflower"; //testing purposes
+
+                this.plantCrops();
+                this.playGrowth();
+            }
+            
         });
 
         // Dragging code (set draggable to true in setInteractive to enable dragging)
@@ -279,40 +313,74 @@ class Plot extends Phaser.GameObjects.Container{
     }
 
     plantCrops() {
+        this.gridSize = 5;
+        this.occupied = true;
 
-        switch (this.crop) {
-            case "carrot":
-                let sprite = 'carrotGrowth';
-                let anim = 'carrotAnimation';
-                break;
-            case "sunflower":
+        let cellWidth = this.plotSprite.width / this.gridSize;
+        let cellHeight = this.plotSprite.height / this.gridSize;
+
+        for (let row = 0; row < this.gridSize; row++) {
+            for (let col = 0; col < this.gridSize; col++) {
+                let x = col * cellWidth + cellWidth / 2;
+                let y = row * cellHeight + cellHeight / 2;
+                //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
+                let crop = this.scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");;
+                crop.stop();
+                //Set the frame of the crop sprite to the the current growth stage of the plot
+                crop.setFrame(this.growthStage);
+                
+                
+                //Push the crop sprite to the cropSprites array of the plot
+                this.cropSprites.push(crop);
+                //Add the crop sprite to the plot container
+                this.add(crop);
+            }
+        }
+    }
+
+    playGrowth() {
+
+        const self = this;
+        for (let crop of this.cropSprites) {
 
         }
-
-        let gridSize = 5;
-
-            let cellWidth = this.plotSprite.width / gridSize;
-            let cellHeight = this.plotSprite.height / gridSize;
-
-            for (let row = 0; row < gridSize; row++) {
-                for (let col = 0; col < gridSize; col++) {
-                    let x = col * cellWidth + cellWidth / 2;
-                    let y = row * cellHeight + cellHeight / 2;
-                    //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
-                    let crop = this.scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1);
-                    //Set the frame of the crop sprite to the the current growth stage of the plot
-                    crop.setFrame(this.growthStage);
-                    //Push the crop sprite to the cropSprites array of the plot
-                    this.cropSprites.push(crop);
-                    //Add the crop sprite to the plot container
-                    this.add(crop);
-                }
-            }
+        console.log(this.cropSprites.length);
+        
+        this.tick = setInterval(function () {self.growSingle();}, 50);
     }
     
-    harvest(){
+    growSingle() {
+        
+
+        while(true) {
+            let num = (Math.random() * this.cropSprites.length) | 0;
+            
+            if (this.cropSprites[num].anims.isLast) { continue; }
+            if (this.cropSprites[num].anims.frame > this.growthStage + 1) {continue; }
+            if (this.growthStep === this.cropSprites.length) {
+                this.growthStep = 0;
+                this.growthStage += 1;
+                console.log("+1 growthStage");
+                if (this.growthStage === this.cropSprites[0].anims.frameTotal) {
+                    //crops finished
+        
+                    //prompt to harvest - don't have to.
+                    clearInterval(this.tick);
+                    console.log("crops finished!");
+                    return;
+                }
+            }
+            this.cropSprites[num].anims.nextFrame(1);
+            this.growthStep += 1;
+            break;
+        }
+    }
+
+
+    harvest() {
         for(let cropSprite of this.cropSprites){
             cropSprite.destroy();
+
             switch(this.crop){
                 case "sunflower":
                     this.scene.farm.coins += 100 * 1.2;
@@ -326,6 +394,7 @@ class Plot extends Phaser.GameObjects.Container{
             this.growthStage = 0;
             this.crop = "nothing";
         }
+        this.cropSprites = [];
     
     }
     
