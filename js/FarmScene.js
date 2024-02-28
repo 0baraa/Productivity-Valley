@@ -242,7 +242,8 @@ class Plot extends Phaser.GameObjects.Container{
         this.id = config.id;
         this.crop = config.crop || "nothing";
         this.growthStage = config.gs || 0;
-        this.growthStep = 0;
+        this.growthStep = 0
+        
         this.cropSprites = [];
 
 
@@ -291,10 +292,13 @@ class Plot extends Phaser.GameObjects.Container{
                 this.crop = "sunflower"; //testing purposes
 
                 this.plantCrops();
+                
                 this.playGrowth();
             }
             
         });
+
+        
 
         // Dragging code (set draggable to true in setInteractive to enable dragging)
 
@@ -324,7 +328,9 @@ class Plot extends Phaser.GameObjects.Container{
                 let x = col * cellWidth + cellWidth / 2;
                 let y = row * cellHeight + cellHeight / 2;
                 //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
-                let crop = this.scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");;
+                let crop = this.scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");
+
+                // immediately stops animation so that it can be controlled.
                 crop.stop();
                 //Set the frame of the crop sprite to the the current growth stage of the plot
                 crop.setFrame(this.growthStage);
@@ -336,48 +342,78 @@ class Plot extends Phaser.GameObjects.Container{
                 this.add(crop);
             }
         }
+        this.maxFrame = this.cropSprites[0].anims.getTotalFrames();
     }
 
     playGrowth() {
 
-        const self = this;
-        for (let crop of this.cropSprites) {
-
+        console.log(this.cropSprites[0].anims.getFrameName());
+        console.log("started growing");
+        this.cropsLeft = [];
+        for (let i = 0; i < this.cropSprites.length; i++) {
+            this.cropsLeft.push(i);
         }
-        console.log(this.cropSprites.length);
-        
-        this.tick = setInterval(function () {self.growSingle();}, 50);
+        console.log("numbers " + this.cropsLeft);
+        const self = this;
+        this.tick = setInterval(function () {self.growSingle();}, 100);
     }
     
     growSingle() {
+        if (this.growthStep === this.cropSprites.length) {
+            this.growthStep = 0;
+            this.growthStage++;
+            console.log("Max " + this.cropsLeft.length);
+        }
+        if (this.growthStage >= this.maxFrame - 1) {
+            //crops finished
+            
+            //prompt to harvest - don't have to.
+            clearInterval(this.tick);
+            console.log("crops finished!");
+            return;
+        }
         
 
-        while(true) {
-            let num = (Math.random() * this.cropSprites.length) | 0;
-            
-            if (this.cropSprites[num].anims.isLast) { continue; }
-            if (this.cropSprites[num].anims.frame > this.growthStage + 1) {continue; }
-            if (this.growthStep === this.cropSprites.length) {
-                this.growthStep = 0;
-                this.growthStage += 1;
-                console.log("+1 growthStage");
-                if (this.growthStage === this.cropSprites[0].anims.frameTotal) {
-                    //crops finished
-        
-                    //prompt to harvest - don't have to.
-                    clearInterval(this.tick);
-                    console.log("crops finished!");
-                    return;
+        let rand = (Math.random() * this.cropsLeft.length) | 0;
+        let num = this.cropsLeft[rand];
+
+        console.log(num);
+        for (let i = 0; i < this.cropsLeft.length; i++) {
+            if (this.cropSprites[num].anims.getFrameName() == this.maxFrame - 1) {
+                this.cropsLeft.splice(rand, 1);
+                if (this.cropsLeft.length == 0) {
+                    break;
                 }
+                rand = (Math.random() * this.cropsLeft.length) | 0;
+                num = this.cropsLeft[rand];
+                console.log("extra ", num);
+                continue;
             }
+            if (this.cropSprites[num].anims.getFrameName() > this.growthStage + 1) {
+                rand ++;
+                if (rand == this.cropsLeft.length) {
+                    rand = 0;
+                }
+                num = this.cropsLeft[rand];
+            } 
+            else {break}
+        }
+
+        if (this.cropsLeft.length != 0) {
             this.cropSprites[num].anims.nextFrame(1);
-            this.growthStep += 1;
-            break;
+            this.growthStep++;
+        }
+        else {
+            console.log(this.growthStep);
+            this.growthStep ++;
         }
     }
 
 
     harvest() {
+        if (this.tick) {
+            clearInterval(this.tick);
+        }
         for(let cropSprite of this.cropSprites){
             cropSprite.destroy();
 
