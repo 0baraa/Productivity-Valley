@@ -289,7 +289,7 @@ class Plot extends Phaser.GameObjects.Container{
             else {
 
                 // ask for crop type etc.
-                this.crop = "sunflower"; //testing purposes
+                this.crop = "carrot"; //testing purposes
 
                 this.plantCrops();
                 
@@ -323,6 +323,7 @@ class Plot extends Phaser.GameObjects.Container{
         let cellWidth = this.plotSprite.width / this.gridSize;
         let cellHeight = this.plotSprite.height / this.gridSize;
 
+        //Place crops
         for (let row = 0; row < this.gridSize; row++) {
             for (let col = 0; col < this.gridSize; col++) {
                 let x = col * cellWidth + cellWidth / 2;
@@ -342,81 +343,85 @@ class Plot extends Phaser.GameObjects.Container{
                 this.add(crop);
             }
         }
+        //Used for growth
         this.maxFrame = this.cropSprites[0].anims.getTotalFrames();
     }
 
     playGrowth() {
 
-        console.log(this.cropSprites[0].anims.getFrameName());
         console.log("started growing");
+        
+        //List of numbered references to possible cropSprites.
         this.cropsLeft = [];
         for (let i = 0; i < this.cropSprites.length; i++) {
             this.cropsLeft.push(i);
         }
-        console.log("numbers " + this.cropsLeft);
         const self = this;
+
+        //repeating function to grow crops individually
         this.tick = setInterval(function () {self.growSingle();}, 100);
     }
     
     growSingle() {
+        //progress tracking
         if (this.growthStep === this.cropSprites.length) {
             this.growthStep = 0;
             this.growthStage++;
-            console.log("Max " + this.cropsLeft.length);
+            //console.log("Max " + this.cropsLeft.length);
         }
         if (this.growthStage >= this.maxFrame - 1) {
             //crops finished
             
-            //prompt to harvest - don't have to.
+            //todo: prompt to harvest
             clearInterval(this.tick);
             console.log("crops finished!");
+            alert(`Crops finished growing in: ${this.id}`);
             return;
         }
         
-
+        //random number
         let rand = (Math.random() * this.cropsLeft.length) | 0;
         let num = this.cropsLeft[rand];
 
-        console.log(num);
-        for (let i = 0; i < this.cropsLeft.length; i++) {
-            if (this.cropSprites[num].anims.getFrameName() == this.maxFrame - 1) {
-                this.cropsLeft.splice(rand, 1);
-                if (this.cropsLeft.length == 0) {
-                    break;
-                }
-                rand = (Math.random() * this.cropsLeft.length) | 0;
-                num = this.cropsLeft[rand];
-                console.log("extra ", num);
-                continue;
-            }
+        //console.log(num);
+        //crop selection logic
+        for (let i = 0; i <= this.cropsLeft.length; i++) {
             if (this.cropSprites[num].anims.getFrameName() > this.growthStage + 1) {
-                rand ++;
+                rand ++; //cycle through crops to find one to actually increment
                 if (rand == this.cropsLeft.length) {
                     rand = 0;
                 }
+                //set the number
                 num = this.cropsLeft[rand];
             } 
-            else {break}
+            else {break} //viable crop found
         }
 
-        if (this.cropsLeft.length != 0) {
+        //actually increment the frame of the crop
+        if (this.cropsLeft.length != 0) { //here for safety's sake
             this.cropSprites[num].anims.nextFrame(1);
+            if (this.cropSprites[num].anims.getFrameName() == this.maxFrame -1) {
+                this.cropsLeft.splice(rand, 1); // remove from list of crops to grow
+            }
             this.growthStep++;
         }
         else {
-            console.log(this.growthStep);
+            //in the event of the crops somehow finishing early, it will still finish the counter
             this.growthStep ++;
         }
     }
 
 
     harvest() {
+        //todo: remove this once we 'lock' the plots when in pomodoro mode.
         if (this.tick) {
             clearInterval(this.tick);
         }
+        //remove crops
         for(let cropSprite of this.cropSprites){
             cropSprite.destroy();
 
+            //calculate coins
             switch(this.crop){
                 case "sunflower":
                     this.scene.farm.coins += 100 * 1.2;
