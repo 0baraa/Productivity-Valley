@@ -75,6 +75,20 @@ export default class FarmScene extends Phaser.Scene {
         Utility.addTintOnHover(this.marketSign);
 
 
+        //Create crop animations.
+        this.anims.create({
+            key: 'carrotAnim',
+            frames: this.anims.generateFrameNumbers("carrotGrowth", {start: 0, end: 10,}),
+            frameRate: 1,
+            repeat: 0
+        })
+        this.anims.create({
+            key: 'sunflowerAnim',
+            frames: this.anims.generateFrameNumbers("sunflowerGrowth", {start: 0, end: 10,}),
+            frameRate: 1,
+            repeat: 0
+        })
+
         this.farm = new PlayerFarm(0,0,0,0,0);
         this.farm.createPlots(this);
 
@@ -163,7 +177,7 @@ function getUserData() {
           {"id": 4, "crop": "carrot", "growthStage": 6},
           {"id": 5, "crop": "nothing", "growthStage": 0}, 
           {"id": 6, "crop": "sunflower", "growthStage": 6}, 
-          {"id": 7, "crop": "nothing", "growthStage": 9},
+          {"id": 7, "crop": "nothing", "growthStage": 0},
           {"id": 100, "crop": "sunflower", "growthStage": 10} 
         ],
         "furniture": [
@@ -203,7 +217,7 @@ class PlayerFarm {
         for(let i = 0; i < data.plots.length; i++){
             let plotX = 165 + (100 * (i % 4));
             let plotY = 610 + (100 * Math.floor(i / 4));
-            let plot = new Plot(scene, plotX, plotY, data.plots[i].id , data.plots[i].crop, data.plots[i].growthStage);
+            let plot = new Plot({scene: scene, x: plotX, y: plotY, id: data.plots[i].id , crop: data.plots[i].crop, gs: data.plots[i].growthStage});
             this.plots.push(plot);
         }
 
@@ -221,43 +235,32 @@ class PlayerFarm {
 }
 
 class Plot extends Phaser.GameObjects.Container{
-    constructor(scene, x, y, id, crop, growthStage) {
-        super(scene, x, y);
+    constructor(config) {
+        super(config.scene, config.x, config.y);
 
-        this.id = id;
-        this.crop = crop;
-        this.growthStage = growthStage;
+        this.scene = config.scene;
+        this.id = config.id;
+        this.crop = config.crop || "nothing";
+        this.growthStage = config.gs || 0;
+        this.growthStep = 0
+        
         this.cropSprites = [];
 
 
+        if (this.crop === "nothing") {
+            this.occupied = false;
+        } else {
+            this.occupied = true;
+        }
 
         // Create the plot sprite and add it to the container
-        this.plotSprite = scene.add.sprite(0, 0, 'plot');
+        this.plotSprite = this.scene.add.sprite(0, 0, 'plot');
         Utility.addTintOnHover(this.plotSprite);
         this.add(this.plotSprite);
 
+        // if there's crops saved, load those crops
         if(this.crop !== "nothing"){
-
-            // 5x5 grid of crop sprites
-            let gridSize = 5;
-
-            let cellWidth = this.plotSprite.width / gridSize;
-            let cellHeight = this.plotSprite.height / gridSize;
-
-            for (let row = 0; row < gridSize; row++) {
-                for (let col = 0; col < gridSize; col++) {
-                    let x = col * cellWidth + cellWidth / 2;
-                    let y = row * cellHeight + cellHeight / 2;
-                    //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
-                    let crop = scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1);
-                    //Set the frame of the crop sprite to the the current growth stage of the plot
-                    crop.setFrame(this.growthStage);
-                    //Push the crop sprite to the cropSprites array of the plot
-                    this.cropSprites.push(crop);
-                    //Add the crop sprite to the plot container
-                    this.add(crop);
-                }
-            }
+            this.plantCrops();
         }
 
         // Make the container interactive
@@ -278,9 +281,24 @@ class Plot extends Phaser.GameObjects.Container{
 
         // Add a click event listener
         this.on('pointerdown', () => {
-            alert(`Plot id: ${this.id}`);
-            this.harvest(scene);
+            //alert(`Plot id: ${this.id}`);
+            if (this.occupied) {
+                this.harvest();
+                this.occupied = false;
+            }
+            else {
+
+                // ask for crop type etc.
+                this.crop = "sunflower"; //testing purposes
+
+                this.plantCrops();
+                
+                this.playGrowth();
+            }
+            
         });
+
+        
 
         // Dragging code (set draggable to true in setInteractive to enable dragging)
 
@@ -292,28 +310,127 @@ class Plot extends Phaser.GameObjects.Container{
         // scene.input.on('dragstart', function (pointer, gameObject) {
         //     // Bring the gameObject to the top of the display list
         //     this.children.bringToTop(gameObject);
-        // }, scene);
+        // }, this.scene);
         
         // Add the container to the scene
-        scene.add.existing(this);
+        this.scene.add.existing(this);
     }
 
-    harvest(scene){
+    plantCrops() {
+        this.gridSize = 5;
+        this.occupied = true;
+
+        let cellWidth = this.plotSprite.width / this.gridSize;
+        let cellHeight = this.plotSprite.height / this.gridSize;
+
+        for (let row = 0; row < this.gridSize; row++) {
+            for (let col = 0; col < this.gridSize; col++) {
+                let x = col * cellWidth + cellWidth / 2;
+                let y = row * cellHeight + cellHeight / 2;
+                //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
+                let crop = this.scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");
+
+                // immediately stops animation so that it can be controlled.
+                crop.stop();
+                //Set the frame of the crop sprite to the the current growth stage of the plot
+                crop.setFrame(this.growthStage);
+                
+                
+                //Push the crop sprite to the cropSprites array of the plot
+                this.cropSprites.push(crop);
+                //Add the crop sprite to the plot container
+                this.add(crop);
+            }
+        }
+        this.maxFrame = this.cropSprites[0].anims.getTotalFrames();
+    }
+
+    playGrowth() {
+
+        console.log(this.cropSprites[0].anims.getFrameName());
+        console.log("started growing");
+        this.cropsLeft = [];
+        for (let i = 0; i < this.cropSprites.length; i++) {
+            this.cropsLeft.push(i);
+        }
+        console.log("numbers " + this.cropsLeft);
+        const self = this;
+        this.tick = setInterval(function () {self.growSingle();}, 100);
+    }
+    
+    growSingle() {
+        if (this.growthStep === this.cropSprites.length) {
+            this.growthStep = 0;
+            this.growthStage++;
+            console.log("Max " + this.cropsLeft.length);
+        }
+        if (this.growthStage >= this.maxFrame - 1) {
+            //crops finished
+            
+            //prompt to harvest - don't have to.
+            clearInterval(this.tick);
+            console.log("crops finished!");
+            return;
+        }
+        
+
+        let rand = (Math.random() * this.cropsLeft.length) | 0;
+        let num = this.cropsLeft[rand];
+
+        console.log(num);
+        for (let i = 0; i < this.cropsLeft.length; i++) {
+            if (this.cropSprites[num].anims.getFrameName() == this.maxFrame - 1) {
+                this.cropsLeft.splice(rand, 1);
+                if (this.cropsLeft.length == 0) {
+                    break;
+                }
+                rand = (Math.random() * this.cropsLeft.length) | 0;
+                num = this.cropsLeft[rand];
+                console.log("extra ", num);
+                continue;
+            }
+            if (this.cropSprites[num].anims.getFrameName() > this.growthStage + 1) {
+                rand ++;
+                if (rand == this.cropsLeft.length) {
+                    rand = 0;
+                }
+                num = this.cropsLeft[rand];
+            } 
+            else {break}
+        }
+
+        if (this.cropsLeft.length != 0) {
+            this.cropSprites[num].anims.nextFrame(1);
+            this.growthStep++;
+        }
+        else {
+            console.log(this.growthStep);
+            this.growthStep ++;
+        }
+    }
+
+
+    harvest() {
+        if (this.tick) {
+            clearInterval(this.tick);
+        }
         for(let cropSprite of this.cropSprites){
             cropSprite.destroy();
+
             switch(this.crop){
                 case "sunflower":
-                    scene.farm.coins += 100 * 1.2;
+                    this.scene.farm.coins += 100 * 1.2;
                     // scene.coinsText.setText('Coins: ' + scene.farm.coins);
                     break;
                 case "carrot":
-                    scene.farm.coins += 100 * 1.5;
+                    this.scene.farm.coins += 100 * 1.5;
                     // scene.coinsText.setText('Coins: ' + scene.farm.coins);
                     break;
             }
             this.growthStage = 0;
             this.crop = "nothing";
         }
+        this.cropSprites = [];
     
     }
     
