@@ -418,23 +418,22 @@ class Plot extends Phaser.GameObjects.Container{
             clearInterval(this.tick);
         }
         //remove crops
+        //calculate coins
+        switch(this.crop){
+            case "sunflower":
+                this.scene.farm.coins += 100 * 1.2 * this.size * this.size; // i don' think we need to multiply by number of crops but anyway, this is better than a loop calculating
+                // scene.coinsText.setText('Coins: ' + scene.farm.coins);
+                break;
+            case "carrot":
+                this.scene.farm.coins += 100 * 1.5 * this.size * this.size;
+                // scene.coinsText.setText('Coins: ' + scene.farm.coins);
+                break;
+        }
         for(let cropSprite of this.cropSprites){
             cropSprite.destroy();
-
-            //calculate coins
-            switch(this.crop){
-                case "sunflower":
-                    this.scene.farm.coins += 100 * 1.2;
-                    // scene.coinsText.setText('Coins: ' + scene.farm.coins);
-                    break;
-                case "carrot":
-                    this.scene.farm.coins += 100 * 1.5;
-                    // scene.coinsText.setText('Coins: ' + scene.farm.coins);
-                    break;
-            }
-            this.growthStage = 0;
-            this.crop = "nothing";
         }
+        this.crop = "nothing";
+        this.growthStage = 0;
         this.cropSprites = [];
     
     }
