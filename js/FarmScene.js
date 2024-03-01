@@ -70,9 +70,7 @@ export default class FarmScene extends Phaser.Scene {
         Utility.addTintOnHover(this.farmhouse);
 
         //Add market sign image and make it interactive
-        this.marketSign = this.add.image(600, 560, 'marketSign');
-        this.marketSign.setInteractive();
-        Utility.addTintOnHover(this.marketSign);
+        
 
 
         //Create crop animations.
@@ -88,10 +86,9 @@ export default class FarmScene extends Phaser.Scene {
             frameRate: 1,
             repeat: 0
         })
-
-        this.farm = new PlayerFarm(0,0,0,0,0);
+        
+        this.farm = new PlayerFarm({coins: 0, cropsOwned: 0, decorationsOwned: 0, decorationsPlaced: 0, furnitureOwned: 0, animals: 0});
         this.farm.createPlots(this);
-
 
 
 
@@ -102,12 +99,7 @@ export default class FarmScene extends Phaser.Scene {
         this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', Utility.toggleFullscreen);
 
 
-        // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
-        this.marketSign.on('pointerdown', () => {
-            // Disable input for FarmScene
-            this.input.enabled = false;
-            this.scene.launch('MarketScene');
-        });
+        // the market sign has moved to this.farm.createPlots()
 
         // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
         this.farmhouse.on('pointerdown', () => {
@@ -173,12 +165,12 @@ function getUserData() {
         "plots": [
           {"id": 1, "crop": "sunflower", "growthStage": 3}, 
           {"id": 2, "crop": "sunflower", "growthStage": 9}, 
-          {"id": 3, "crop": "carrot", "growthStage": 2}, 
-          {"id": 4, "crop": "carrot", "growthStage": 6},
-          {"id": 5, "crop": "nothing", "growthStage": 0}, 
-          {"id": 6, "crop": "sunflower", "growthStage": 6}, 
-          {"id": 7, "crop": "nothing", "growthStage": 0},
-          {"id": 100, "crop": "sunflower", "growthStage": 10} 
+        //   {"id": 3, "crop": "carrot", "growthStage": 2}, 
+        //   {"id": 4, "crop": "carrot", "growthStage": 6},
+        //   {"id": 5, "crop": "nothing", "growthStage": 0}, 
+        //   {"id": 6, "crop": "sunflower", "growthStage": 6}, 
+        //   {"id": 7, "crop": "nothing", "growthStage": 0},
+        //   {"id": 8, "crop": "sunflower", "growthStage": 10} 
         ],
         "furniture": [
           {"type": "carpet1", "x": 320, "y": 612},
@@ -200,34 +192,79 @@ function getUserData() {
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
-    constructor(coins, cropsOwned, decorationsOwned, decorationsPlaced, furnitureOwned, animals){
-        this.coins = coins;
+    constructor(config){
+        this.coins = config.coins;
         this.plots = [];
         this.furniturePlaced = [];
-        this.cropsOwned = cropsOwned;
-        this.decorationsOwned = decorationsOwned;
-        this.decorationsPlaced = decorationsPlaced;
-        this.furnitureOwned = furnitureOwned;
-        this.animals = animals;
+        this.cropsOwned = config.cropsOwned;
+        this.decorationsOwned = config.decorationsOwned;
+        this.decorationsPlaced = config.decorationsPlaced;
+        this.furnitureOwned = config.furnitureOwned;
+        this.animals = config.animals;
     }
 
     createPlots(scene){
         let data = getUserData();
-
+        
+        let x, zoom;
+        let y = 0;
+        let along = false;
+        // calculate camera offset and zoom based on plot number
+        switch (data.plots.length) {
+            case 2:
+                x = -100;
+                y = -40;
+                zoom = 1.455;
+                along = true;
+                break;
+            case 4:
+                x = -100;
+                zoom = 1.455;
+                break;
+            case 6:
+                x = -50;
+                zoom = 1.2;
+                break;
+            default:
+                x = 0;
+                zoom = 1;
+        }
+        // adjust camera
+        scene.cameras.main.setScroll(x, y)
+        scene.cameras.main.setZoom(zoom,zoom);
+        let plotX,plotY;
         for(let i = 0; i < data.plots.length; i++){
-            let plotX = 165 + (100 * (i % 4));
-            let plotY = 610 + (100 * Math.floor(i / 4));
+
+            if (along) {
+                plotX = 165 + (100 * (i));
+                plotY = 610;
+            } else {
+                plotX = 165 + (100 * (i % (data.plots.length/2)));
+                plotY = 610 + (100 * Math.floor(i / (data.plots.length/2)));
+            }
+            //adjustable plot numbers:
+
+            
             let plot = new Plot({scene: scene, x: plotX, y: plotY, id: data.plots[i].id , crop: data.plots[i].crop, gs: data.plots[i].growthStage});
             this.plots.push(plot);
         }
 
+        //set market sign to be one more than the crops.
+        this.marketSign = scene.add.image(165 + (100 * data.plots.length), 560, 'marketSign');
+        this.marketSign.setInteractive();
+        Utility.addTintOnHover(this.marketSign);
+        this.marketSign.on('pointerdown', () => {
+            // Disable input for FarmScene
+            scene.input.enabled = false;
+            scene.scene.launch('MarketScene');
+        });
     }
 
     createFurniture(scene){
         let data = getUserData();
 
         for(let i = 0; i < data.furniture.length; i++){
-            let furniture = new Furniture(scene, data.furniture[i].x, data.furniture[i].y, data.furniture[i].type, data.furniture[i].type);
+            let furniture = new Furniture({scene: scene, x: data.furniture[i].x, y: data.furniture[i].y, type: data.furniture[i].type, texture: data.furniture[i].type});
             this.furniturePlaced.push(furniture);
         }
     }
@@ -330,13 +367,10 @@ class Plot extends Phaser.GameObjects.Container{
                 let y = row * cellHeight + cellHeight / 2;
                 //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
                 let crop = this.scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");
-
                 // immediately stops animation so that it can be controlled.
                 crop.stop();
                 //Set the frame of the crop sprite to the the current growth stage of the plot
                 crop.setFrame(this.growthStage);
-                
-                
                 //Push the crop sprite to the cropSprites array of the plot
                 this.cropSprites.push(crop);
                 //Add the crop sprite to the plot container
@@ -350,7 +384,7 @@ class Plot extends Phaser.GameObjects.Container{
     playGrowth() {
 
         console.log("started growing");
-        
+
         //List of numbered references to possible cropSprites.
         this.cropsLeft = [];
         for (let i = 0; i < this.cropSprites.length; i++) {
@@ -359,49 +393,70 @@ class Plot extends Phaser.GameObjects.Container{
         const self = this;
 
         //repeating function to grow crops individually
-        this.tick = setInterval(function () {self.growSingle();}, 100);
+        this.tick = setInterval(function () {self.findCrop();}, 100);
     }
-    
-    growSingle() {
+
+    findCrop() {
         //progress tracking
         if (this.growthStep === this.cropSprites.length) {
             this.growthStep = 0;
             this.growthStage++;
             //console.log("Max " + this.cropsLeft.length);
+
+            //send current state and time to database to save growthStage
         }
         if (this.growthStage >= this.maxFrame - 1) {
             //crops finished
-            
+
             //todo: prompt to harvest
             clearInterval(this.tick);
             console.log("crops finished!");
             alert(`Crops finished growing in: ${this.id}`);
             return;
         }
-        
+
+        //check if any crops are left too far behind by the growthStage
+        for (let j = 1; j <= this.cropsLeft.length; j++) {
+            if (this.cropSprites[this.cropsLeft[j - 1]].anims.getFrameName() <= this.growthStage - 2) {
+                this.growSelectedCrop(this.cropsLeft[j - 1],j-1);
+                return;
+            }
+        }
+
         //random number
         let rand = (Math.random() * this.cropsLeft.length) | 0;
-        let num = this.cropsLeft[rand];
 
+        let upordown = (Math.random() * 2) | 0; // makes it seem more random when cycling through.
         //console.log(num);
         //crop selection logic
-        for (let i = 0; i <= this.cropsLeft.length; i++) {
-            if (this.cropSprites[num].anims.getFrameName() > this.growthStage + 1) {
-                rand ++; //cycle through crops to find one to actually increment
+        for (let i = 0; i < this.cropsLeft.length; i++) {
+            if (this.cropSprites[this.cropsLeft[rand]].anims.getFrameName() > this.growthStage + 1) {
+                if (upordown) {
+                    rand ++;
+                } else {
+                    rand --;
+                } //cycle through crops to find one to actually increment
+
+                //reset random if out of range of list
                 if (rand == this.cropsLeft.length) {
                     rand = 0;
                 }
-                //set the number
-                num = this.cropsLeft[rand];
+                else if (rand == 0) {
+                    rand = this.cropsLeft.length - 1;
+                }
+                
+                
             } 
-            else {break} //viable crop found
+            else {this.growSelectedCrop(this.cropsLeft[rand],rand); break;} //viable crop found
         }
-
+    }
+    growSelectedCrop(num,rand) { 
         //actually increment the frame of the crop
         if (this.cropsLeft.length != 0) { //here for safety's sake
             this.cropSprites[num].anims.nextFrame(1);
             if (this.cropSprites[num].anims.getFrameName() == this.maxFrame -1) {
                 this.cropsLeft.splice(rand, 1); // remove from list of crops to grow
+                console.log("finished growing crop");
             }
             this.growthStep++;
         }
@@ -411,13 +466,18 @@ class Plot extends Phaser.GameObjects.Container{
         }
     }
 
+    pauseGrowth() {
+        if (this.tick) {
+            clearInterval(this.tick);
+            console.log("Paused growing");
+        }
+    }
 
     harvest() {
         //todo: remove this once we 'lock' the plots when in pomodoro mode.
         if (this.tick) {
             clearInterval(this.tick);
         }
-        //remove crops
         //calculate coins
         switch(this.crop){
             case "sunflower":
@@ -429,6 +489,7 @@ class Plot extends Phaser.GameObjects.Container{
                 // scene.coinsText.setText('Coins: ' + scene.farm.coins);
                 break;
         }
+        //remove crops
         for(let cropSprite of this.cropSprites){
             cropSprite.destroy();
         }
@@ -443,14 +504,14 @@ class Plot extends Phaser.GameObjects.Container{
 
 
 class Furniture extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture, type) {
-        super(scene, x, y, texture);
+    constructor(config) {
+        super(config.scene, config.x, config.y, config.texture);
 
         // Set the type of this furniture
-        this.type = type;
+        this.type = config.type;
 
         // Store a reference to the scene
-        this.scene = scene;
+        this.scene = config.scene;
 
         // Enable input for this object
         this.setInteractive({ draggable: true });
@@ -459,7 +520,7 @@ class Furniture extends Phaser.GameObjects.Sprite {
         Utility.addTintOnHover(this);
 
         // Add this object to the scene
-        scene.add.existing(this);
+        this.scene.add.existing(this);
 
         // Add a pointerdown event listener
         this.on('pointerdown', this.handleClick, this);
@@ -469,10 +530,10 @@ class Furniture extends Phaser.GameObjects.Sprite {
             gameObject.y = dragY;
         });
 
-        scene.input.on('dragstart', function (pointer, gameObject) {
+        this.scene.input.on('dragstart', function (pointer, gameObject) {
             // Bring the gameObject to the top of the display list
             this.children.bringToTop(gameObject);
-        }, scene);
+        }, this.scene);
 
         if(this.type === "fireplace") {
             this.anims.play('fireplaceAnimation');
@@ -504,7 +565,4 @@ class Furniture extends Phaser.GameObjects.Sprite {
             }
         }
     }
-
-
-
 }
