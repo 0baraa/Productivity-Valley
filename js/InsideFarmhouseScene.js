@@ -54,7 +54,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         Utility.addTintOnHover(this.door);
 
         // Create fireplace animation
-        this.anims.create({
+        if (this.anims.get)this.anims.create({
             key: 'fireplaceAnimation',
             frames: this.anims.generateFrameNumbers('fireplaceSpritesheet', { start: 0, end: 4 }),
             frameRate: 6,

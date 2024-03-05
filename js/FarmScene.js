@@ -99,7 +99,7 @@ export default class FarmScene extends Phaser.Scene {
         this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', Utility.toggleFullscreen);
 
 
-        // the market sign has moved to this.farm.createPlots()
+        // NOTE: the market sign has moved to this.farm.createPlots()
 
         // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
         this.farmhouse.on('pointerdown', () => {
@@ -163,14 +163,14 @@ function getUserData() {
         "coins": 300,
         "cropsOwned": ["tomato", "sunflower", "carrot", "potato"],
         "plots": [
-          {"id": 1, "crop": "sunflower", "growthStage": 3}, 
-          {"id": 2, "crop": "sunflower", "growthStage": 9}, 
-        //   {"id": 3, "crop": "carrot", "growthStage": 2}, 
+          {"id": 1, "crop": "sunflower", "growthStage": 3},
+          {"id": 2, "crop": "sunflower", "growthStage": 9},
+        //   {"id": 3, "crop": "carrot", "growthStage": 2},
         //   {"id": 4, "crop": "carrot", "growthStage": 6},
-        //   {"id": 5, "crop": "nothing", "growthStage": 0}, 
-        //   {"id": 6, "crop": "sunflower", "growthStage": 6}, 
+        //   {"id": 5, "crop": "nothing", "growthStage": 0},
+        //   {"id": 6, "crop": "sunflower", "growthStage": 6},
         //   {"id": 7, "crop": "nothing", "growthStage": 0},
-        //   {"id": 8, "crop": "sunflower", "growthStage": 10} 
+        //   {"id": 8, "crop": "sunflower", "growthStage": 10}
         ],
         "furniture": [
           {"type": "carpet1", "x": 320, "y": 612},
@@ -190,6 +190,25 @@ function getUserData() {
       return data;
 }
 
+function setUserData(table, colName, config) {
+    //called when sending data to server
+
+    //https://www.freecodecamp.org/news/javascript-post-request-how-to-send-an-http-post-request-in-js/
+
+    //this is a way to do it all in javascript?
+
+    //or we can use django channels with ajax 
+
+    //https://stackoverflow.com/questions/60653841/how-to-send-data-from-javascript-function-to-django-view
+
+
+    //at least to form the characters to save.
+
+
+    const body = JSON.stringify()
+
+}
+
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
     constructor(config){
@@ -203,19 +222,26 @@ class PlayerFarm {
         this.animals = config.animals;
     }
 
-    createPlots(scene){
+    createPlots(scene, cropMult){
         let data = getUserData();
-        
+        let cM = cropMult || 1;
         let x, zoom;
         let y = 0;
-        let along = false;
+        if (cM != 1) {
+            // do the stuff to set to make it mean that it will add plots instead of anything else.
+        }
+        
+        let length = data.plots.length * cM;
         // calculate camera offset and zoom based on plot number
-        switch (data.plots.length) {
+        switch (length) {
+            case 1:
+                x = -150;
+                y = -40;
+                zoom = 1.77
             case 2:
                 x = -100;
                 y = -40;
                 zoom = 1.455;
-                along = true;
                 break;
             case 4:
                 x = -100;
@@ -233,24 +259,27 @@ class PlayerFarm {
         scene.cameras.main.setScroll(x, y)
         scene.cameras.main.setZoom(zoom,zoom);
         let plotX,plotY;
-        for(let i = 0; i < data.plots.length; i++){
+        for(let i = 0; i < length; i++){
 
-            if (along) {
+            if (length == 2) {
                 plotX = 165 + (100 * (i));
                 plotY = 610;
             } else {
-                plotX = 165 + (100 * (i % (data.plots.length/2)));
-                plotY = 610 + (100 * Math.floor(i / (data.plots.length/2)));
+                plotX = 165 + (100 * (i % (length/2)));
+                plotY = 610 + (100 * Math.floor(i / (length/2)));
             }
             //adjustable plot numbers:
 
             
-            let plot = new Plot({scene: scene, x: plotX, y: plotY, id: data.plots[i].id , crop: data.plots[i].crop, gs: data.plots[i].growthStage});
+            let plot = new Plot({scene: scene, x: plotX, y: plotY,
+                                 id: data.plots[i].id , 
+                                 crop: data.plots[i].crop, 
+                                 gs: data.plots[i].growthStage});
             this.plots.push(plot);
         }
 
         //set market sign to be one more than the crops.
-        this.marketSign = scene.add.image(165 + (100 * data.plots.length), 560, 'marketSign');
+        this.marketSign = scene.add.image(165 + (100 * length), 560, 'marketSign');
         this.marketSign.setInteractive();
         Utility.addTintOnHover(this.marketSign);
         this.marketSign.on('pointerdown', () => {
@@ -258,16 +287,93 @@ class PlayerFarm {
             scene.input.enabled = false;
             scene.scene.launch('MarketScene');
         });
+
+        //same utilisation could be added for sun.
+
+        //might be best place for sun? to at least control it's centre.
+
+        //
+    }
+
+    doublePlots(scene) {
+        if (this.plots.length == 8) {
+            console.log("can't double");
+            return;
+        }
+        for (let plot of this.plots) {
+            //delete plot
+        }
+        //alternatively, we could have make a make extra plots function, 
+        //so less need to completely destroy the the original plots?
+
+        this.createPlots(scene,2);
+        this.sendPlotState();
+
+    }
+    halvePlots(scene) {
+        if (this.plots.length == 1) {
+            console.log("can't halve");
+            return;
+        }
+        for (let plot of this.plots) {
+            //delete plot
+        }
+
+        this.createPlots(scene, 0.5)
+    }
+
+    sendPlotState() {
+        let plotData = [];
+        for (let plot of this.plots) {
+            //create the plot state config, append to list
+            plotData.push({"id": plot.id,
+                          "crop": plot.crop,
+                          "growthStage": plot.growthStage});
+        }
+        setUserData("PlayerFarm", "Plot", plotData);
     }
 
     createFurniture(scene){
         let data = getUserData();
 
         for(let i = 0; i < data.furniture.length; i++){
-            let furniture = new Furniture({scene: scene, x: data.furniture[i].x, y: data.furniture[i].y, type: data.furniture[i].type, texture: data.furniture[i].type});
+            let furniture = new Furniture({scene: scene, 
+                                           x: data.furniture[i].x, 
+                                           y: data.furniture[i].y, 
+                                           type: data.furniture[i].type, 
+                                           texture: data.furniture[i].type
+                                        });
             this.furniturePlaced.push(furniture);
         }
     }
+
+    //to be called when "house editing" is exited.
+    sendFurnitureState () {
+        //this is code from https://stackoverflow.com/questions/60653841/how-to-send-data-from-javascript-function-to-django-view
+    
+        let furnitureData = [];
+        for (let i = 0; i < this.furniturePlaced.length; i++) {
+            furnitureData.push({"type": this.furniturePlaced[i].type,
+                                "x": this.furniturePlaced[i].x,
+                                "y": this.furniturePlaced[i].y });
+        }
+        setUserData("PlayerFarm", "Furniture", furnitureData);
+    }
+
+    //for when a furniture is bought
+    appendOwnedFurniture(type) {}
+
+    //Decorations
+    createDecorations(scene) {}
+    sendDecorationState() {}
+    appendOwnedDecoration(type) {}
+
+    doublePlots() {}
+
+    addCoins() {} 
+    subtractCoins() {}//returns true or false.
+
+
 
 }
 
