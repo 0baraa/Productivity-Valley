@@ -27,7 +27,9 @@ export default class FarmScene extends Phaser.Scene {
 
         this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
         this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
-        
+        this.load.image('pop-up', '../assets/UI/pop-up-background.png');
+        this.load.image('carrot-icon', '../assets/UI/crop_icon_carrot.png');
+        this.load.image('sunflower-icon', '../assets/UI/crop_icon_sunflower.png');
     }
 
     create () {
@@ -117,10 +119,9 @@ export default class FarmScene extends Phaser.Scene {
         
 
     }
-
-
-
 }
+
+
 
 function generateCloud(scene) {
     // Generate a random y position
@@ -161,7 +162,7 @@ function getUserData() {
     // Using mock data for now until backend is implemented
     let data = {
         "coins": 300,
-        "cropsOwned": ["tomato", "sunflower", "carrot", "potato"],
+        "cropsOwned": ["sunflower", "carrot"],
         "plots": [
           {"id": 1, "crop": "sunflower", "growthStage": 3},
           {"id": 2, "crop": "sunflower", "growthStage": 9},
@@ -398,7 +399,7 @@ class Plot extends Phaser.GameObjects.Container{
 
         // Create the plot sprite and add it to the container
         this.plotSprite = this.scene.add.sprite(0, 0, 'plot');
-        Utility.addTintOnHover(this.plotSprite);
+        //Utility.addTintOnHover(this.plotSprite);
         this.add(this.plotSprite);
 
         // if there's crops saved, load those crops
@@ -431,16 +432,17 @@ class Plot extends Phaser.GameObjects.Container{
             }
             else {
 
-                // ask for crop type etc.
-                this.crop = "carrot"; //testing purposes
-
-                this.plantCrops();
                 
-                this.playGrowth();
+                this.popup = new PopUp({"scene": this.scene, "x": 150, "y": 400, "type": "crop-choice", "plotID": this.id});
+                //ask for crop type etc.
+                
+
+                //this.plantCrops();
+                
+                //this.playGrowth();
             }
             
         });
-
         
 
         // Dragging code (set draggable to true in setInteractive to enable dragging)
@@ -457,6 +459,13 @@ class Plot extends Phaser.GameObjects.Container{
         
         // Add the container to the scene
         this.scene.add.existing(this);
+    }
+
+    getCrop() {
+        return this.crop;
+    }
+    setCrop(crop) {
+        this.crop = crop;
     }
 
     plantCrops() {
@@ -607,6 +616,67 @@ class Plot extends Phaser.GameObjects.Container{
     
 }
 
+class PopUp extends Phaser.GameObjects.Container {
+    constructor(config) {
+        super(config.scene, config.x, config.y);
+
+        this.scene = config.scene;
+        this.type = config.type;
+        this.x = config.x;
+        this.y = config.y;
+
+        this.plotID = config.plotID;
+        this.popUpSprite = this.scene.add.sprite(0,0, "pop-up");
+        this.add(this.popUpSprite);
+
+
+
+        
+
+        switch(config.type) {
+            case "crop-choice":
+                this.createCropOptions();
+        }
+
+        this.scene.add.existing(this);
+    }
+
+    createCropOptions() {
+        let data = getUserData();
+        let x = - (20 * data.cropsOwned.length/2);
+        let y = 0;
+
+        this.options = [];
+        for (let i = 0; i < (data.cropsOwned.length); i++) {
+
+            let vegIcon = this.scene.add.sprite(x + i*40,y, data.cropsOwned[i] + "-icon");
+            //Utility.addTintOnHover(this.vegIcon);
+            this.options.push(vegIcon);
+            
+            this.options[i].on('pointerover', () => {
+                this.options[i].setTint(0xdddddd); // Change the color to your liking
+            });
+    
+            this.options[i].on('pointerout', () => {
+                this.options[i].clearTint();
+            });
+
+            this.options[i].on('pointerdown', () => {
+                PlayerFarm.plots[this.plotID].setCrop(data.cropsOwned[i]);
+                
+                //testing purposes, will replace with prepare sun if needed.
+                destroyCropOptions();
+                
+                PlayerFarm.plots[this.plotID].plantCrops();
+            });
+
+            this.add(this.options[i])
+        }
+    }
+    destroyCropOptions() {
+        this.removeAll(true);
+    }
+}
 
 
 class Furniture extends Phaser.GameObjects.Sprite {
