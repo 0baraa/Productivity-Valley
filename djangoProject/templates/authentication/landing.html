@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Productivity Valley</title>
+    {% load static %}
+    <link href="{% static 'css/styles2.css' %}" type="text/css" rel="stylesheet">
+    <link rel="icon" href="{% static 'assets/sun.ico' %}" type="image/x-icon">
+</head>
+<body>
+<div class="mainCont">
+    <div class="header">
+        <h1>Productivity Valley</h1>
+    </div>
+    <div class="buttons">
+<!--        <button>SIGN IN WITH UNIVERSITY OF MANCHESTER</button>-->
+<!--        <a href="game_index.html"><button>CONTINUE AS GUEST</button></a>-->
+<!--        <button onclick="window.close()">EXIT</button>-->
+        <a href="{% url 'cas_ng_login' %}"><button>SIGN IN WITH UNIVERSITY OF MANCHESTER</button></a>
+        <a href="{% url 'game' %}"><button>CONTINUE AS GUEST</button></a>
+        <button onclick="window.close()">EXIT</button>
+    </div>
+</div>
+</body>
+</html>
