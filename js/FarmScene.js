@@ -372,10 +372,7 @@ class PlayerFarm {
     doublePlots() {}
 
     addCoins() {} 
-    subtractCoins() {}//returns true or false.
-
-
-
+    subtractCoins() {}//returns true or false
 }
 
 class Plot extends Phaser.GameObjects.Container{
@@ -652,6 +649,7 @@ class PopUp extends Phaser.GameObjects.Container {
             let vegIcon = this.scene.add.sprite(x + i*40,y, data.cropsOwned[i] + "-icon");
             //Utility.addTintOnHover(this.vegIcon);
             this.options.push(vegIcon);
+            vegIcon.setInteractive();
             
             this.options[i].on('pointerover', () => {
                 this.options[i].setTint(0xdddddd); // Change the color to your liking
@@ -662,12 +660,12 @@ class PopUp extends Phaser.GameObjects.Container {
             });
 
             this.options[i].on('pointerdown', () => {
-                PlayerFarm.plots[this.plotID].setCrop(data.cropsOwned[i]);
+                PlayerFarm.plots[this.plotID -1].setCrop(data.cropsOwned[i]);
                 
                 //testing purposes, will replace with prepare sun if needed.
                 destroyCropOptions();
                 
-                PlayerFarm.plots[this.plotID].plantCrops();
+                PlayerFarm.plots[this.plotID-1].plantCrops();
             });
 
             this.add(this.options[i])

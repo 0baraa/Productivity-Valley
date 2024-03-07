@@ -8,6 +8,8 @@ const config = {
     width: 640,
     height: 1200,
     pixelArt: true,
+    dom: {createContainer: true},
+    // parent: 'content-window',
     physics: {
         default: 'arcade',
         arcade: {
