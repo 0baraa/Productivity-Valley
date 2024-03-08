@@ -250,7 +250,7 @@ class PlayerFarm {
         }
 
         //set market sign to be one more than the crops.
-        this.marketSign = scene.add.image(165 + (100 * data.plots.length), 560, 'marketSign');
+        this.marketSign = scene.add.image(600, 560, 'marketSign');
         this.marketSign.setInteractive();
         Utility.addTintOnHover(this.marketSign);
         this.marketSign.on('pointerdown', () => {
