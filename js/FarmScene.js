@@ -230,8 +230,8 @@ class PlayerFarm {
                 zoom = 1;
         }
         // adjust camera
-        scene.cameras.main.setScroll(x, y)
-        scene.cameras.main.setZoom(zoom,zoom);
+        // scene.cameras.main.setScroll(x, y)
+        // scene.cameras.main.setZoom(zoom,zoom);
         let plotX,plotY;
         for(let i = 0; i < data.plots.length; i++){
 
