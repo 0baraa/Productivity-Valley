@@ -27,6 +27,8 @@ export default class FarmScene extends Phaser.Scene {
 
         this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
         this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
+
+        this.load.html('form', '../UI/form.html');
         
     }
 
@@ -114,7 +116,16 @@ export default class FarmScene extends Phaser.Scene {
         // this.add.text(50, 450, 'Coins: ' + farm.coins , {fontSize: 20, fill: '#000000'});
         // this.coinsText = this.add.bitmapText(50, 480, 'pixelFont', 'Coins: ' + this.farm.coins, 32);
         // this.coinsText.setTint(0x000000);
-        
+
+
+        // const element = this.add.dom(320, 600).createFromCache('form');
+        // element.addListener('click');
+
+        // this.add.dom(320, 600, 'div', 'background-color: orange; width: 20vw; height: 20vw; font: 48px pixel-font', 'Phaser');
+
+
+        // disable input when menu is shown
+        // this.sys.game.input.enabled = false;
 
     }
 

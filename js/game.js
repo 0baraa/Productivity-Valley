@@ -14,6 +14,10 @@ const config = {
             gravity: { y: 0 }, // Top down game, no gravity
         }
     },
+    parent: 'game-container',
+    // dom: {
+    //     createContainer: true
+    //   },
     scene: [FarmScene, InsideFarmhouseScene, MarketScene],
     scale: {
         mode: Phaser.Scale.ENVELOP,
@@ -22,13 +26,3 @@ const config = {
 };
 
 let game = new Phaser.Game(config);
-
-
-
-
-// Prevent spacebar from scrolling down the page
-window.addEventListener('keydown', function(e) {
-    if(e.key === ' ' && e.target === document.body) {
-        e.preventDefault();
-    }
-});
