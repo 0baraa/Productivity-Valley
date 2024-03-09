@@ -12,17 +12,30 @@
     <script type="module" src="./js/game.js"></script>
     <div id="game-container"></div>
 
-    <div class="menu-container">
-        <div class="menu">
-            <!-- <p class="text">HELLO !!!!</p> -->
-            <div class="exit-button-container">
+    <div class="menu-container task-menu" style="display: none;">
+        <dialog class="menu task-menu">
+            <div class="menu-top-container">
                 <button class="menu-top-spacer">X</button>
-                <div class="text">Create a task</div>
-                <button class="exit-button">X</button>
+                <p>Create a task</p>
+                <button class="exit-button" id="task-exit-button">X</button>
             </div>
-            <!-- <button>asdf</button> -->
-        </div>
+            <form action="/create_task" method="post" style="display: flex; justify-content: center;">
+                <div>
+                    <label for="taskName">Task Name:</label>
+                    <input type="text" id="taskName" name="taskName" maxlength="25" placeholder="Task 1"required><br>
+                    <label for="minutes">Minutes:</label>
+                    <input type="number" id="minutes" name="minutes" min="25" max="120" step="5" placeholder="25" required><br>
+                    <label for="crop">Crop:</label>
+                    <select id="crop" name="crop">
+                        <option value="sunflower">Sunflower</option>
+                        <option value="carrot">Carrot</option>
+                    </select><br>
+                    <div style="display: flex; justify-content: center;">
+                        <button type="submit">Create</button>
+                    </div>
+                </div>
+            </form>
+        </dialog>
     </div>
-
 </body>
 </html>

@@ -96,7 +96,8 @@ export default class FarmScene extends Phaser.Scene {
 
 
         //When F key is pressed call toggleFullscreen function
-        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', Utility.toggleFullscreen);
+        //Disabled for now as it doesn't quite work with the dialog element
+        // this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', Utility.toggleFullscreen);
 
 
         // the market sign has moved to this.farm.createPlots()
@@ -124,6 +125,13 @@ export default class FarmScene extends Phaser.Scene {
 
         // disable input when menu is shown
         // this.sys.game.input.enabled = false;
+
+
+        let taskExitButton = document.querySelector('#task-exit-button');
+
+        taskExitButton.addEventListener('click', () => {
+            Utility.toggleMenu(this, "taskMenu");
+        });
 
     }
 
@@ -174,12 +182,12 @@ function getUserData() {
         "plots": [
           {"id": 1, "crop": "sunflower", "growthStage": 3}, 
           {"id": 2, "crop": "sunflower", "growthStage": 9}, 
-        //   {"id": 3, "crop": "carrot", "growthStage": 2}, 
-        //   {"id": 4, "crop": "carrot", "growthStage": 6},
-        //   {"id": 5, "crop": "nothing", "growthStage": 0}, 
-        //   {"id": 6, "crop": "sunflower", "growthStage": 6}, 
-        //   {"id": 7, "crop": "nothing", "growthStage": 0},
-        //   {"id": 8, "crop": "sunflower", "growthStage": 10} 
+          {"id": 3, "crop": "carrot", "growthStage": 2}, 
+          {"id": 4, "crop": "carrot", "growthStage": 6},
+          {"id": 5, "crop": "nothing", "growthStage": 0}, 
+          {"id": 6, "crop": "nothing", "growthStage": 0}, 
+          {"id": 7, "crop": "nothing", "growthStage": 0},
+          {"id": 8, "crop": "sunflower", "growthStage": 10} 
         ],
         "furniture": [
           {"type": "carpet1", "x": 320, "y": 612},
@@ -334,12 +342,14 @@ class Plot extends Phaser.GameObjects.Container{
             }
             else {
 
-                // ask for crop type etc.
-                this.crop = "carrot"; //testing purposes
+                // // ask for crop type etc.
+                // this.crop = "carrot"; //testing purposes
+                Utility.toggleMenu(this.scene, "taskMenu");
 
-                this.plantCrops();
+
+                // this.plantCrops();
                 
-                this.playGrowth();
+                // this.playGrowth();
             }
             
         });

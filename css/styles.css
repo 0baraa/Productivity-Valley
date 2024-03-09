@@ -1,11 +1,22 @@
 * {
     box-sizing: border-box;
     image-rendering: pixelated;
+    font-family: pixel-font, Arial, Helvetica, sans-serif;
   }
 
 body {
     margin: 0;
     overflow: hidden;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 3vw;
+}
+
+form {
+    font-size: 3vw;
 }
 
 
@@ -50,39 +61,33 @@ body {
     border-image-slice: 38 fill;
     border-image-width: 60px;
     border-image-repeat: repeat;
-
-/* 
-    display: flex;  */
-    /* justify-content: center;
-    align-items: center; */
 }
 
-.text {
-    font-size: 4vw;
-    font-family: pixel-font;
-}
 
 button {
     background-color: #d39f20;
     outline: 3px solid black;
     cursor: pointer;
     color: black;
-    font-family: pixel-font;
     font-size: 4vw;
-    border: transparent;   
+    border: transparent;
+    margin: 5px;
 }
 
-.exit-button-container {
+.menu-top-container {
     display: flex;
     justify-content: space-between;
     padding: 4px 12px 4px 12px;
+}
+
+.menu-top-container p {
+    font-size: 4vw;
 }
 
 .exit-button {
     background-color: red;
     outline: 3px solid black;
     cursor: pointer;
-    font-family: pixel-font;
     font-size: 3vw;
     border: transparent; 
     align-self: center;  
@@ -92,11 +97,35 @@ button {
     background-color: red;
     outline: 3px solid black;
     cursor: pointer;
-    font-family: pixel-font;
     font-size: 3vw;
     border: transparent;
+    align-self: center;  
     visibility: hidden;
 }
+
+input[type="text"], input[type="number"] {
+    height: 3vw;
+    font-size: 3vw;
+}
+
+select {
+    height: 3vw;
+    font-size: 3vw;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
