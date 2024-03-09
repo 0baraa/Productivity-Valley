@@ -27,8 +27,6 @@ export default class FarmScene extends Phaser.Scene {
 
         this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
         this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
-
-        this.load.html('form', '../UI/form.html');
         
     }
 

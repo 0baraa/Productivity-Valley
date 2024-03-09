@@ -1,8 +1,10 @@
-body {
-    margin: 0;
-}
+* {
+    box-sizing: border-box;
+    image-rendering: pixelated;
+  }
 
 body {
+    margin: 0;
     overflow: hidden;
 }
 
@@ -37,19 +39,66 @@ body {
 }
 
 .menu {
-    width: 60vw;
+    width: 65vw;
     height: 60vh;
-    background-color: rgb(225, 225, 179);
+    background-color: #f2e7b9;
+    padding: 50px;
+    background: transparent;
+    filter: drop-shadow(-6px 6px 0 rgba(52, 70, 69, 0.567));
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    border-image: url("../assets/UI/pop-up-background.png");
+    border-image-slice: 38 fill;
+    border-image-width: 60px;
+    border-image-repeat: repeat;
+
+/* 
+    display: flex;  */
+    /* justify-content: center;
+    align-items: center; */
 }
 
 .text {
-    font-size: 4em;
+    font-size: 4vw;
     font-family: pixel-font;
 }
+
+button {
+    background-color: #d39f20;
+    outline: 3px solid black;
+    cursor: pointer;
+    color: black;
+    font-family: pixel-font;
+    font-size: 4vw;
+    border: transparent;   
+}
+
+.exit-button-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 12px 4px 12px;
+}
+
+.exit-button {
+    background-color: red;
+    outline: 3px solid black;
+    cursor: pointer;
+    font-family: pixel-font;
+    font-size: 3vw;
+    border: transparent; 
+    align-self: center;  
+}
+
+.menu-top-spacer {
+    background-color: red;
+    outline: 3px solid black;
+    cursor: pointer;
+    font-family: pixel-font;
+    font-size: 3vw;
+    border: transparent;
+    visibility: hidden;
+}
+
+
 
 /* Custom cursor */
 /* body {
