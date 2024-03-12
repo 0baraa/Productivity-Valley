@@ -11,6 +11,7 @@ class UsersView(APIView):
                   "lastName":output.lastName,
                   "username":output.username,
                   "email":output.email,
+                  "plots":output.plots,
                   "money":output.money}
                   for output in Users.objects.all()]
         return Response(output)
@@ -37,6 +38,8 @@ class TasksView(APIView):
                   "taskCompleted":output.taskCompleted,
                   "taskStatus":output.taskStatus,
                   "plotNumber":output.plotNumber,
+                  "timeSpent":output.timeSpent,
+                  "dateCompleted":output.dateCompleted,
                   "pomodorros":output.pomodorros}
                   for output in Tasks.objects.all()]
         return Response(output)

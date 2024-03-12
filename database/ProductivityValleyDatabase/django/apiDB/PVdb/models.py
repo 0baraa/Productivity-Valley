@@ -5,6 +5,7 @@ class Users(models.Model):    #table for users
     lastName = models.CharField(max_length=30)
     username = models.CharField(max_length=50, unique=True, primary_key=True)
     email = models.EmailField(unique=True)
+    plots = models.PositiveIntegerField(default =0)
     money = models.PositiveIntegerField(default=0)
 
 class Tasks(models.Model):   #table for tasks
@@ -12,6 +13,8 @@ class Tasks(models.Model):   #table for tasks
     taskCompleted = models.BooleanField(default=False)
     taskStatus = models.PositiveIntegerField(default=0)
     plotNumber = models.PositiveIntegerField(default=0)
+    timeSpent = models.PositiveIntegerField(default=0)
+    dateCompleted = models.DateField(default=None)
     pomodorros = models.PositiveIntegerField(default=0)
     
 class Decorations(models.Model):    #table for decorations
