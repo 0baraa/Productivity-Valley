@@ -8,7 +8,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
 
     preload () {
         this.load.image('insideFarmhouseBackground', '../assets/farmhouse-background.png');
-        this.load.image('door1', '../assets/house/doors/door1.png');
+        this.load.image('door1', '../assets/house/doors/house-door.png');
         this.load.image('wall1', '../assets/house/walls/wall1.png');
         this.load.image('floor1', '../assets/house/floors/floor1.png');
         this.load.image('window', '../assets/house/window.png');
@@ -49,7 +49,8 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
 
         this.add.image(400, 548, 'window');
 
-        this.door = this.add.sprite(320, 571, 'door1');
+        this.door = this.add.sprite(322, 573, 'door1');
+        this.door.setScale(0.5);
         this.door.setInteractive();
         Utility.addTintOnHover(this.door);
 
