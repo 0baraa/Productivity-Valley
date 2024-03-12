@@ -345,16 +345,15 @@ class Plot extends Phaser.GameObjects.Container{
                 // // ask for crop type etc.
                 // this.crop = "carrot"; //testing purposes
                 Utility.toggleMenu(this.scene, "taskMenu");
-
-
+                this.form = document.getElementById("task-form");
+                let self = this;
+                this.form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    self.setupCrops()})
                 // this.plantCrops();
-                
                 // this.playGrowth();
             }
-            
         });
-
-        
 
         // Dragging code (set draggable to true in setInteractive to enable dragging)
 
@@ -370,6 +369,27 @@ class Plot extends Phaser.GameObjects.Container{
         
         // Add the container to the scene
         this.scene.add.existing(this);
+    }
+
+    setupCrops() {
+        this.resetPlot()
+        //this.crop = this.form.get("crop");
+        removeEventListener('submit', function() {setupCrops()})
+        this.crop = document.getElementById('crop').value;
+        //i think we need to use the DOM :( https://www.w3schools.com/js/js_htmldom_methods.asp
+        Utility.toggleMenu(this.scene, "taskMenu");
+        this.plantCrops();
+        this.playGrowth();
+    }
+
+    resetPlot() {
+        this.growthStage = 0;
+        this.occupied = false;
+        for(let cropSprite of this.cropSprites){
+            cropSprite.destroy();
+        }
+        this.crop = "nothing";
+        this.cropSprites = [];
     }
 
     plantCrops() {
@@ -409,7 +429,7 @@ class Plot extends Phaser.GameObjects.Container{
         for (let i = 0; i < this.cropSprites.length; i++) {
             this.cropsLeft.push(i);
         }
-        const self = this;
+        let self = this;
 
         //repeating function to grow crops individually
         this.tick = setInterval(function () {self.findCrop();}, 100);

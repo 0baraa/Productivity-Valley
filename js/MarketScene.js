@@ -9,6 +9,7 @@ export default class MarketScene extends Phaser.Scene {
     preload () {
         this.load.image('marketBackground', '../assets/market-background.png');
         this.load.image('farmSign', '../assets/farm-sign.png');
+        this.load.image('marketStall', '../assets/market/market_stall_seeds.png');
     }
 
 
@@ -21,6 +22,11 @@ export default class MarketScene extends Phaser.Scene {
         this.farmSign = this.add.sprite(200, 630, 'farmSign');
         this.farmSign.setInteractive();
         Utility.addTintOnHover(this.farmSign);
+
+        this.marketStall1 = this.add.image(320, 600, 'marketStall');
+        this.marketStall1.setInteractive();
+        Utility.addTintOnHover(this.marketStall1);
+
 
 
 
