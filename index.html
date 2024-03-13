@@ -13,29 +13,46 @@
     <div id="game-container"></div>
 
     <div class="menu-container task-menu" style="display: none;">
-        <dialog class="menu task-menu">
+        <dialog class="menu task-menu" style="position: relative;">
             <div class="menu-top-container">
                 <button class="menu-top-spacer">X</button>
                 <p>Create a task</p>
                 <button class="exit-button" id="task-exit-button">X</button>
             </div>
-            <form action="#" id="task-form" style="display: flex; justify-content: center;">
-                <div>
-                    <br>
-                    <label for="taskName">Task Name:</label>
-                    <input type="text" id="taskName" name="taskName" maxlength="30" placeholder="Task"required><br>
-                    <br>
-                    <label for="minutes">Minutes:</label>
-                    <input type="number" id="minutes" name="minutes" min="10" max="120" step="5" placeholder="25" required><br>
-                    <br>
-                    <label for="crop">Crop:</label>
-                    <select id="crop" name="crop">
-                        <option value="sunflower">Sunflower</option>
-                        <option value="carrot">Carrot</option>
-                    </select><br>
-                    <div style="display: flex; justify-content: center;">
-                        <button id="create-task" type="submit">Create</button>
-                    </div>
+            <form id="task-form">
+                <table class="menu-table">
+                    <tr class="task-row">
+                        <td>
+                        <label for="taskName">Task Name:</label>
+                        <input type="text" id="taskName" name="taskName" maxlength="30" placeholder="Task"required><br>
+                        </td>
+                    </tr>
+                    <tr class="task-row">
+                        <td>
+                        <label for="minutes">Minutes:</label>
+                        <input type="number" id="minutes" name="minutes" min="10" max="120" step="5" placeholder="25" required><br>
+                        </td>
+                    </tr>
+                    <tr class="task-row">
+                        <td>
+                        <label for="crop">Crop:</label>
+                        <select id="crop" name="crop">
+                            <!--will load from javascript to know which crops to show.
+                            https://www.w3schools.com/howto/howto_css_image_gallery.asp
+                            -->
+
+                            <option value="sunflower">Sunflower</option>
+                            <option value="carrot">Carrot</option>
+                        </select><br>
+                        </td>
+                    </tr>
+                    <tr class="task-row">
+                        <td>
+                            <div style="display: flex; justify-content: center;">
+                                <button id="create-task" type="submit">Create</button>
+                            </div>
+                        </td>
+                    </tr>
                 </div>
             </form>
         </dialog>

@@ -127,11 +127,7 @@ export default class FarmScene extends Phaser.Scene {
         // this.sys.game.input.enabled = false;
 
 
-        let taskExitButton = document.querySelector('#task-exit-button');
 
-        taskExitButton.addEventListener('click', () => {
-            Utility.toggleMenu(this, "taskMenu");
-        });
 
     }
 
@@ -210,6 +206,7 @@ function getUserData() {
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
     constructor(config){
+        // load playerstate from database
         this.coins = config.coins;
         this.plots = [];
         this.furniturePlaced = [];
@@ -262,7 +259,7 @@ class PlayerFarm {
             //adjustable plot numbers:
 
             
-            let plot = new Plot({scene: scene, x: plotX, y: plotY, id: data.plots[i].id , crop: data.plots[i].crop, gs: data.plots[i].growthStage});
+            let plot = new Plot({scene: scene, x: plotX, y: plotY, id: data.plots[i].id , crop: data.plots[i].crop, counter: data.plots[i].growthStage});
             this.plots.push(plot);
         }
 
@@ -290,14 +287,13 @@ class PlayerFarm {
 
 class Plot extends Phaser.GameObjects.Container{
     constructor(config) {
+        //loads plot state 
         super(config.scene, config.x, config.y);
-
         this.scene = config.scene;
         this.id = config.id;
         this.crop = config.crop || "nothing";
-        this.growthStage = config.gs || 0;
-        this.growthStep = 0
-        
+        this.growthStage = config.counter || 0;
+        this.growthStep = config.step || 0;
         this.cropSprites = [];
 
 
@@ -334,29 +330,8 @@ class Plot extends Phaser.GameObjects.Container{
         });
 
         // Add a click event listener
-        this.on('pointerdown', () => {
-            //alert(`Plot id: ${this.id}`);
-            if (this.occupied) {
-                this.harvest();
-                this.occupied = false;
-            }
-            else {
-
-                // // ask for crop type etc.
-                // this.crop = "carrot"; //testing purposes
-                Utility.toggleMenu(this.scene, "taskMenu");
-                this.form = document.getElementById("task-form");
-                let self = this;
-                this.form.addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    self.setupCrops()})
-                // this.plantCrops();
-                // this.playGrowth();
-            }
-        });
-
+        
         // Dragging code (set draggable to true in setInteractive to enable dragging)
-
         // scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
         //     gameObject.x = dragX;
         //     gameObject.y = dragY;
@@ -368,16 +343,49 @@ class Plot extends Phaser.GameObjects.Container{
         // }, this.scene);
         
         // Add the container to the scene
+
+
+        this.on('pointerdown', () => {
+            // if occupied, attempt harvest, if unoccupied, open start task menu.
+            if (this.occupied) {
+                this.harvest();
+                this.occupied = false;
+            }
+            else {
+                //show menu
+                Utility.toggleMenu(this.scene, "taskMenu");
+                const self = this;
+                let form = document.getElementById("task-form");
+                let taskExitButton = document.querySelector('#task-exit-button');
+                const func = function submitHandler(event) {
+                    //starts crop growth, removes listeners, or just removes listeners
+                    console.log(this);
+                    form.removeEventListener('submit', func);
+                    taskExitButton.removeEventListener('click', func)
+                    Utility.toggleMenu(self.scene, "taskMenu");
+                    if (event.type == "submit") {
+                        event.preventDefault();
+                        self.setupCrops();
+                    }
+                }
+                //add submit listener
+                form.addEventListener('submit', func);
+                //add exit listener
+                taskExitButton.addEventListener('click', func);
+
+                
+            }
+        });
+
+        
         this.scene.add.existing(this);
     }
 
     setupCrops() {
-        this.resetPlot()
-        //this.crop = this.form.get("crop");
-        removeEventListener('submit', function() {setupCrops()})
+        if (this.occupied == true)
+            this.resetPlot();
+        
         this.crop = document.getElementById('crop').value;
-        //i think we need to use the DOM :( https://www.w3schools.com/js/js_htmldom_methods.asp
-        Utility.toggleMenu(this.scene, "taskMenu");
         this.plantCrops();
         this.playGrowth();
     }
