@@ -329,7 +329,6 @@ class Plot extends Phaser.GameObjects.Container{
             this.plotSprite.clearTint();
         });
 
-        // Add a click event listener
         
         // Dragging code (set draggable to true in setInteractive to enable dragging)
         // scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
@@ -356,7 +355,7 @@ class Plot extends Phaser.GameObjects.Container{
                 Utility.toggleMenu(this.scene, "taskMenu");
                 const self = this;
                 let form = document.getElementById("task-form");
-                let taskExitButton = document.querySelector('#task-exit-button');
+                let taskExitButton = document.getElementById('task-exit-button');
                 const func = function submitHandler(event) {
                     //starts crop growth, removes listeners, or just removes listeners
                     console.log(this);
