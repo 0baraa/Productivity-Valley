@@ -75,10 +75,15 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         this.add.image(240, 548, 'window');
 
         this.add.image(400, 548, 'window');
+        this.window = this.add.image(400, 548, 'window').setInteractive();
+        this.window.on('pointerdown', () => {
+            this.scene.launch('ChartScene');
+        });
 
         this.door = this.add.sprite(320, 571, 'door1');
         this.door.setInteractive();
         Utility.addTintOnHover(this.door);
+
 
         // Create fireplace animation
         this.anims.create({
@@ -86,6 +91,8 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('fireplaceSpritesheet', { start: 0, end: 4 }),
             frameRate: 6,
             repeat: -1 // Repeat indefinitely
+
+
         });
         
         let FarmScene = this.scene.get('FarmScene');

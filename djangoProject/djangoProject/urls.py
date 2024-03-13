@@ -26,6 +26,6 @@ urlpatterns = [
     path('accounts/logout/', CASLogoutView.as_view(), name='cas_ng_logout'),
     path('', home, name='home'),
     path('auth/', include('authentication.urls')),
-]
 
+]
 

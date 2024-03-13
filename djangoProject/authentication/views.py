@@ -57,3 +57,11 @@ def signout(request):
 
 def game_view(request):
     return render(request, 'authentication/game_index.html')
+
+
+def chart_view(request):
+    data = {
+        'labels': ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        'data': [12, 19, 3, 5, 2, 3],
+    }
+    return render(request, 'chart.html', {'chart_data': data})

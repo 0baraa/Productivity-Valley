@@ -7,15 +7,14 @@
     <title>Productivity Valley</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="icon" href="{% static 'assets/sun.ico' %}" type="image/x-icon">
-<!--    <script src="{% static 'js/libs/phaser.js' %}"></script>-->
     <script type="text/javascript">
         // 定义一个变量来存储静态文件的基础路径
         var STATIC_URL = "{% static '' %}";
     </script>
     <script type="module" src="{% static 'js/libs/phaser.js' %}"></script>
-
 </head>
 <body>
-<script type="module" src="{% static 'js/game.js' %}"></script>
+{#    <div id="game-container"></div> <!-- Phaser 游戏或图表将在这里渲染 -->#}
+    <script type="module" src="{% static 'js/game.js' %}"></script>
 </body>
 </html>

@@ -12,4 +12,5 @@ urlpatterns = [
     path('redirect_to_auth/', views.redirect_to_auth_service, name='redirect_to_auth'),
     path('cas_callback/', views.cas_callback, name='cas_callback'),
     path('game/', views.game_view, name='game'),
+    path('chart/', views.chart_view, name='chart')
 ]
