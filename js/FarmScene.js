@@ -164,44 +164,7 @@ function generateCloud(scene) {
 
 
 
-function getUserData() {
-    // Called in create method of FarmScene
-    // Fetches user data from the backend
-    // Then formats data in appropriate way
-    // This data is used to create a PlayerFarm object, which is then displayed
 
-
-    // Using mock data for now until backend is implemented
-    let data = {
-        "coins": 300,
-        "cropsOwned": ["tomato", "sunflower", "carrot", "potato"],
-        "plots": [
-          {"id": 1, "crop": "sunflower", "growthStage": 3}, 
-          {"id": 2, "crop": "sunflower", "growthStage": 9}, 
-          {"id": 3, "crop": "carrot", "growthStage": 2}, 
-          {"id": 4, "crop": "carrot", "growthStage": 6},
-          {"id": 5, "crop": "nothing", "growthStage": 0}, 
-          {"id": 6, "crop": "nothing", "growthStage": 0}, 
-          {"id": 7, "crop": "nothing", "growthStage": 0},
-          {"id": 8, "crop": "sunflower", "growthStage": 10} 
-        ],
-        "furniture": [
-          {"type": "carpet1", "x": 320, "y": 612},
-          {"type": "bookshelf", "x": 281, "y": 580},
-          {"type": "fridge", "x": 193, "y": 580},
-          {"type": "grandfatherClock", "x": 246, "y": 580},
-          {"type": "kitchenSink", "x": 408, "y": 600},
-          {"type": "chair", "x": 210, "y": 650},
-          {"type": "table", "x": 192, "y": 650},
-          {"type": "lamp", "x": 345, "y": 580},
-          {"type": "toilet", "x": 452, "y": 658},
-          {"type": "bathtub", "x": 370, "y": 660},
-          {"type": "fireplace", "x": 221, "y": 565}
-        ]
-      }
-
-      return data;
-}
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
@@ -218,7 +181,7 @@ class PlayerFarm {
     }
 
     createPlots(scene){
-        let data = getUserData();
+        let data = Utility.getUserData();
         
         let x, zoom;
         let y = 0;
@@ -275,7 +238,7 @@ class PlayerFarm {
     }
 
     createFurniture(scene){
-        let data = getUserData();
+        let data = Utility.getUserData();
 
         for(let i = 0; i < data.furniture.length; i++){
             let furniture = new Furniture({scene: scene, x: data.furniture[i].x, y: data.furniture[i].y, type: data.furniture[i].type, texture: data.furniture[i].type});

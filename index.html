@@ -15,10 +15,8 @@
     <div class="menu-container task-menu" style="display: none;">
         <dialog class="menu task-menu">
             <div class="menu-top-container">
-                <button class="menu-top-spacer">X</button>
-                <button class="menu-top-spacer">X</button>
-                <p>Create a task</p>
                 <button class="info-button" id="task-info-button">?</button>
+                <p>Create a task</p>
                 <button class="exit-button" id="task-exit-button">X</button>
             </div>
             <form id="task-form" style="display: flex; justify-content: center;">
@@ -62,29 +60,81 @@
                 <p>Seed Stall</p>
                 <button type="button" class="exit-button" id="shop-exit-button">X</button>
             </div>
-            <table class = "menu-table">
-                <tr class="menu-row" id="1">
+            <table class = "menu-table" id = "seed-menu" style="display: none;">
+                <tr class="menu-row" id="sunflower">
                     <tc>
                         <td>
-                            <img src="/assets/seed-bags/sunflower-seeds-4x.png">
+                            <img class="seed-bags" id="sunflower"src="/assets/seed-bags/sunflower-seeds-4x.png">
                         </td>
                     <tc>
                         <td>
-                            <p>100 coins</p>
+                            <button class="sunflower-bags" id="1">Buy 1</button><br>
+                            <span>50</span><span class="coin">&#9737;</span>
                         </td>
                     </tc>
-                    </tr>
-                    <tr class="menu-row" id="2">
+                    <tc>
                         <td>
-                            <img src="/assets/seed-bags/carrot-seeds-4x.png">
+                            <button class="sunflower-bags" id="3">Buy 3</button><br>
+                            <span>125</span><span class="coin">&#9737;</span>
                         </td>
-                    </tr>
-                    <tr class="menu-row" id="3">
+                    </tc>
+                    <tc>
                         <td>
-                            <img src="/assets/seed-bags/pumpkin-seeds-4x.png">
+                            <button class="sunflower-bags" id="10">Buy 10</button><br>
+                            <span>360</span><span class="coin">&#9737;</span>
                         </td>
-                    </tr>
-                </tc>
+                    </tc>
+                </tr>
+                <tr class="menu-row" id="carrot">
+                    <tc>
+                        <td>
+                            <img class="seed-bags" id="carrot" src="/assets/seed-bags/carrot-seeds-4x.png">
+                        </td>
+                    </tc>
+                    <tc>
+                        <td>
+                            <button class="carrot-bags" id="1">Buy 1</button><br>
+                            <span>50</span><span class="coin">&#9737;</span>
+                        </td>
+                    </tc>
+                    <tc>
+                        <td>
+                            <button class="carrot-bags" id="3">Buy 3</button><br>
+                            <span>125</span><span class="coin">&#9737;</span>
+                        </td>
+                    </tc>
+                    <tc>
+                        <td>
+                            <button class="carrot-bags" id="10">Buy 10</button><br>
+                            <span>360</span><span class="coin">&#9737;</span>
+                        </td>
+                    </tc>
+                </tr>
+                <tr class="menu-row" id="pumpkin">
+                    <tc>
+                        <td>
+                            <img class="seed-bags" id="pumpkin" src="/assets/seed-bags/pumpkin-seeds-4x.png">
+                        </td>
+                    </tc>
+                    <tc>
+                        <td>
+                            <button class="pumpkin-bags" id="1">Buy 1</button><br>
+                            <span>50</span><span class="coin">&#9737;</span>
+                        </td>
+                    </tc>
+                    <tc>
+                        <td>
+                            <button class="pumpkin-bags" id="3">Buy 3</button><br>
+                            <span>125</span><span class="coin">&#9737;</span>
+                        </td>
+                    </tc>
+                    <tc>
+                        <td>
+                            <button class="pumpkin-bags" id="10">Buy 10</button><br>
+                            <span>360</span><span class="coin">&#9737;</span>
+                        </td>
+                    </tc>
+                </tr>
 
             </table>
         </dialog>

@@ -99,7 +99,7 @@ button {
 }
 
 .exit-button {
-    background-color: red;
+    background-color: rgb(255, 42, 42);
     outline: 3px solid black;
     cursor: pointer;
     font-size: 3vw;
@@ -117,13 +117,24 @@ button {
 }
 
 .menu-top-spacer {
-    background-color: red;
+    background-color: rgb(57, 199, 255);
     outline: 3px solid black;
     cursor: pointer;
     font-size: 3vw;
     border: transparent;
-    align-self: center;  
+    align-self: center;
     visibility: hidden;
+}
+
+span {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 3vw;
+}
+.coin {
+    color:#d39f20;
+    margin-top: 10px;
+    
 }
 
 input[type="text"], input[type="number"] {
