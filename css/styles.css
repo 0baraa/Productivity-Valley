@@ -103,8 +103,17 @@ button {
     outline: 3px solid black;
     cursor: pointer;
     font-size: 3vw;
-    border: transparent; 
-    align-self: center;  
+    border: transparent;
+}
+.info-button {
+    background-color: rgb(0, 102, 255);
+    outline: 3px solid black;
+    color: white;
+    cursor: pointer;
+    font-size: 3vw;
+    border: transparent;
+    align-self:self-end;
+
 }
 
 .menu-top-spacer {

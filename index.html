@@ -13,51 +13,81 @@
     <div id="game-container"></div>
 
     <div class="menu-container task-menu" style="display: none;">
-        <dialog class="menu task-menu" style="position: relative;">
+        <dialog class="menu task-menu">
             <div class="menu-top-container">
                 <button class="menu-top-spacer">X</button>
+                <button class="menu-top-spacer">X</button>
                 <p>Create a task</p>
+                <button class="info-button" id="task-info-button">?</button>
                 <button class="exit-button" id="task-exit-button">X</button>
             </div>
-            <form id="task-form">
-                <table class="menu-table">
-                    <tr class="task-row">
+            <form id="task-form" style="display: flex; justify-content: center;">
+                <table>
+                    <tr>
                         <td>
-                        <label for="taskName">Task Name:</label>
-                        <input type="text" id="taskName" name="taskName" maxlength="30" placeholder="Task"required><br>
+                            <label for="taskName">Task Name:</label>
+                            <input type="text" id="taskName" name="taskName" maxlength="25" placeholder="Task 1"required><br>
                         </td>
                     </tr>
-                    <tr class="task-row">
+                    <tr>
                         <td>
-                        <label for="minutes">Minutes:</label>
-                        <input type="number" id="minutes" name="minutes" min="10" max="120" step="5" placeholder="25" required><br>
+                            <label for="minutes">Minutes:</label>
+                            <input type="number" id="minutes" name="minutes" min="10" max="120" step="5" placeholder="25" required><br>
                         </td>
                     </tr>
-                    <tr class="task-row">
+                    <tr>
                         <td>
-                        <label for="crop">Crop:</label>
-                        <select id="crop" name="crop">
-                            <!--will load from javascript to know which crops to show.
-                            https://www.w3schools.com/howto/howto_css_image_gallery.asp
-                            -->
-
-                            <option value="sunflower">Sunflower</option>
-                            <option value="carrot">Carrot</option>
-                        </select><br>
+                            <label for="crop">Crop:</label>
+                            <select id="crop" name="crop">
+                                <option value="sunflower">Sunflower</option>
+                                <option value="carrot">Carrot</option>
+                            </select><br>
                         </td>
                     </tr>
-                    <tr class="task-row">
+                    <tr>
                         <td>
                             <div style="display: flex; justify-content: center;">
-                                <button id="create-task" type="submit">Create</button>
+                                <button type="submit">Create</button>
                             </div>
                         </td>
                     </tr>
-                </div>
+                </table>
             </form>
         </dialog>
     </div>
+    <div class="menu-container shop-menu" style="display: none;">
+        <dialog class="menu shop-menu">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Seed Stall</p>
+                <button type="button" class="exit-button" id="shop-exit-button">X</button>
+            </div>
+            <table class = "menu-table">
+                <tr class="menu-row" id="1">
+                    <tc>
+                        <td>
+                            <img src="/assets/seed-bags/sunflower-seeds-4x.png">
+                        </td>
+                    <tc>
+                        <td>
+                            <p>100 coins</p>
+                        </td>
+                    </tc>
+                    </tr>
+                    <tr class="menu-row" id="2">
+                        <td>
+                            <img src="/assets/seed-bags/carrot-seeds-4x.png">
+                        </td>
+                    </tr>
+                    <tr class="menu-row" id="3">
+                        <td>
+                            <img src="/assets/seed-bags/pumpkin-seeds-4x.png">
+                        </td>
+                    </tr>
+                </tc>
 
-    <div class="menu-container "></div>
+            </table>
+        </dialog>
+    </div>
 </body>
 </html>

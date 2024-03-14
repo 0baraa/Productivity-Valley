@@ -358,7 +358,6 @@ class Plot extends Phaser.GameObjects.Container{
                 let taskExitButton = document.getElementById('task-exit-button');
                 const func = function submitHandler(event) {
                     //starts crop growth, removes listeners, or just removes listeners
-                    console.log(this);
                     form.removeEventListener('submit', func);
                     taskExitButton.removeEventListener('click', func)
                     Utility.toggleMenu(self.scene, "taskMenu");

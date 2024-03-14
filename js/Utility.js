@@ -30,8 +30,8 @@ export default class Utility {
         }
         // else if (menu === "furnitureMenu") {
         else if (menu == "cropShop") {
-            dialogContainer = document.querySelector('.menu-container.crop-shop');
-            dialog = document.querySelector('.menu.crop-shop');
+            dialogContainer = document.querySelector('.menu-container.shop-menu');
+            dialog = document.querySelector('.menu.shop-menu');
         }
     
 

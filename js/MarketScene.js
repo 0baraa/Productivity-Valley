@@ -14,6 +14,7 @@ export default class MarketScene extends Phaser.Scene {
 
 
     create () {
+        
         //Set camera zoom to 2x as canvas size of farmhouse interior is 320px wide, rather than 640px
         this.cameras.main.setZoom(2);
 
@@ -27,13 +28,6 @@ export default class MarketScene extends Phaser.Scene {
         this.marketStall1.setInteractive();
         Utility.addTintOnHover(this.marketStall1);
 
-
-
-
-
-
-
-
         //Swtich to farm scene when door is clicked
         this.farmSign.on('pointerdown', () => {
             this.scene.stop();
@@ -41,8 +35,22 @@ export default class MarketScene extends Phaser.Scene {
             this.scene.get('FarmScene').input.enabled = true;
         });
 
+        const self = this;
+        this.marketStall1.on('pointerdown', () => {
+            Utility.toggleMenu(self, "cropShop");
+            //let table = document.querySelector("menu-container.shop-menu");
+            let taskExitButton = document.getElementById('shop-exit-button');
+            console.log(taskExitButton)
 
+            const func = function exitHandler(event) {
+                console.log(event);
+                Utility.toggleMenu(self, "cropShop");
+                console.log("listener exited");
+                taskExitButton.removeEventListener("mousedown", func);
+            }
+            taskExitButton.addEventListener("mousedown", func);
+            console.log("listener created");
 
-
+        })
     }
 }
