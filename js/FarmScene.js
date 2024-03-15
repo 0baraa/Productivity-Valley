@@ -127,11 +127,7 @@ export default class FarmScene extends Phaser.Scene {
         // this.sys.game.input.enabled = false;
 
 
-        let taskExitButton = document.querySelector('#task-exit-button');
 
-        taskExitButton.addEventListener('click', () => {
-            Utility.toggleMenu(this, "taskMenu");
-        });
 
     }
 
@@ -168,48 +164,12 @@ function generateCloud(scene) {
 
 
 
-function getUserData() {
-    // Called in create method of FarmScene
-    // Fetches user data from the backend
-    // Then formats data in appropriate way
-    // This data is used to create a PlayerFarm object, which is then displayed
 
-
-    // Using mock data for now until backend is implemented
-    let data = {
-        "coins": 300,
-        "cropsOwned": ["tomato", "sunflower", "carrot", "potato"],
-        "plots": [
-          {"id": 1, "crop": "sunflower", "growthStage": 3}, 
-          {"id": 2, "crop": "sunflower", "growthStage": 9}, 
-          {"id": 3, "crop": "carrot", "growthStage": 2}, 
-          {"id": 4, "crop": "carrot", "growthStage": 6},
-          {"id": 5, "crop": "nothing", "growthStage": 0}, 
-          {"id": 6, "crop": "nothing", "growthStage": 0}, 
-          {"id": 7, "crop": "nothing", "growthStage": 0},
-          {"id": 8, "crop": "sunflower", "growthStage": 10} 
-        ],
-        "furniture": [
-          {"type": "carpet1", "x": 320, "y": 612},
-          {"type": "bookshelf", "x": 281, "y": 580},
-          {"type": "fridge", "x": 193, "y": 580},
-          {"type": "grandfatherClock", "x": 246, "y": 580},
-          {"type": "kitchenSink", "x": 408, "y": 600},
-          {"type": "chair", "x": 210, "y": 650},
-          {"type": "table", "x": 192, "y": 650},
-          {"type": "lamp", "x": 345, "y": 580},
-          {"type": "toilet", "x": 452, "y": 658},
-          {"type": "bathtub", "x": 370, "y": 660},
-          {"type": "fireplace", "x": 221, "y": 565}
-        ]
-      }
-
-      return data;
-}
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
     constructor(config){
+        // load playerstate from database
         this.coins = config.coins;
         this.plots = [];
         this.furniturePlaced = [];
@@ -221,7 +181,7 @@ class PlayerFarm {
     }
 
     createPlots(scene){
-        let data = getUserData();
+        let data = Utility.getUserData();
         
         let x, zoom;
         let y = 0;
@@ -262,7 +222,7 @@ class PlayerFarm {
             //adjustable plot numbers:
 
             
-            let plot = new Plot({scene: scene, x: plotX, y: plotY, id: data.plots[i].id , crop: data.plots[i].crop, gs: data.plots[i].growthStage});
+            let plot = new Plot({scene: scene, x: plotX, y: plotY, id: data.plots[i].id , crop: data.plots[i].crop, counter: data.plots[i].growthStage});
             this.plots.push(plot);
         }
 
@@ -278,7 +238,7 @@ class PlayerFarm {
     }
 
     createFurniture(scene){
-        let data = getUserData();
+        let data = Utility.getUserData();
 
         for(let i = 0; i < data.furniture.length; i++){
             let furniture = new Furniture({scene: scene, x: data.furniture[i].x, y: data.furniture[i].y, type: data.furniture[i].type, texture: data.furniture[i].type});
@@ -290,14 +250,13 @@ class PlayerFarm {
 
 class Plot extends Phaser.GameObjects.Container{
     constructor(config) {
+        //loads plot state 
         super(config.scene, config.x, config.y);
-
         this.scene = config.scene;
         this.id = config.id;
         this.crop = config.crop || "nothing";
-        this.growthStage = config.gs || 0;
-        this.growthStep = 0
-        
+        this.growthStage = config.counter || 0;
+        this.growthStep = config.step || 0;
         this.cropSprites = [];
 
 
@@ -333,31 +292,8 @@ class Plot extends Phaser.GameObjects.Container{
             this.plotSprite.clearTint();
         });
 
-        // Add a click event listener
-        this.on('pointerdown', () => {
-            //alert(`Plot id: ${this.id}`);
-            if (this.occupied) {
-                this.harvest();
-                this.occupied = false;
-            }
-            else {
-
-                // // ask for crop type etc.
-                // this.crop = "carrot"; //testing purposes
-                Utility.toggleMenu(this.scene, "taskMenu");
-
-
-                // this.plantCrops();
-                
-                // this.playGrowth();
-            }
-            
-        });
-
         
-
         // Dragging code (set draggable to true in setInteractive to enable dragging)
-
         // scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
         //     gameObject.x = dragX;
         //     gameObject.y = dragY;
@@ -369,7 +305,60 @@ class Plot extends Phaser.GameObjects.Container{
         // }, this.scene);
         
         // Add the container to the scene
+
+
+        this.on('pointerdown', () => {
+            // if occupied, attempt harvest, if unoccupied, open start task menu.
+            if (this.occupied) {
+                this.harvest();
+                this.occupied = false;
+            }
+            else {
+                //show menu
+                Utility.toggleMenu(this.scene, "taskMenu");
+                const self = this;
+                let form = document.getElementById("task-form");
+                let taskExitButton = document.getElementById('task-exit-button');
+                const func = function submitHandler(event) {
+                    //starts crop growth, removes listeners, or just removes listeners
+                    form.removeEventListener('submit', func);
+                    taskExitButton.removeEventListener('click', func)
+                    Utility.toggleMenu(self.scene, "taskMenu");
+                    if (event.type == "submit") {
+                        event.preventDefault();
+                        self.setupCrops();
+                    }
+                }
+                //add submit listener
+                form.addEventListener('submit', func);
+                //add exit listener
+                taskExitButton.addEventListener('click', func);
+
+                
+            }
+        });
+
+        
         this.scene.add.existing(this);
+    }
+
+    setupCrops() {
+        if (this.occupied == true)
+            this.resetPlot();
+        
+        this.crop = document.getElementById('crop').value;
+        this.plantCrops();
+        this.playGrowth();
+    }
+
+    resetPlot() {
+        this.growthStage = 0;
+        this.occupied = false;
+        for(let cropSprite of this.cropSprites){
+            cropSprite.destroy();
+        }
+        this.crop = "nothing";
+        this.cropSprites = [];
     }
 
     plantCrops() {
@@ -409,7 +398,7 @@ class Plot extends Phaser.GameObjects.Container{
         for (let i = 0; i < this.cropSprites.length; i++) {
             this.cropsLeft.push(i);
         }
-        const self = this;
+        let self = this;
 
         //repeating function to grow crops individually
         this.tick = setInterval(function () {self.findCrop();}, 100);
