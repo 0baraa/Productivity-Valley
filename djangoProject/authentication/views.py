@@ -6,53 +6,12 @@ import uuid
 from django.shortcuts import redirect
 from django.urls import reverse
 import requests
-
-
-def cas_callback(request):
-    csticket = request.GET.get('csticket')
-    username = request.GET.get('username')
-    fullname = request.GET.get('fullname')
-
-#     validation_url = f"http://studentnet.cs.manchester.ac.uk/authenticate/?url={request.build_absolute_uri()}&csticket={csticket}&version=3&command=confirm&username={username}&fullname={fullname}"
-    validation_url = f"https://login.manchester.ac.uk/cas//?url={request.build_absolute_uri()}&csticket={csticket}&version=3&command=confirm&username={username}&fullname={fullname}"
-    response = requests.get(validation_url)
-
-    if response.text == 'true':
-        request.session['username'] = username
-
-        request.session['fullname'] = fullname
-        # 认证成功，重定向到受保护的主页
-        return redirect('protected_home')
-    else:
-        # 认证失败，重定向到错误页面或主页，并附带错误消息
-        return redirect(f"{reverse('home')}?error=Authentication+Failed")
-
-
-
-def redirect_to_auth_service(request):
-    csticket = generate_csticket(request)  # 调用上面的函数生成 CSTICKET
-#     auth_service_url = f"http://studentnet.cs.manchester.ac.uk/authenticate/?url={request.build_absolute_uri(reverse('cas_callback'))}&csticket={csticket}&version=3&command=validate"
-    auth_service_url = f"https://login.manchester.ac.uk/cas/?url={request.build_absolute_uri(reverse('cas_callback'))}&csticket={csticket}&version=3&command=validate"
-    return redirect(auth_service_url)
-
-
-def generate_csticket(request):
-    csticket = str(uuid.uuid4())  # 生成随机的 CSTICKET
-    request.session['csticket'] = csticket  # 保存到会话中
-    return csticket
+from django.contrib.auth import authenticate,login
+from django.contrib import messages
 
 
 def home(request):
     return render(request, 'authentication/landing.html')
-
-
-@login_required
-def protected_home(request):
-    return render(request, 'authentication/index.html')
-
-
-def signout(request):
-    return redirect('cas_ng_logout')
 
 
 def game_view(request):
@@ -65,3 +24,40 @@ def chart_view(request):
         'data': [12, 19, 3, 5, 2, 3],
     }
     return render(request, 'chart.html', {'chart_data': data})
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('game')
+        else:
+            messages.error(request, 'Invalid username or password')
+    return render(request, 'authentication/login.html')
+
+def create_account_view(request):
+    if request.method == 'POST':
+        userEmail = request.POST.get('email')
+        username = request.POST.get('username')
+        userPassword1 = request.POST.get('password1')
+        userPassword2 = request.POST.get('password2')
+        firstName = request.POST.get('first_name')
+        lastName = request.POST.get('last_name')
+        try:
+            user = User.objects.get(email=userEmail)
+            msg = 'User already registered'
+            return render(request, 'authentication/create_account.html', {'msg': msg})
+        except User.DoesNotExist:
+            if userPassword1 != userPassword2:
+                error_msg = 'Passwords do not match'
+                return render(request, 'authentication/create_account.html', {'error_msg': error_msg})
+            else:
+                user = User.objects.create_user(username, userEmail, userPassword1)
+                user.first_name = firstName
+                user.last_name = lastName
+                user.save()
+                return redirect('login')
+    else:
+        return render(request, 'authentication/create_account.html')

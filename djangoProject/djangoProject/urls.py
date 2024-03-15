@@ -16,16 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django_cas_ng.views import LoginView as CASLoginView, LogoutView as CASLogoutView
 from authentication.views import home
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/login/', CASLoginView.as_view(), name='cas_ng_login'),
-    path('accounts/logout/', CASLogoutView.as_view(), name='cas_ng_logout'),
-    path('', home, name='home'),
-    path('auth/', include('authentication.urls')),
+    path('', include('authentication.urls')),
+    # path('', include('DB.urls')),
+    path('', include('PVdb.urls')),
 
 ]
 

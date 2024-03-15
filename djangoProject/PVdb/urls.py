@@ -15,9 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.contrib import admin 
-from django.urls import path, include 
+from django.contrib import admin
+from django.urls import path, include
 from PVdb.views import *
+from .views import UsersView
 urlpatterns = [
 path('admin/', admin.site.urls),
 path('users', UsersView.as_view(), name='Users'),
@@ -26,4 +27,5 @@ path('decorations', DecorationsView.as_view(), name='Decorations'),
 path('crops', CropsView.as_view(), name='Crops'),
 path('user-decorations/', UserDecorationsView.as_view(), name='user_decorations'),
 path('user-crops/', UserCropsView.as_view(), name='user_crops'),
+path('users', UsersView.as_view(), name='users'),
 ]
