@@ -35,13 +35,9 @@ export default class MarketScene extends Phaser.Scene {
             //Re-enable input for farm scene
             this.scene.get('FarmScene').input.enabled = true;
         });
-
     }
-
-    static buySeeds(crop,amount) {
-        //add crop to data.
-        //take away coins.
-        console.log("bought " + crop + " x" + amount);
+    buyCropShop(crop,amount,price) {
+        this.cropShop.buy(crop,amount,price);
     }
 }
 
@@ -69,7 +65,8 @@ class Shop extends Phaser.GameObjects.Sprite {
                 console.log(event);
                 Utility.toggleMenu(config.scene, config.sprite);
                 self.table.style.display = "none";
-                self.removeListeners();
+                self.removeItemListeners();
+                self.displayedItems = [];
                 taskExitButton.removeEventListener("mousedown", exitHandler);
             }
             taskExitButton.addEventListener("mousedown", exitHandler);
@@ -83,40 +80,68 @@ class Shop extends Phaser.GameObjects.Sprite {
         //create buycrop methods using class driven items
         for (let i = 0; i < data.cropsOwned.length; i++) {
             if(parseInt(data.cropsOwned[i].count) >= 0) {
-                this.displayedItems.push(new Item(data.cropsOwned[i].crop));
-                console.log("created item");
+                this.displayedItems.push(new Item(data.cropsOwned[i].crop, "bags"));
                 //set price to be lower
             }
             else {
-                this.displayedItems.push(new Item(data.cropsOwned[i].crop));
-                console.log("created item");
+                this.displayedItems.push(new Item(data.cropsOwned[i].crop, "bags"));
                 //set price to be higher
             }
         }
     }
 
-    removeListeners() {
-        for (let item in this.displayedItems) {
-            for (let button in item.buttons) {
-                console.log(item.name);
-                button.removeEventListener("click", item.buyCrop);
+    removeItemListeners() {
+        for (let i; i < this.displayedItems.length; i++) {
+            for (let j; j < this.displayedItems[i].buttons.length; j++) {
+                this.displayedItems[i].buttons[j].removeEventListener("click", this.displayedItems[i].buyCrop);
             }
         }
     }
+
+    buy(crop, amount, price) {
+        console.log("bought " + crop + " x" + amount + " for " + price + " coins");
+        console.log(this.displayedItems);
+        Utility.buySeeds(crop, amount, price)
+        //this.removeItemListeners();
+        for (let item in this.displayedItems) {
+            item.updateAffordabilityOptions();
+        }
+    }
+    
 }
 
 class Item {
     // represents a seedbag from the html
-    constructor(name) {
+    constructor(name, type) {
+        const self = this;
         this.name = name;
-        this.buttons = document.getElementsByClassName(name+"-bags");
+        this.buttons = document.getElementsByClassName(this.name+"-"+type);
+        this.price_tags = document.getElementsByClassName(this.name+"-price");
+        this.prices = [];
         for (let i = 0; i < this.buttons.length; i++) {
-            this.buttons[i].addEventListener("click", this.buyCrop);
+            this.prices.push(this.price_tags[i].innerHTML);
+            this.updateAffordabilityOptions();
         }
     }
 
-    buyCrop(event) {
-        console.log(event.target.id);
-        MarketScene.buySeeds(this.name,event.target.id)
+    updateAffordabilityOptions() {
+        //sets affordability of all seeds
+        let data = Utility.getUserData();
+        const self = this;
+        for (let i = 0; i < this.buttons.length; i++) {
+            if(this.prices[i] <= data.coins) {
+                this.buttons[i].addEventListener("click", function buyListener (event) {console.log("clicked");self.buyCrop(event,self.prices[i])});
+                this.buttons[i].disabled == false;
+            }
+            else {
+                this.buttons[i].disabled == true;
+                this.buttons[i].removeEventListener("click", function buyListener (event) {self.buyCrop(event,self.prices[i])});
+            }
+        }
+    }
+
+    buyCrop(event,price) {
+        Utility.buySeeds(event.target.className,event.target.id,price);
+
     }
 }

@@ -60,7 +60,7 @@ export default class Utility {
     
     
         // Using mock data for now until backend is implemented
-        let data = {
+        this.data = {
             "coins": 300,
             "cropsOwned": [
                 {crop: "tomato", count: 3},
@@ -94,7 +94,7 @@ export default class Utility {
             ]
           }
     
-          return data;
+          return this.data;
     }
     static getPlotData() {
         //get plot data specifically
@@ -106,5 +106,20 @@ export default class Utility {
         //get owned crops data
     }
 
-    static setUserData() {}
+    static buySeeds(type, amount, price) {
+        //get data from database
+        let add = true;
+        for (let i = 0; i < this.data.cropsOwned.length; i++) {
+            if (type == this.data.cropsOwned[i].type) {
+                this.data.cropsOwned[i].count += amount;
+                add = false;
+            }
+        }
+        if (add) {
+            //update database.
+            this.data.cropsOwned.push({crop: type, count: amount});
+        }
+        this.data.coins -= price;
+        console.log(this.data.coins);
+    }
 }
