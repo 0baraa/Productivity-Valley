@@ -8,6 +8,7 @@ from django.urls import reverse
 import requests
 from django.contrib.auth import authenticate,login
 from django.contrib import messages
+from django.contrib.auth.models import User
 
 
 def home(request):
