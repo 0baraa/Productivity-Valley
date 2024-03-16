@@ -534,8 +534,26 @@ class Furniture extends Phaser.GameObjects.Sprite {
         this.on('pointerdown', this.handleClick, this);
 
         this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
+
+            // Snap the furniture to a grid
+            gameObject.x = Math.round(dragX / 4) * 4;
+            gameObject.y = Math.round(dragY / 4) * 4;
+
+            // Keep the furniture within the bounds of the room
+            if(gameObject.x + gameObject.width / 2 > 464) {
+                gameObject.x = 464 - gameObject.width / 2;
+            }
+            if(gameObject.x - gameObject.width / 2 < 176) {
+                gameObject.x = 176 + gameObject.width / 2;
+            }
+            if(gameObject.y + gameObject.height / 2 > 674) {
+                gameObject.y = 674 - gameObject.height / 2;
+            }
+            if(gameObject.y - gameObject.height / 2 < 526) {
+                gameObject.y = 526 + gameObject.height / 2;
+            }
+
+
         });
 
         this.scene.input.on('dragstart', function (pointer, gameObject) {
