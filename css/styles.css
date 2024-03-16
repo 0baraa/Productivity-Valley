@@ -87,13 +87,13 @@ button {
     font-size: 4vw;
 }
 
-.menu-table {
+/* .menu-table {
     height: 70%;
     width: 100%;
     position: absolute;
     border:0px;
 
-}
+} */
 .task-row {
     height: 24%;
 }
