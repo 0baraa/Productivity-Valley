@@ -1,7 +1,7 @@
 import FarmScene from "./FarmScene.js";
 import InsideFarmhouseScene from "./InsideFarmhouseScene.js";
 import MarketScene from "./MarketScene.js";
-import ChartScene from "./chart.js";
+// import ChartScene from "./chart.js";
 
 const config = {
     type: Phaser.AUTO,
@@ -14,7 +14,8 @@ const config = {
             gravity: { y: 0 }, // Top down game, no gravity
         }
     },
-    scene: [FarmScene, InsideFarmhouseScene, MarketScene,ChartScene],
+    scene: [FarmScene, InsideFarmhouseScene, MarketScene],
+    // scene: [FarmScene, InsideFarmhouseScene, MarketScene,ChartScene],
     scale: {
         mode: Phaser.Scale.ENVELOP,
         autoCenter: Phaser.Scale.CENTER_BOTH

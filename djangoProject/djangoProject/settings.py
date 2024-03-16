@@ -20,11 +20,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cas_ng',
     'PVdb',
     'rest_framework',
     'corsheaders',
-    'DB',
     ]
 
 MIDDLEWARE = [
@@ -35,7 +33,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_cas_ng.middleware.CASMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
 
@@ -61,8 +58,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'djangoProject.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -99,16 +94,8 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
 STATIC_URL = '/static/'
-
-# CAS settings
-CAS_SERVER_URL = 'https://login.manchester.ac.uk/cas/'
-# CAS_SERVER_URL = 'https://www.manchester.ac.uk/'
-# Where to redirect after successful login
-CAS_REDIRECT_URL = '/'
