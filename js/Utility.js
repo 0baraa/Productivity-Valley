@@ -1,3 +1,5 @@
+//import UserData from "../../connection/UserData.js"
+//""
 export default class Utility {
 
     static toggleFullscreen() {

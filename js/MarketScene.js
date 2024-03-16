@@ -8,6 +8,7 @@ export default class MarketScene extends Phaser.Scene {
 
     preload () {
         this.load.image('marketBackground', '../assets/market-background.png');
+        this.load.image('mountains-market', '../assets/mountains-market.png');
         this.load.image('farmSign', '../assets/farm-sign.png');
         this.load.image('cropShop', '../assets/market/market_stall_seeds.png');
     }
@@ -18,14 +19,14 @@ export default class MarketScene extends Phaser.Scene {
         //Set camera zoom to 2x as canvas size of farmhouse interior is 320px wide, rather than 640px
         this.cameras.main.setZoom(2);
 
-        this.add.image(320, 600, 'marketBackground');
-
+        this.add.image(320, 583, 'marketBackground');
+        this.add.image(320, 559, 'mountains-market');
         //instantiate all the shops
-        this.cropShop = new Shop({scene: this, x:320, y:600, sprite:'cropShop'});
+        this.cropShop = new Shop({scene: this, x:320, y:580, sprite:'cropShop'});
 
         //this.furnitureShop = new Shop({scene: this, x: 400, y: 620, sprite:'furnitureShop'});
 
-        this.farmSign = this.add.sprite(200, 630, 'farmSign');
+        this.farmSign = this.add.sprite(200, 610, 'farmSign');
         this.farmSign.setInteractive();
         Utility.addTintOnHover(this.farmSign);
 
