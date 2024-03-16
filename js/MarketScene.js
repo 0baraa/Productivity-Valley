@@ -35,13 +35,6 @@ export default class MarketScene extends Phaser.Scene {
             //Re-enable input for farm scene
             this.scene.get('FarmScene').input.enabled = true;
         });
-
-    }
-
-    static buySeeds(crop,amount) {
-        //add crop to data.
-        //take away coins.
-        console.log("bought " + crop + " x" + amount);
     }
 }
 
@@ -58,6 +51,7 @@ class Shop extends Phaser.GameObjects.Sprite {
             if(config.sprite == "cropShop"){
                 this.table = document.getElementById('seed-menu');
                 this.setSeeds();
+                this.updateAffordability();
             }
             else {
                 this.table = document.getElementById('empty-shop-table');
@@ -69,7 +63,8 @@ class Shop extends Phaser.GameObjects.Sprite {
                 console.log(event);
                 Utility.toggleMenu(config.scene, config.sprite);
                 self.table.style.display = "none";
-                self.removeListeners();
+                self.removeItemListeners();
+                self.displayedItems = [];
                 taskExitButton.removeEventListener("mousedown", exitHandler);
             }
             taskExitButton.addEventListener("mousedown", exitHandler);
@@ -83,40 +78,69 @@ class Shop extends Phaser.GameObjects.Sprite {
         //create buycrop methods using class driven items
         for (let i = 0; i < data.cropsOwned.length; i++) {
             if(parseInt(data.cropsOwned[i].count) >= 0) {
-                this.displayedItems.push(new Item(data.cropsOwned[i].crop));
-                console.log("created item");
+                this.displayedItems.push(new Item(data.cropsOwned[i].crop, "bags"));
+
                 //set price to be lower
             }
             else {
-                this.displayedItems.push(new Item(data.cropsOwned[i].crop));
-                console.log("created item");
+                this.displayedItems.push(new Item(data.cropsOwned[i].crop, "bags"));
                 //set price to be higher
+            }
+        }
+        
+    }
+    
+    updateAffordability() {
+        const self = this;
+        let data = Utility.getUserData();
+        let buyListener = function thingy() {}
+        for (let i = 0; i < this.displayedItems.length; i++) {
+            for (let j = 0; j < this.displayedItems[i].buttons.length; j++) {
+                buyListener = function thingy(event) {
+                    self.buyCropEvent(event,self.displayedItems[i].prices[j])
+                }
+                if (this.displayedItems[i].prices[j] <= data.coins) {
+                    this.displayedItems[i].buttons[j].onclick = buyListener;
+                    this.displayedItems[i].buttons[j].style.cursor = "pointer";
+                    this.displayedItems[i].buttons[j].style.backgroundColor = "#d39f20";
+                }
+                else {
+                    this.displayedItems[i].buttons[j].onclick = null;
+                    this.displayedItems[i].buttons[j].style.cursor = "default";
+                    this.displayedItems[i].buttons[j].style.backgroundColor = "grey";
+                }
             }
         }
     }
 
-    removeListeners() {
-        for (let item in this.displayedItems) {
-            for (let button in item.buttons) {
-                console.log(item.name);
-                button.removeEventListener("click", item.buyCrop);
+    removeItemListeners() {
+        const self = this;
+        for (let i = 0; i < this.displayedItems.length; i++) {
+            for (let j = 0; j < this.displayedItems[i].buttons.length; j++) {
+                this.displayedItems[i].buttons[j].onclick = null;
             }
         }
+    }
+
+    buyCropEvent(event,price) {
+        console.log("bought " + event.target.className + " x" + event.target.id + " for " + price + " coins");
+        Utility.buySeeds(event.target.className,event.target.id,price);
+        this.removeItemListeners();
+        this.updateAffordability();
     }
 }
 
 class Item {
     // represents a seedbag from the html
-    constructor(name) {
+    constructor(name, type) {
+        const self = this;
         this.name = name;
-        this.buttons = document.getElementsByClassName(name+"-bags");
+        this.type = "-" + type || "";
+        this.buttons = document.getElementsByClassName(this.name+this.type);
+        this.price_tags = document.getElementsByClassName(this.name+"-price");
+        this.prices = [];
         for (let i = 0; i < this.buttons.length; i++) {
-            this.buttons[i].addEventListener("click", this.buyCrop);
+            this.prices.push(this.price_tags[i].innerHTML);
         }
-    }
-
-    buyCrop(event) {
-        console.log(event.target.id);
-        MarketScene.buySeeds(this.name,event.target.id)
     }
 }
