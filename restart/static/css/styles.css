@@ -1,0 +1,27 @@
+body {
+    margin: 0;
+}
+
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+body {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+
+@font-face {
+    font-family: 'pixel-font';
+    src: url('../fonts/pixel-font.ttf') format('truetype');
+    /*src: url('/static/fonts/pixel-font.ttf') format('truetype');*/
+}
+
+/* Custom cursor */
+/* body {
+    cursor: url('../assets/cursor.png'), auto;
+} */
