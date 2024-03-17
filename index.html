@@ -24,14 +24,31 @@
                     <table>
                         <tr>
                             <td>
-                                <label for="taskName">Task Name:</label>
-                                <input type="text" id="taskName" name="taskName" maxlength="25" placeholder="Task 1"required><br>
+                                <label for="preset">Preset:</label>
+                                <select id="preset" name="preset">
+                                    <option value="empty">New</option>
+                                    <option value="valueName">Preset 1</option>
+                                </select>
+                                <label for="save-preset">Save Preset</label>
+                                <input type="checkbox" id="save-preset" name="save-preset">
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <label for="minutes">Minutes:</label>
-                                <input type="number" id="minutes" name="minutes" min="10" max="120" step="5" placeholder="10" required><br>
+                                <input type="text" id="taskName" name="taskName" maxlength="25" value="Task 1"required><br>
+                                <label for="taskName">Task Name:</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="minutes">Minutes/session:</label>
+                                <input type="number" id="minutes" name="minutes" min="10" max="120" step="5" value="25" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="repetitions">Sessions:</label>
+                                <input type="number" id="repetitions" name="repetitions" min="1" max="20" step="1" value="1" required>
                             </td>
                         </tr>
                         <tr>
@@ -41,6 +58,12 @@
                                     <option value="sunflower">Sunflower</option>
                                     <option value="carrot">Carrot</option>
                                 </select><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" id="subtasks-query" name="subtasks-query">
+                                <label for="subtasks-query">Add Subtasks</label>
                             </td>
                         </tr>
                         <tr>
@@ -62,7 +85,7 @@
         <dialog class="menu shop-menu"style="display: flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button type="button" class="menu-top-spacer">X</button>
-                <p>Seed Stall</p>
+                <h1>Crop Shop</h1>
                 <button type="button" class="exit-button" id="shop-exit-button">X</button>
             </div>
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
