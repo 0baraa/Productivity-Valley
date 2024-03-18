@@ -1,49 +1,54 @@
-{% extends 'base.html' %}
-
-{% load static %}
-
-{% block title %}Productivity Valley{% endblock title %}
-
-{% block styles %}
-    {{ block.super }}
+{#可能js,css动态功能导致header的功能无法实现#}
+{#to do #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productivity Valley</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-{% endblock styles %}
-
-{% block head_extra %}
     <link rel="icon" href="{% static 'assets/sun.ico' %}" type="image/x-icon">
     <script type="text/javascript">
+        // 定义一个变量来存储静态文件的基础路径
         var STATIC_URL = "{% static '' %}";
     </script>
-{% endblock head_extra %}
-
-{% block scripts %}
-    {{ block.super }}
     <script type="module" src="{% static 'js/libs/phaser.js' %}"></script>
-    <script type="module" src="{% static 'js/game.js' %}"></script>
-{% endblock scripts %}
+</head>
+<body>
+    {% include "_partials/header.html" %}
+    <div class="ui container">
+    <div id="game-container"></div> <!-- Phaser 游戏或图表将在这里渲染 -->
+    </div>
+        <script type="module" src="{% static 'js/game.js' %}"></script>
+</body>
+</html>
 
-{% block content %}
-    {# 在这里添加游戏内容和其他页面特有内容 #}
-    {# 例如: <div id="game-container"></div> #}
-{% endblock content %}
-
-{#<!DOCTYPE html>#}
-{#<html lang="en">#}
-{#<head>#}
-{#    {% load static %}#}
-{#    <meta charset="UTF-8">#}
-{#    <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
-{#    <title>Productivity Valley</title>#}
+{#{% extends 'base.html' %}#}
+{##}
+{#{% load static %}#}
+{##}
+{#{% block title %}Productivity Valley{% endblock title %}#}
+{##}
+{#{% block styles %}#}
+{#    {{ block.super }}#}
 {#    <link rel="stylesheet" href="{% static 'css/styles.css' %}">#}
+{#{% endblock styles %}#}
+{##}
+{#{% block head_extra %}#}
 {#    <link rel="icon" href="{% static 'assets/sun.ico' %}" type="image/x-icon">#}
 {#    <script type="text/javascript">#}
-{#        // 定义一个变量来存储静态文件的基础路径#}
 {#        var STATIC_URL = "{% static '' %}";#}
 {#    </script>#}
+{#{% endblock head_extra %}#}
+{##}
+{#{% block scripts %}#}
+{#    {{ block.super }}#}
 {#    <script type="module" src="{% static 'js/libs/phaser.js' %}"></script>#}
-{#</head>#}
-{#<body>#}
-{#    <div id="game-container"></div> <!-- Phaser 游戏或图表将在这里渲染 -->#}
 {#    <script type="module" src="{% static 'js/game.js' %}"></script>#}
-{#</body>#}
-{#</html>#}
+{#{% endblock scripts %}#}
+{##}
+{#{% block content %}#}
+    {# 在这里添加游戏内容和其他页面特有内容 #}
+    {# 例如: <div id="game-container"></div> #}
+{#{% endblock content %}#}

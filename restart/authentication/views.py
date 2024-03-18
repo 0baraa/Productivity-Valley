@@ -13,7 +13,9 @@ from .utils import generate_token
 from django.core.mail import EmailMessage
 from django.conf import settings
 import threading
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
+# from helpers.decorators import check_email_exist
 
 class EmailThread(threading.Thread):
 
@@ -23,6 +25,10 @@ class EmailThread(threading.Thread):
 
     def run(self):
         self.email.send()
+
+
+def home(request):
+    return render(request, 'authentication/landing.html')
 
 
 def send_activation_email(user, request):
@@ -101,11 +107,13 @@ def register(request):
             messages.add_message(request, messages.SUCCESS,
                                  'We sent you an email to verify your account')
             return redirect('login')
+            # return render(request, 'authentication/game_index.html')
+
 
     return render(request, 'authentication/register.html')
 
 
-@auth_user_should_not_access
+# @auth_user_should_not_access
 def login_user(request):
 
     if request.method == 'POST':
@@ -131,7 +139,7 @@ def login_user(request):
         messages.add_message(request, messages.SUCCESS,
                              f'Welcome {user.username}')
 
-        return redirect(reverse('home'))
+        return redirect(reverse('game'))
         # return render(request, 'authentication/game_index.html')
 
     return render(request, 'authentication/login.html')
@@ -164,5 +172,111 @@ def activate_user(request, uidb64, token):
         messages.add_message(request, messages.SUCCESS,
                              'Email verified, you can now login')
         return redirect(reverse('login'))
+
+    return render(request, 'authentication/activate-failed.html', {"user": user})
+
+# @login_required
+def game_view(request):
+    return render(request, 'authentication/game_index.html')
+
+
+
+def email_check(request):
+    if request.method == 'POST':
+        context = {'has_error': False, 'data': request.POST}
+        email = request.POST.get('email')
+        # user = authenticate(request, email=email)
+        user = User.objects.filter(email=email).first()
+        if not validate_email(email):
+            messages.add_message(request, messages.ERROR,
+                                 'Enter a valid email address')
+            context['has_error'] = True
+
+        if not user:
+            messages.add_message(request, messages.SUCCESS,
+                                 'Email does not exist')
+            context['has_error'] = True
+            return render(request, 'authentication/email_check.html', context)
+        if context['has_error']:
+            return render(request, 'authentication/email_check.html', context)
+
+        user_id = user.pk
+
+        request.session['user_id_for_reset'] = user_id
+        user.save()
+
+        if not context['has_error']:
+            send_reset_email(user, request)
+            messages.add_message(request, messages.SUCCESS,
+                                 'We sent you an email to verify your account')
+            return redirect('email_check')
+
+
+    return render(request, 'authentication/email_check.html')
+
+def reset(request):
+    if request.method == 'POST':
+        context = {'has_error': False, 'data': request.POST}
+        new_password = request.POST.get('password')
+        password2 = request.POST.get('password2')
+
+        if new_password and len(new_password) < 6:
+            messages.add_message(request, messages.ERROR, 'Password should be at least 6 characters')
+            context['has_error'] = True
+
+        if new_password != password2:
+            messages.add_message(request, messages.ERROR, 'Password mismatch')
+            context['has_error'] = True
+
+        if context['has_error']:
+            return render(request, 'authentication/reset.html', context)
+
+        # 获取用户实例
+        user_id = request.session.get('user_id_for_reset', None)
+        if user_id:
+            user = User.objects.get(pk=user_id)
+            user.set_password(new_password)  # 使用表单提交的密码
+            user.save()
+            del request.session['user_id_for_reset']  # 删除会话中的用户ID
+            messages.add_message(request, messages.SUCCESS, 'Your password has been reset successfully')
+            return redirect('login')
+
+    return render(request, 'authentication/reset.html')
+
+def send_reset_email(user, request):
+    current_site = get_current_site(request)
+    email_subject = 'Reset your password'
+    email_body = render_to_string('authentication/activate_reset.html', {
+        'user': user,
+        'domain': current_site,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': generate_token.make_token(user)
+    })
+
+    email = EmailMessage(subject=email_subject, body=email_body,
+                         from_email=settings.EMAIL_FROM_USER,
+                         to=[user.email]
+                         )
+
+    if not settings.TESTING:
+        EmailThread(email).start()
+
+def activate_reset(request, uidb64, token):
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+
+        user = User.objects.get(pk=uid)
+
+    except Exception as e:
+        user = None
+
+    if user and generate_token.check_token(user, token):
+        user.is_email_verified = True
+        user.save()
+
+        messages.add_message(request, messages.SUCCESS,
+                             'Email verified, you can now reset your password')
+        return redirect(reverse('reset'))
 
     return render(request, 'authentication/activate-failed.html', {"user": user})

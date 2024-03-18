@@ -45,9 +45,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'authentication',
-    'todo',
+    # 'todo',
     'PVdb',
     'rest_framework',
+
 ]
 
 MIDDLEWARE = [
