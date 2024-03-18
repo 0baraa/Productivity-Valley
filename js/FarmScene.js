@@ -131,12 +131,12 @@ export default class FarmScene extends Phaser.Scene {
         this.editMode = false;
         let editButton = document.getElementById('edit-button');
 
-        editButton.addEventListener('click', function() {
+        editButton.addEventListener('click', () => {
             this.editMode = true;
             console.log("edit mode enabled");
             let editButton = document.getElementById('edit-button');
             editButton.style.display = 'none';
-
+        
             let tickButton = document.getElementById('tick-button');
             let plusButton = document.getElementById('plus-button');
             let trashButton = document.getElementById('trash-button');
@@ -188,7 +188,7 @@ class PlayerFarm {
     constructor(config){
         // load playerstate from database
         this.coins = config.coins;
-        this.plots = [];
+        this.plots = [1,2,3];
         this.furniturePlaced = [];
         this.cropsOwned = config.cropsOwned;
         this.decorationsOwned = config.decorationsOwned;
@@ -550,24 +550,26 @@ class Furniture extends Phaser.GameObjects.Sprite {
         // Add a pointerdown event listener
         this.on('pointerdown', this.handleClick, this);
 
+        let farmScene = this.scene.scene.get('FarmScene');
         this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+            if(farmScene.editMode) {
+                // Snap the furniture to a grid
+                gameObject.x = Math.round(dragX / 4) * 4;
+                gameObject.y = Math.round(dragY / 4) * 4;
 
-            // Snap the furniture to a grid
-            gameObject.x = Math.round(dragX / 4) * 4;
-            gameObject.y = Math.round(dragY / 4) * 4;
-
-            // Keep the furniture within the bounds of the room
-            if(gameObject.x + gameObject.width / 2 > 464) {
-                gameObject.x = 464 - gameObject.width / 2;
-            }
-            if(gameObject.x - gameObject.width / 2 < 176) {
-                gameObject.x = 176 + gameObject.width / 2;
-            }
-            if(gameObject.y + gameObject.height / 2 > 674) {
-                gameObject.y = 674 - gameObject.height / 2;
-            }
-            if(gameObject.y - gameObject.height / 2 < 526) {
-                gameObject.y = 526 + gameObject.height / 2;
+                // Keep the furniture within the bounds of the room
+                if(gameObject.x + gameObject.width / 2 > 464) {
+                    gameObject.x = 464 - gameObject.width / 2;
+                }
+                if(gameObject.x - gameObject.width / 2 < 176) {
+                    gameObject.x = 176 + gameObject.width / 2;
+                }
+                if(gameObject.y + gameObject.height / 2 > 674) {
+                    gameObject.y = 674 - gameObject.height / 2;
+                }
+                if(gameObject.y - gameObject.height / 2 < 526) {
+                    gameObject.y = 526 + gameObject.height / 2;
+                }
             }
 
 
