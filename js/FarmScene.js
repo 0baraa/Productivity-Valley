@@ -128,7 +128,20 @@ export default class FarmScene extends Phaser.Scene {
 
 
 
+        this.editMode = false;
+        let editButton = document.getElementById('edit-button');
 
+        editButton.addEventListener('click', function() {
+            this.editMode = true;
+            console.log("edit mode enabled");
+            let editButton = document.getElementById('edit-button');
+            editButton.style.display = 'none';
+
+            let tickButton = document.getElementById('tick-button');
+            let crossButton = document.getElementById('cross-button');
+            tickButton.style.display = 'inline';
+            crossButton.style.display = 'inline';
+        });
     }
 
 
