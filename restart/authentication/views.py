@@ -14,8 +14,7 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 import threading
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.hashers import make_password
-# from helpers.decorators import check_email_exist
+from django.contrib.auth import get_user_model
 
 class EmailThread(threading.Thread):
 
@@ -201,7 +200,6 @@ def email_check(request):
             return render(request, 'authentication/email_check.html', context)
 
         user_id = user.pk
-
         request.session['user_id_for_reset'] = user_id
         user.save()
 
@@ -214,11 +212,32 @@ def email_check(request):
 
     return render(request, 'authentication/email_check.html')
 
+User = get_user_model()
 def reset(request):
     if request.method == 'POST':
         context = {'has_error': False, 'data': request.POST}
+        new_username = request.POST.get('username')
+        # user_form = UserUpdateForm(request.POST, instance=request.user)
         new_password = request.POST.get('password')
         password2 = request.POST.get('password2')
+        # context = {'user_form': user_form, 'has_error': False}
+
+        user_id = request.session.get('user_id_for_reset', None)
+        print("User ID for reset:", user_id)
+        # user = User.objects.get(pk=user_id)
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            messages.error(request, "No user found for this request.")
+            return redirect('authentication/activate-failed')  # 重定向到错误处理视图或首页
+
+        if User.objects.filter(username=new_username).exists():
+            if new_username != user.username:
+                messages.add_message(request, messages.ERROR,
+                                     'Username is taken, choose another one')
+                context['has_error'] = True
+
+
 
         if new_password and len(new_password) < 6:
             messages.add_message(request, messages.ERROR, 'Password should be at least 6 characters')
@@ -232,10 +251,11 @@ def reset(request):
             return render(request, 'authentication/reset.html', context)
 
         # 获取用户实例
-        user_id = request.session.get('user_id_for_reset', None)
+        # user_id = request.session.get('user_id_for_reset', None)
         if user_id:
-            user = User.objects.get(pk=user_id)
+            # user = User.objects.get(pk=user_id)
             user.set_password(new_password)  # 使用表单提交的密码
+            user.username = new_username
             user.save()
             del request.session['user_id_for_reset']  # 删除会话中的用户ID
             messages.add_message(request, messages.SUCCESS, 'Your password has been reset successfully')
