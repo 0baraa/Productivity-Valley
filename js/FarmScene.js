@@ -577,7 +577,9 @@ class Furniture extends Phaser.GameObjects.Sprite {
 
         this.scene.input.on('dragstart', function (pointer, gameObject) {
             // Bring the gameObject to the top of the display list
-            this.children.bringToTop(gameObject);
+            if(farmScene.editMode){
+                this.children.bringToTop(gameObject);
+            }
         }, this.scene);
 
         if(this.type === "fireplace") {
