@@ -128,11 +128,10 @@ export default class FarmScene extends Phaser.Scene {
 
 
 
-        this.editMode = false;
         let editButton = document.getElementById('edit-button');
 
         editButton.addEventListener('click', () => {
-            this.editMode = true;
+            Utility.setEditMode(true);
             console.log("edit mode enabled");
             let editButton = document.getElementById('edit-button');
             editButton.style.display = 'none';
@@ -550,9 +549,8 @@ class Furniture extends Phaser.GameObjects.Sprite {
         // Add a pointerdown event listener
         this.on('pointerdown', this.handleClick, this);
 
-        let farmScene = this.scene.scene.get('FarmScene');
         this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
-            if(farmScene.editMode) {
+            if(Utility.getEditMode()) {
                 // Snap the furniture to a grid
                 gameObject.x = Math.round(dragX / 4) * 4;
                 gameObject.y = Math.round(dragY / 4) * 4;
@@ -577,7 +575,7 @@ class Furniture extends Phaser.GameObjects.Sprite {
 
         this.scene.input.on('dragstart', function (pointer, gameObject) {
             // Bring the gameObject to the top of the display list
-            if(farmScene.editMode){
+            if(Utility.getEditMode()){
                 this.children.bringToTop(gameObject);
             }
         }, this.scene);

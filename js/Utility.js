@@ -1,6 +1,24 @@
 //import UserData from "../../connection/UserData.js"
 //""
 export default class Utility {
+    static editMode = false;
+    static deleteMode = false;
+
+    static setEditMode(mode) {
+        this.editMode = mode;
+    }
+
+    static getEditMode() {
+        return this.editMode;
+    }
+
+    static setDeleteMode(mode) {
+        this.deleteMode = mode;
+    }
+
+    static getDeleteMode() {
+        return this.deleteMode;
+    }
 
     static toggleFullscreen() {
         if(!document.fullscreenElement){
