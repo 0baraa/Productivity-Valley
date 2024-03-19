@@ -131,7 +131,7 @@ export default class FarmScene extends Phaser.Scene {
         let editButton = document.getElementById('edit-button');
 
         editButton.addEventListener('click', () => {
-            Utility.setEditMode(true);
+            Utility.toggleEditMode();
             console.log("edit mode enabled");
             let editButton = document.getElementById('edit-button');
             editButton.style.display = 'none';

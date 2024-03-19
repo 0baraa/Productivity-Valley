@@ -4,16 +4,16 @@ export default class Utility {
     static editMode = false;
     static deleteMode = false;
 
-    static setEditMode(mode) {
-        this.editMode = mode;
+    static toggleEditMode() {
+        this.editMode = !this.editMode;
     }
 
     static getEditMode() {
         return this.editMode;
     }
 
-    static setDeleteMode(mode) {
-        this.deleteMode = mode;
+    static toggleDeleteMode() {
+        this.deleteMode = !this.deleteMode;
     }
 
     static getDeleteMode() {
