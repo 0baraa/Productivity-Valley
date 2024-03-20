@@ -143,21 +143,41 @@ export default class FarmScene extends Phaser.Scene {
 
 
         let editButton = document.getElementById('edit-button');
+        let tickButton = document.getElementById('tick-button');
+        let plusButton = document.getElementById('plus-button');
+        let trashButton = document.getElementById('trash-button');
+        let crossButton = document.getElementById('cross-button');
 
         editButton.addEventListener('click', () => {
             Utility.toggleEditMode();
-            console.log("edit mode enabled");
             let editButton = document.getElementById('edit-button');
             editButton.style.display = 'none';
-        
-            let tickButton = document.getElementById('tick-button');
-            let plusButton = document.getElementById('plus-button');
-            let trashButton = document.getElementById('trash-button');
-            let crossButton = document.getElementById('cross-button');
             tickButton.style.display = 'inline';
             plusButton.style.display = 'inline';
             trashButton.style.display = 'inline';
             crossButton.style.display = 'inline';
+        });
+
+        crossButton.addEventListener('click', () => {
+            Utility.toggleEditMode();
+            tickButton.style.display = 'none';
+            plusButton.style.display = 'none';
+            trashButton.style.display = 'none';
+            crossButton.style.display = 'none';
+            editButton.style.display = 'inline';
+        });
+
+        tickButton.addEventListener('click', () => {
+            Utility.toggleEditMode();
+            tickButton.style.display = 'none';
+            plusButton.style.display = 'none';
+            trashButton.style.display = 'none';
+            crossButton.style.display = 'none';
+            editButton.style.display = 'inline';
+            console.log(this.farm.furniturePlaced[0].x);
+            
+
+            // Save the furniture state to the database
         });
     }
 
