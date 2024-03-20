@@ -550,7 +550,7 @@ class Furniture extends Phaser.GameObjects.Sprite {
         this.on('pointerdown', this.handleClick, this);
 
         this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
-            if(Utility.getEditMode()) {
+            if(Utility.isEditMode()) {
                 // Snap the furniture to a grid
                 gameObject.x = Math.round(dragX / 4) * 4;
                 gameObject.y = Math.round(dragY / 4) * 4;
@@ -575,7 +575,7 @@ class Furniture extends Phaser.GameObjects.Sprite {
 
         this.scene.input.on('dragstart', function (pointer, gameObject) {
             // Bring the gameObject to the top of the display list
-            if(Utility.getEditMode()){
+            if(Utility.isEditMode()){
                 this.children.bringToTop(gameObject);
             }
         }, this.scene);

@@ -8,7 +8,7 @@ export default class Utility {
         this.editMode = !this.editMode;
     }
 
-    static getEditMode() {
+    static isEditMode() {
         return this.editMode;
     }
 
@@ -16,7 +16,7 @@ export default class Utility {
         this.deleteMode = !this.deleteMode;
     }
 
-    static getDeleteMode() {
+    static isDeleteMode() {
         return this.deleteMode;
     }
 
