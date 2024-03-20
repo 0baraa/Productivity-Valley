@@ -31,7 +31,12 @@ export default class Utility {
 
     static addTintOnHover(sprite) {
         sprite.on('pointerover', () => {
-            sprite.setTint(0xdddddd); // Set tint to light grey
+            if(this.isDeleteMode()) {
+                sprite.setTint(0xff0000); // Set tint to red
+            }
+            else {
+                sprite.setTint(0xdddddd); // Set tint to light grey
+            }
         });
         
         sprite.on('pointerout', () => {

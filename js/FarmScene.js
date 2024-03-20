@@ -150,7 +150,6 @@ export default class FarmScene extends Phaser.Scene {
 
         editButton.addEventListener('click', () => {
             Utility.toggleEditMode();
-            let editButton = document.getElementById('edit-button');
             editButton.style.display = 'none';
             tickButton.style.display = 'inline';
             plusButton.style.display = 'inline';
@@ -159,6 +158,9 @@ export default class FarmScene extends Phaser.Scene {
         });
 
         crossButton.addEventListener('click', () => {
+            if(Utility.isDeleteMode()){
+                Utility.toggleDeleteMode();
+            }
             Utility.toggleEditMode();
             tickButton.style.display = 'none';
             plusButton.style.display = 'none';
@@ -167,7 +169,15 @@ export default class FarmScene extends Phaser.Scene {
             editButton.style.display = 'inline';
         });
 
+        trashButton.addEventListener('click', () => {
+            Utility.toggleDeleteMode();
+        
+        });
+
         tickButton.addEventListener('click', () => {
+            if(Utility.isDeleteMode()){
+                Utility.toggleDeleteMode();
+            }
             Utility.toggleEditMode();
             tickButton.style.display = 'none';
             plusButton.style.display = 'none';
@@ -324,7 +334,12 @@ class Plot extends Phaser.GameObjects.Container{
 
         // Add a hover effect to the plot sprite of the container(for some reason Utility.addTintOnHover doesn't work here)
         this.on('pointerover', () => {
-            this.plotSprite.setTint(0xdddddd); // Change the color to your liking
+            if(Utility.isDeleteMode()) {
+                this.plotSprite.setTint(0xff0000);
+            }
+            else {
+                this.plotSprite.setTint(0xdddddd);
+            }
         });
 
         this.on('pointerout', () => {
@@ -357,7 +372,7 @@ class Plot extends Phaser.GameObjects.Container{
             }
         });
 
-        
+
         // this.scene.input.on('dragstart', function (pointer, gameObject) {
         //     if(Utility.isEditMode()){
         //         // Bring the gameObject to the top of the display list
