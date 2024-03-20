@@ -105,8 +105,22 @@ export default class FarmScene extends Phaser.Scene {
         // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
         this.farmhouse.on('pointerdown', () => {
             // Disable input for FarmScene
-            this.input.enabled = false;
-            this.scene.launch('InsideFarmhouseScene');
+            if(!Utility.isEditMode()) {
+                this.input.enabled = false;
+                this.scene.launch('InsideFarmhouseScene');
+            }
+        });
+
+        //set market sign to be one more than the crops.
+        this.marketSign = this.add.image(600, 560, 'marketSign');
+        this.marketSign.setInteractive();
+        Utility.addTintOnHover(this.marketSign);
+        this.marketSign.on('pointerdown', () => {
+            // Disable input for FarmScene
+            if(!Utility.isEditMode()) {
+                this.input.enabled = false;
+                this.scene.launch('MarketScene');
+            }
         });
 
 
@@ -241,16 +255,6 @@ class PlayerFarm {
             let plot = new Plot({scene: scene, x: plotX, y: plotY, id: data.plots[i].id , crop: data.plots[i].crop, counter: data.plots[i].growthStage});
             this.plots.push(plot);
         }
-
-        //set market sign to be one more than the crops.
-        this.marketSign = scene.add.image(600, 560, 'marketSign');
-        this.marketSign.setInteractive();
-        Utility.addTintOnHover(this.marketSign);
-        this.marketSign.on('pointerdown', () => {
-            // Disable input for FarmScene
-            scene.input.enabled = false;
-            scene.scene.launch('MarketScene');
-        });
     }
 
     createFurniture(scene){
