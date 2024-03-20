@@ -168,7 +168,7 @@ select {
 
 #edit-buttons-container {
     position: fixed;
-    bottom: 0.2vh; 
+    top: 0.2vh; 
     left: 0; 
     border: none; 
     padding: 0; 
