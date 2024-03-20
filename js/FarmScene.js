@@ -174,7 +174,6 @@ export default class FarmScene extends Phaser.Scene {
             trashButton.style.display = 'none';
             crossButton.style.display = 'none';
             editButton.style.display = 'inline';
-            console.log(this.farm.furniturePlaced[0].x);
             
 
             // Save the furniture state to the database
@@ -221,7 +220,7 @@ class PlayerFarm {
     constructor(config){
         // load playerstate from database
         this.coins = config.coins;
-        this.plots = [1,2,3];
+        this.plots = [];
         this.furniturePlaced = [];
         this.cropsOwned = config.cropsOwned;
         this.decorationsOwned = config.decorationsOwned;
@@ -320,7 +319,7 @@ class Plot extends Phaser.GameObjects.Container{
         this.setInteractive({
             hitArea: new Phaser.Geom.Rectangle(-this.plotSprite.width/2, -this.plotSprite.height/2, this.plotSprite.width, this.plotSprite.height),
             hitAreaCallback: Phaser.Geom.Rectangle.Contains,
-            draggable: false
+            draggable: true
         });
 
         // Add a hover effect to the plot sprite of the container(for some reason Utility.addTintOnHover doesn't work here)
@@ -334,48 +333,72 @@ class Plot extends Phaser.GameObjects.Container{
 
         
         // Dragging code (set draggable to true in setInteractive to enable dragging)
-        // scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
-        //     gameObject.x = dragX;
-        //     gameObject.y = dragY;
-        // });
+        this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+            if(Utility.isEditMode()){
+                gameObject.x = Math.round(dragX / 8) * 8;
+                gameObject.y = Math.round(dragY / 8) * 8;
 
-        // scene.input.on('dragstart', function (pointer, gameObject) {
-        //     // Bring the gameObject to the top of the display list
-        //     this.children.bringToTop(gameObject);
+                // Keep the furniture within the bounds of the room
+
+                if(gameObject.x + 42 + gameObject.width / 2 > 640) {
+                    gameObject.x = 592;
+                }
+                
+                if(gameObject.x - 42 - gameObject.width / 2 < 0) {
+                    gameObject.x = 48;
+                }
+                if(gameObject.y + gameObject.height / 2 > 710) {
+                    gameObject.y = Math.round(710 / 8) * 8 - gameObject.height / 2;
+                }
+                if(gameObject.y - gameObject.height / 2 < 605) {
+                    gameObject.y = Math.round(605 / 8) * 8 + gameObject.height / 2;
+                }
+                gameObject.setDepth(gameObject.y);
+            }
+        });
+
+        
+        // this.scene.input.on('dragstart', function (pointer, gameObject) {
+        //     if(Utility.isEditMode()){
+        //         // Bring the gameObject to the top of the display list
+        //         this.children.bringToTop(gameObject);
+        //     }
         // }, this.scene);
         
-        // Add the container to the scene
 
 
         this.on('pointerdown', () => {
-            // if occupied, attempt harvest, if unoccupied, open start task menu.
-            if (this.occupied) {
-                this.harvest();
-                this.occupied = false;
-            }
-            else {
-                //show menu
-                Utility.toggleMenu(this.scene, "taskMenu");
-                const self = this;
-                let form = document.getElementById("task-form");
-                let taskExitButton = document.getElementById('task-exit-button');
-                const func = function submitHandler(event) {
-                    //starts crop growth, removes listeners, or just removes listeners
-                    form.removeEventListener('submit', func);
-                    taskExitButton.removeEventListener('click', func)
-                    Utility.toggleMenu(self.scene, "taskMenu");
-                    if (event.type == "submit") {
-                        event.preventDefault();
-                        self.setupCrops();
-                    }
+            if(!Utility.isEditMode()) {
+                // if occupied, attempt harvest, if unoccupied, open start task menu.
+                if (this.occupied) {
+                    this.harvest();
+                    this.occupied = false;
                 }
-                //add submit listener
-                form.addEventListener('submit', func);
-                //add exit listener
-                taskExitButton.addEventListener('click', func);
+                else {
+                    //show menu
+                    Utility.toggleMenu(this.scene, "taskMenu");
+                    const self = this;
+                    let form = document.getElementById("task-form");
+                    let taskExitButton = document.getElementById('task-exit-button');
+                    const func = function submitHandler(event) {
+                        //starts crop growth, removes listeners, or just removes listeners
+                        form.removeEventListener('submit', func);
+                        taskExitButton.removeEventListener('click', func)
+                        Utility.toggleMenu(self.scene, "taskMenu");
+                        if (event.type == "submit") {
+                            event.preventDefault();
+                            self.setupCrops();
+                        }
+                    }
+                    //add submit listener
+                    form.addEventListener('submit', func);
+                    //add exit listener
+                    taskExitButton.addEventListener('click', func);
 
-                
+                    
+                }
             }
+            
         });
 
         
