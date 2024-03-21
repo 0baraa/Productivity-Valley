@@ -10,27 +10,40 @@
 </head>
 <body>
     <script type="module" src="./js/game.js"></script>
+    <script>
+        function addSubtask() {
+            //
+            let taskTable = document.getElementById("task-menu-table");
+            
+            let row = taskTable.insertRow(taskTable.rows.length-2);
+            let cell = row.insertCell();
+            let input = document.createElement("input");
+            value.setAttribute("type", "text");
+            let bullet = document.createTextNode(" - ");
+            cell.appendChild(bullet);
+            cell.appendChild(input);
+
+
+        }
+    </script>
     <div id="game-container"></div>
-    
     <div class="menu-container task-menu" style="display: none;">
-        <dialog class="menu task-menu" style="display: flex; flex-direction: column;">
+        <dialog class="menu task-menu" style="display: inline-flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button class="info-button" id="task-info-button">?</button>
                 <p>Create a task</p>
                 <button class="exit-button" id="task-exit-button">X</button>
             </div>
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
-                <form id="task-form" style="display: flex; justify-content: center; flex: 1;">
-                    <table>
+                <form id="task-form" style="display: flex; justify-content: center;">
+                    <table id="task-menu-table">
                         <tr>
                             <td>
                                 <label for="preset">Preset:</label>
                                 <select id="preset" name="preset">
-                                    <option value="empty">New</option>
-                                    <option value="valueName">Preset 1</option>
+                                    <option value="new">New</option>
+                                    <option value=""></option>
                                 </select>
-                                <label for="save-preset">Save Preset</label>
-                                <input type="checkbox" id="save-preset" name="save-preset">
                             </td>
                         </tr>
                         <tr>
@@ -68,6 +81,13 @@
                         </tr>
                         <tr>
                             <td>
+                                <input type="checkbox" id="save-preset" name="save-preset">
+                                <label for="save-preset">Save Preset</label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
                                 <div style="display: flex; justify-content: center;">
                                     <button type="submit">Create</button>
                                 </div>
@@ -98,19 +118,19 @@
                         <tc>
                             <td>
                                 <button class="sunflower-bags" id="1">Buy 1</button><br>
-                                <span class = "sunflower-price">50</span><span class="coin">&#9737;</span>
+                                <span class = "sunflower-price">50</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="sunflower-bags" id="3">Buy 3</button><br>
-                                <span class = "sunflower-price">140</span><span class="coin">&#9737;</span>
+                                <span class = "sunflower-price">140</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="sunflower-bags" id="10">Buy 10</button><br>
-                                <span class = "sunflower-price">400</span><span class="coin">&#9737;</span>
+                                <span class = "sunflower-price">400</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                     </tr>
@@ -123,19 +143,19 @@
                         <tc>
                             <td>
                                 <button class="carrot-bags" id="1">Buy 1</button><br>
-                                <span class = "carrot-price">50</span><span class="coin">&#9737;</span>
+                                <span class = "carrot-price">50</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="carrot-bags" id="3">Buy 3</button><br>
-                                <span class = "carrot-price">140</span><span class="coin">&#9737;</span>
+                                <span class = "carrot-price">140</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="carrot-bags" id="10">Buy 10</button><br>
-                                <span class = "carrot-price">400</span><span class="coin">&#9737;</span>
+                                <span class = "carrot-price">400</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                     </tr>
@@ -148,19 +168,19 @@
                         <tc>
                             <td>
                                 <button class="pumpkin-bags" id="1">Buy 1</button><br>
-                                <span class = "pumpkin-price">50</span><span class="coin">&#9737;</span>
+                                <span class = "pumpkin-price">50</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="pumpkin-bags" id="3">Buy 3</button><br>
-                                <span class = "pumpkin-price">140</span><span class="coin">&#9737;</span>
+                                <span class = "pumpkin-price">140</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="pumpkin-bags" id="10">Buy 10</button><br>
-                                <span class = "pumpkin-price">400</span><span class="coin">&#9737;</span>
+                                <span class = "pumpkin-price">400</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                     </tr>

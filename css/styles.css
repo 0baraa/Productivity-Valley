@@ -108,6 +108,7 @@ button {
 } */
 .task-row {
     height: 24%;
+    width: 
 }
 
 .exit-button {
@@ -158,22 +159,6 @@ select {
     height: 3vw;
     font-size: 3vw;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* Custom cursor */
 /* body {
