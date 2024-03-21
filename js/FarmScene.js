@@ -302,6 +302,10 @@ function generateButterfly(scene) {
         })
     butterfly.seed();
     scene.butterflies.push(butterfly);
+
+    for(let i = 0; i < scene.butterflies.length; i++) {
+        scene.butterflies[i].setDepth(10000);
+    }
     
 
     for (let i = 0; i < scene.butterflies.length; i++) {
