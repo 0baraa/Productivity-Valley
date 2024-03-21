@@ -121,6 +121,34 @@ export default class Utility {
     
           return this.data;
     }
+
+    static sendCreatedTaskData() {
+        let form = document.getElementById("task-form");
+        let taskName = form.taskName.value;
+        let time = form.minutes.value;
+        let repetitions = form.repetitions.value;
+        let crop = form.crop.value;
+        let subtaskCheck = document.getElementById("subtasks-query").checked;
+        let savePreset = document.getElementById("save-preset").checked;
+        let task = {name: taskName, time: time, repetitions: repetitions, crop: crop};
+        if (subtaskCheck) {
+            //add subtasks to save;
+            let subtasks = document.getElementsByClassName("subtask");
+            let subtasklist = []
+            for (let i = 0; i<subtasks.length; i++) {
+                if (subtasks[i].value != "") {
+                    subtasklist.push(subtasks[i].value);
+                }
+            }
+            task.subtasks = subtasklist;
+        }
+        if (savePreset) {
+            //save to player's presets.
+        }
+        console.log(task);
+
+    }
+
     static getPlotData() {
         //get plot data specifically
     }

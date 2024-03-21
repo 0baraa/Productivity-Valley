@@ -378,8 +378,9 @@ class PlayerFarm {
             let plot = new Plot({scene: scene, x: plotX, y: plotY, id: data.plots[i].id , crop: data.plots[i].crop, counter: data.plots[i].growthStage});
             this.plots.push(plot);
         }
+        this.showCoins(scene, data.coins);
     }
-    showCoins(scene) {
+    showCoins(scene, coins) {
 
     }
 
@@ -387,7 +388,11 @@ class PlayerFarm {
         let data = Utility.getUserData();
 
         for(let i = 0; i < data.furniture.length; i++){
-            let furniture = new Furniture({scene: scene, x: data.furniture[i].x, y: data.furniture[i].y, type: data.furniture[i].type, texture: data.furniture[i].type});
+            let furniture = new Furniture({scene: scene, 
+                                           x: data.furniture[i].x, 
+                                           y: data.furniture[i].y, 
+                                           type: data.furniture[i].type, 
+                                           texture: data.furniture[i].type});
             this.furniturePlaced.push(furniture);
         }
     }
@@ -425,11 +430,11 @@ class Butterfly extends Animal {
     }
     graph (x) {
         let y = this.startingy + 20*(Math.sin(this.offset1*x ) + 4*Math.sin(1/5*x + this.offset2)) | 0;
+        let deriv = 20*(Math.cos(this.offset1*x) + 4/5*Math.sin(1/5*x + this.offset2))
         let second_deriv =  20*( - 9*Math.sin(this.offset1*x ) - 4/25*Math.sin(1/5*x + this.offset2));
-        if (second_deriv < 0 || this.y < y) {
+        if (second_deriv < 0 || deriv < -6) {
             if (!this.anims.isPlaying)
                 this.anims.play(this.animation);
-                console.log("going up");
         }
         return y
     }
@@ -539,28 +544,59 @@ class Plot extends Phaser.GameObjects.Container{
                     const self = this;
                     let form = document.getElementById("task-form");
                     let taskExitButton = document.getElementById('task-exit-button');
-                    const func = function submitHandler(event) {
+                    let subtasksCheck = document.getElementById("subtasks-query");
+                const showHideSubtasks = function openHideSubtasks(event) {
+                    let subtasksRows = document.getElementsByClassName("subtask-row");
+
+                    for (let i = 0; i < subtasksRows.length; i++) {
+                        if(subtasksCheck.checked) {subtasksRows[i].style.display = "block";} 
+                        else {subtasksRows[i].style.display = "none";}
+                    }
+                }
+                const addSubtask = function (event) {
+                    let filled = true;
+                    let subtasks = document.getElementsByClassName("subtask");
+                    for (let i = 0; i < subtasks.length; i++) {
+                        if (subtasks[i].value == "") {
+                            filled = false;
+                        }
+                    }
+                    if (filled && subtasks.length < 10) {
+                        let table = document.getElementById("task-menu-table")
+                        let newSubtask = document.createElement('input')
+                        newSubtask.value = "";
+                        let row = table.insertRow(table.rows.length - 2);
+                        let cell = row.insertCell(0);
+                        row.class = "subtask-row";
+                        cell.innerHTML = '<label for="subtask"> - </label><input type ="text" class="subtask" name="subtask"></input>';
+                    }
+                }
+                const close = function submitHandler(event) {
                         //starts crop growth, removes listeners, or just removes listeners
-                        form.removeEventListener('submit', func);
-                        taskExitButton.removeEventListener('click', func)
+                        form.removeEventListener('submit', close);
+                        taskExitButton.removeEventListener('click', close)
+                    subtasksCheck.removeEventListener('click', showHideSubtasks);
                         Utility.toggleMenu(self.scene, "taskMenu");
                         if (event.type == "submit") {
                             event.preventDefault();
                             self.setupCrops();
-                        }
+                            Utility.sendCreatedTaskData();
                     }
-                    //add submit listener
-                    form.addEventListener('submit', func);
+                    }
+                    //add subtask listener
+                subtasksCheck.addEventListener('click', showHideSubtasks);
+                //add subtaskfilled listener
+                form.addEventListener('keydown', addSubtask);
+                //add submit listener
+                    form.addEventListener('submit', close);
                     //add exit listener
-                    taskExitButton.addEventListener('click', func);
+                    taskExitButton.addEventListener('click', close);
 
                     
                 }
             }
             
         });
-
-        
         this.scene.add.existing(this);
     }
 
@@ -631,7 +667,6 @@ class Plot extends Phaser.GameObjects.Container{
         if (this.growthStep === this.cropSprites.length) {
             this.growthStep = 0;
             this.growthStage++;
-            //console.log("Max " + this.cropsLeft.length);
 
             //send current state and time to database to save growthStage
         }
@@ -657,7 +692,7 @@ class Plot extends Phaser.GameObjects.Container{
         let rand = (Math.random() * this.cropsLeft.length) | 0;
 
         let upordown = (Math.random() * 2) | 0; // makes it seem more random when cycling through.
-        //console.log(num);
+
         //crop selection logic
         for (let i = 0; i < this.cropsLeft.length; i++) {
             if (this.cropSprites[this.cropsLeft[rand]].anims.getFrameName() > this.growthStage + 1) {
