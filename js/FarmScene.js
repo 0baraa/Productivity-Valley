@@ -14,6 +14,7 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('mountains', '../assets/mountains.png');
         this.load.image('fence', '../assets/fence.png');
         this.load.spritesheet('farmhouseSpritesheet', '../assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });
+        this.load.image('shackFarmhouse', '../assets/house/shack-farmhouse.png');
         this.load.image('marketSign', '../assets/market-sign.png');
         this.load.image('sun', '../assets/sun.png');
         this.load.image('plot', '../assets/larger_plot.png');
@@ -27,7 +28,8 @@ export default class FarmScene extends Phaser.Scene {
 
         this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
         this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
-        
+        this.load.spritesheet("butterfly1AS", "../assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16 })
+        this.load.spritesheet("butterfly2AS", "../assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16 })
     }
 
     create () {
@@ -42,18 +44,42 @@ export default class FarmScene extends Phaser.Scene {
         this.clouds = [];
         this.cloudImages = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
         
+        
         //Generate initial cloud
         generateCloud(this);
-
+        
+        
         //Generate a new cloud every 5 seconds
         this.time.addEvent({
-            delay: 2500,
+            delay: 8000,
             callback: () => generateCloud(this),
             loop: true
         });
-
+        
         this.add.image(320, 550, 'fence');
+        
 
+        this.butterflies = [];
+        this.anims.create({
+            key: "butterfly1Anim",
+            frames: this.anims.generateFrameNumbers("butterfly1AS", {start: 0, end: 3}),
+            frameRate: 20,
+            yoyo: true
+        })
+
+        this.time.addEvent({
+            delay: 5000,
+            callback: () => generateButterfly(this),
+            loop: true
+        })
+
+        //animation driver 20 fps
+        this.skip = 0; // skip frames for 10fps or 5fps or 4fps or 8.333 fps
+        this.time.addEvent({
+            delay: 50,
+            callback: () => this.updateAnimations(),
+            loop: true
+        })
 
 
         this.anims.create({
@@ -64,8 +90,8 @@ export default class FarmScene extends Phaser.Scene {
         });
 
         //Add farmhouse image and make it interactive
-        this.farmhouse = this.add.sprite(64, 560, 'farmhouseSpritesheet');
-        this.farmhouse.anims.play('farmhouseAnimation');
+        this.farmhouse = this.add.sprite(64, 560, 'shackFarmhouse');
+        //this.farmhouse.anims.play('farmhouseAnimation');
         this.farmhouse.setInteractive();
         Utility.addTintOnHover(this.farmhouse);
 
@@ -219,6 +245,19 @@ export default class FarmScene extends Phaser.Scene {
         });
     }
 
+    updateAnimations() {
+        for (let i = 0; i < this.butterflies.length; i++) {
+            this.butterflies[i].updateY();
+        }
+        if (this.skip == 3) {
+            this.skip = 0;
+            for (let j = 0; j < this.clouds.length; j++) {
+                this.clouds[j].moveX();
+            }
+        }
+        this.skip++;
+        
+    }
 
 
 }
@@ -232,11 +271,12 @@ function generateCloud(scene) {
     let randomImage = scene.cloudImages[randomIndex];
 
     // Create a new cloud at left edge of the screen and at the random y position, setDepth(-1) to make sure the clouds are behind the mountains
-    let cloud = scene.physics.add.image(-50, y, randomImage).setDepth(-1);
-    cloud.setScale(Phaser.Math.Between(50, 75) / 100);
+    let cloud = new Cloud({scene: scene, x: -50, y: y, texture: randomImage})
+    // scene.physics.add.image(-50, y, randomImage).setDepth(-1);
+    //cloud.setScale(Phaser.Math.Between(50, 75) / 100);
 
-    // Set the cloud's velocity to the right
-    cloud.setVelocityX(20);
+    // // Set the cloud's velocity to the right
+    // cloud.setVelocityX(20);
 
     // Add the cloud to the clouds array
     scene.clouds.push(cloud);
@@ -250,6 +290,27 @@ function generateCloud(scene) {
     }
 }
 
+function generateButterfly(scene) {
+    let y = Math.floor(Math.random() * 200) + 450;
+    let x = -20;
+    let butterfly = new Butterfly ({
+        animalName: "butterfly1",
+        scene: scene,
+        x: x,
+        y: y,
+        frameStartEnd: [0, 3],
+        })
+    butterfly.seed();
+    scene.butterflies.push(butterfly);
+    
+
+    for (let i = 0; i < scene.butterflies.length; i++) {
+        if ((scene.butterflies[i].x < -20) || scene.butterflies[i].x > (screen.width + 40) ) {
+            scene.butterflies[i].destroy();
+            scene.butterflies.splice(i, 1);
+        }
+    }
+}
 
 
 
@@ -314,6 +375,9 @@ class PlayerFarm {
             this.plots.push(plot);
         }
     }
+    showCoins(scene) {
+
+    }
 
     createFurniture(scene){
         let data = Utility.getUserData();
@@ -323,8 +387,55 @@ class PlayerFarm {
             this.furniturePlaced.push(furniture);
         }
     }
-
 }
+
+class Animal extends Phaser.GameObjects.Sprite{
+    constructor (config) {
+        super(config.scene, config.x, config.y, config.animalName+"AS")
+        this.spritesheet = config.animalName + "AS";
+        this.animal = config.animalName;
+        this.scene = config.scene;
+        this.animation = config.animalName + "Anim";
+        this.scene.add.existing(this);
+    }
+}
+
+class Cloud extends Phaser.GameObjects.Sprite {
+    constructor(config) {
+        super(config.scene, config.x, config.y, config.texture);
+
+        config.scene.add.existing(this);
+    }
+    moveX () {
+        this.x ++;
+    }
+}
+
+class Butterfly extends Animal {
+    //this would work better with birds tbh.
+
+    seed () {
+        this.offset1 = (Math.random() * 2) | 0 + 2
+        this.offset2 = (Math.random() * 3) | 0
+        this.startingy = this.y;
+    }
+    graph (x) {
+        let y = this.startingy + 20*(Math.sin(this.offset1*x ) + 4*Math.sin(1/5*x + this.offset2)) | 0;
+        let second_deriv =  20*( - 9*Math.sin(this.offset1*x ) - 4/25*Math.sin(1/5*x + this.offset2));
+        if (second_deriv < 0 || this.y < y) {
+            if (!this.anims.isPlaying)
+                this.anims.play(this.animation);
+                console.log("going up");
+        }
+        return y
+    }
+    updateY () {
+        this.x += 2;
+        this.y = this.graph(this.x/50);
+    }
+}
+
+
 
 class Plot extends Phaser.GameObjects.Container{
     constructor(config) {

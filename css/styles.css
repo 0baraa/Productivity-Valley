@@ -15,6 +15,13 @@ p {
     font-size: 3vw;
 }
 
+h1 {
+    font-size: 3vw;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    font-family: pixel-script;
+}
+
 form {
     font-size: 3vw;
     height: 60%; width: 90%; justify-content: center;
@@ -38,6 +45,11 @@ body {
 @font-face {
     font-family: 'pixel-font';
     src: url('../fonts/pixel-font.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'pixel-script';
+    src: url('../fonts/pixel-script.otf') format('truetype');
 }
 
 
@@ -96,6 +108,7 @@ button {
 } */
 .task-row {
     height: 24%;
+    width: 
 }
 
 .exit-button {
