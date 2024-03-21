@@ -63,7 +63,8 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         });
         
         let FarmScene = this.scene.get('FarmScene');
-        FarmScene.farm.createFurniture(this);
+        this.farm = FarmScene.farm;
+        this.farm.createFurniture(this);
 
 
 

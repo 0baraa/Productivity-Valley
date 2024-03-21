@@ -149,12 +149,26 @@ export default class FarmScene extends Phaser.Scene {
         let crossButton = document.getElementById('cross-button');
 
         editButton.addEventListener('click', () => {
+
+
             Utility.toggleEditMode();
             editButton.style.display = 'none';
             tickButton.style.display = 'inline';
             plusButton.style.display = 'inline';
             trashButton.style.display = 'inline';
             crossButton.style.display = 'inline';
+
+            // Save initial positions of objects so they can be reset if the user cancels the edit
+
+            // If we are in InsideFarmhouseScene
+            if(this.scene.isActive('InsideFarmhouseScene')) {
+                console.log('Inside farmhouse scene is active');
+                this.originalFurniture = this.farm.furniturePlaced.map(furniture => ({...furniture}));
+            }
+            // If we are in FarmScene
+            else {
+                this.originalPlots = this.farm.plots.map(plot => ({...plot}));
+            }
         });
 
         crossButton.addEventListener('click', () => {
@@ -167,6 +181,21 @@ export default class FarmScene extends Phaser.Scene {
             trashButton.style.display = 'none';
             crossButton.style.display = 'none';
             editButton.style.display = 'inline';
+
+            // Reset the positions of the objects
+            if(this.scene.isActive('InsideFarmhouseScene')) {
+                for (let i = 0; i < this.farm.furniturePlaced.length; i++) {
+                    this.farm.furniturePlaced[i].x = this.originalFurniture[i].x;
+                    this.farm.furniturePlaced[i].y = this.originalFurniture[i].y;
+                }
+            }
+            // If we are in FarmScene
+            else {
+                for (let i = 0; i < this.farm.plots.length; i++) {
+                    this.farm.plots[i].x = this.originalPlots[i].x;
+                    this.farm.plots[i].y = this.originalPlots[i].y;
+                }
+            }
         });
 
         trashButton.addEventListener('click', () => {
