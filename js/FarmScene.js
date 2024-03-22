@@ -454,6 +454,7 @@ class Plot extends Phaser.GameObjects.Container{
         this.growthStage = config.counter || 0;
         this.growthStep = config.step || 0;
         this.cropSprites = [];
+        this.placed = true;
 
 
         if (this.crop === "nothing") {
@@ -775,6 +776,9 @@ class Furniture extends Phaser.GameObjects.Sprite {
 
         // Store a reference to the scene
         this.scene = config.scene;
+
+        // Whether or not the furniture is currently placed on the scene
+        this.placed = true;
 
         // Enable input for this object
         this.setInteractive({ draggable: true });
