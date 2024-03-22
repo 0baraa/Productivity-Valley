@@ -98,9 +98,9 @@ export default class Utility {
               {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework"}, 
               {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup"}, 
               {"id": 3, "crop": "carrot", "growthStage": 2},
-              {"id": 4, "crop": "carrot", "growthStage": 6},
-              {"id": 5, "crop": "nothing", "growthStage": 0},
-              {"id": 6, "crop": "nothing", "growthStage": 0},
+            //   {"id": 4, "crop": "carrot", "growthStage": 6},
+            //   {"id": 5, "crop": "nothing", "growthStage": 0},
+            //   {"id": 6, "crop": "nothing", "growthStage": 0},
               {"id": 7, "crop": "nothing", "growthStage": 0},
               {"id": 8, "crop": "sunflower", "growthStage": 10}
             ],

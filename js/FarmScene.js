@@ -455,6 +455,7 @@ class Plot extends Phaser.GameObjects.Container{
         this.growthStep = config.step || 0;
         this.cropSprites = [];
         this.placed = true;
+        this.lastValidPosition = {x: 0, y: 0};
 
 
         if (this.crop === "nothing") {
@@ -494,7 +495,10 @@ class Plot extends Phaser.GameObjects.Container{
             this.plotSprite.clearTint();
         });
 
-        
+        this.scene.input.on('dragstart', function (pointer, gameObject) {
+            gameObject.lastValidPosition = {x: gameObject.x, y: gameObject.y};
+        });
+
         // Dragging code (set draggable to true in setInteractive to enable dragging)
         this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
             if(Utility.isEditMode()){
@@ -520,14 +524,25 @@ class Plot extends Phaser.GameObjects.Container{
             }
         });
 
-
-        // this.scene.input.on('dragstart', function (pointer, gameObject) {
-        //     if(Utility.isEditMode()){
-        //         // Bring the gameObject to the top of the display list
-        //         this.children.bringToTop(gameObject);
-        //     }
-        // }, this.scene);
+        this.scene.input.on('dragend', (pointer, gameObject) => {
+            let overlapped = false;
+            for(let plot of this.scene.farm.plots){
+                if(plot !== gameObject && plot.placed === true) {
+                    let gameObjBounds = gameObject.plotSprite.getBounds();
+                    let plotBounds = plot.plotSprite.getBounds();
         
+                    if (Phaser.Geom.Intersects.RectangleToRectangle(gameObjBounds, plotBounds)) {
+                        gameObject.x = gameObject.lastValidPosition.x;
+                        gameObject.y = gameObject.lastValidPosition.y;
+                        overlapped = true;
+                        break;
+                    }
+                }
+            }
+            if(!overlapped) {
+                gameObject.lastValidPosition = {x: gameObject.x, y: gameObject.y};
+            }
+        });
 
 
         this.on('pointerdown', () => {
