@@ -213,6 +213,12 @@ export default class FarmScene extends Phaser.Scene {
                 for (let i = 0; i < this.farm.furniture.length; i++) {
                     this.farm.furniture[i].x = this.originalFurniture[i].x;
                     this.farm.furniture[i].y = this.originalFurniture[i].y;
+                    // If the furniture was deleted, place it back
+                    if(this.farm.furniture[i].placed == false) {
+                        this.farm.furniture[i].setVisible(true);
+                        this.farm.furniture[i].setActive(true);
+                        this.farm.furniture[i].placed = true;
+                    }
                 }
             }
             // If we are in FarmScene
@@ -220,6 +226,12 @@ export default class FarmScene extends Phaser.Scene {
                 for (let i = 0; i < this.farm.plots.length; i++) {
                     this.farm.plots[i].x = this.originalPlots[i].x;
                     this.farm.plots[i].y = this.originalPlots[i].y;
+                    // If the plot was deleted, place it back
+                    if(this.farm.plots[i].placed == false) {
+                        this.farm.plots[i].setVisible(true);
+                        this.farm.plots[i].setActive(true);
+                        this.farm.plots[i].placed = true;
+                    }
                 }
             }
         });
@@ -505,7 +517,7 @@ class Plot extends Phaser.GameObjects.Container{
                 gameObject.x = Math.round(dragX / 8) * 8;
                 gameObject.y = Math.round(dragY / 8) * 8;
 
-                // Keep the furniture within the bounds of the room
+                // Keep the plots within the bounds of the farm
 
                 if(gameObject.x + 42 + gameObject.width / 2 > 640) {
                     gameObject.x = 592;
@@ -524,6 +536,8 @@ class Plot extends Phaser.GameObjects.Container{
             }
         });
 
+        // Check if the plot is overlapping with another plot
+        // Reset to last valid position if it is
         this.scene.input.on('dragend', (pointer, gameObject) => {
             let overlapped = false;
             for(let plot of this.scene.farm.plots){
@@ -546,6 +560,13 @@ class Plot extends Phaser.GameObjects.Container{
 
 
         this.on('pointerdown', () => {
+            if(Utility.isDeleteMode()) {
+                this.setVisible(false); // make the sprite invisible
+                this.setActive(false); // make the sprite inactive
+                this.setPosition(-1000, -1000); // move it off-screen
+                this.placed = false;
+                return;
+            }
             if(!Utility.isEditMode()) {
                 // if occupied, attempt harvest, if unoccupied, open start task menu.
                 if (this.occupied) {
@@ -845,27 +866,35 @@ class Furniture extends Phaser.GameObjects.Sprite {
     }
 
     handleClick() {
-        if(this.type === "fireplace"){
-            if(!this.scene.fireplaceTurnedOn) {
-                this.anims.resume();
-                this.scene.fireplaceTurnedOn = true
+        if (!Utility.isDeleteMode()) {
+            if(this.type === "fireplace"){
+                if(!this.scene.fireplaceTurnedOn) {
+                    this.anims.resume();
+                    this.scene.fireplaceTurnedOn = true
+                }
+                else {
+                    this.anims.pause();
+                    this.setTexture('fireplace');
+                    this.scene.fireplaceTurnedOn = false;
+                }
             }
-            else {
-                this.anims.pause();
-                this.setTexture('fireplace');
-                this.scene.fireplaceTurnedOn = false;
+
+            else if(this.type === "lamp") {
+                if(!this.scene.lampTurnedOn) {
+                    this.setTexture('lampOn');
+                    this.scene.lampTurnedOn = true;
+                }
+                else {
+                    this.setTexture('lamp');
+                    this.scene.lampTurnedOn = false;
+                }
             }
         }
-
-        else if(this.type === "lamp") {
-            if(!this.scene.lampTurnedOn) {
-                this.setTexture('lampOn');
-                this.scene.lampTurnedOn = true;
-            }
-            else {
-                this.setTexture('lamp');
-                this.scene.lampTurnedOn = false;
-            }
+        else{ 
+            this.setVisible(false); // make the sprite invisible
+            this.setActive(false); // make the sprite inactive
+            this.setPosition(-1000, -1000); // move it off-screen
+            this.placed = false;
         }
     }
 }
