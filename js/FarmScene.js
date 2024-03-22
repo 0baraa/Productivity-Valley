@@ -113,7 +113,7 @@ export default class FarmScene extends Phaser.Scene {
             repeat: 0
         })
         
-        this.farm = new PlayerFarm({coins: 0, cropsOwned: 0, decorationsOwned: 0, decorationsPlaced: 0, furnitureOwned: 0, animals: 0});
+        this.farm = new PlayerFarm();
         this.farm.createPlots(this);
 
 
@@ -189,7 +189,7 @@ export default class FarmScene extends Phaser.Scene {
             // If we are in InsideFarmhouseScene
             if(this.scene.isActive('InsideFarmhouseScene')) {
                 console.log('Inside farmhouse scene is active');
-                this.originalFurniture = this.farm.furniturePlaced.map(furniture => ({...furniture}));
+                this.originalFurniture = this.farm.furniture.map(furniture => ({...furniture}));
             }
             // If we are in FarmScene
             else {
@@ -210,9 +210,9 @@ export default class FarmScene extends Phaser.Scene {
 
             // Reset the positions of the objects
             if(this.scene.isActive('InsideFarmhouseScene')) {
-                for (let i = 0; i < this.farm.furniturePlaced.length; i++) {
-                    this.farm.furniturePlaced[i].x = this.originalFurniture[i].x;
-                    this.farm.furniturePlaced[i].y = this.originalFurniture[i].y;
+                for (let i = 0; i < this.farm.furniture.length; i++) {
+                    this.farm.furniture[i].x = this.originalFurniture[i].x;
+                    this.farm.furniture[i].y = this.originalFurniture[i].y;
                 }
             }
             // If we are in FarmScene
@@ -321,16 +321,14 @@ function generateButterfly(scene) {
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
-    constructor(config){
+    constructor(){
         // load playerstate from database
-        this.coins = config.coins;
+        this.coins = 0;
         this.plots = [];
-        this.furniturePlaced = [];
-        this.cropsOwned = config.cropsOwned;
-        this.decorationsOwned = config.decorationsOwned;
-        this.decorationsPlaced = config.decorationsPlaced;
-        this.furnitureOwned = config.furnitureOwned;
-        this.animals = config.animals;
+        this.cropsOwned = [];
+        this.furniture = [];
+        this.decorations = [];
+        this.animals = [];
     }
 
     createPlots(scene){
@@ -393,7 +391,7 @@ class PlayerFarm {
                                            y: data.furniture[i].y, 
                                            type: data.furniture[i].type, 
                                            texture: data.furniture[i].type});
-            this.furniturePlaced.push(furniture);
+            this.furniture.push(furniture);
         }
     }
 }
