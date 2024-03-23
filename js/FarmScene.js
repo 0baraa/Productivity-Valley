@@ -19,6 +19,8 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('sun', '../assets/sun.png');
         this.load.image('plot', '../assets/larger_plot.png');
 
+        this.load.image('snowman', '../assets/decorations/snowman.png');
+
         this.load.image('cloud1', '../assets/clouds/cloud1.png');
         this.load.image('cloud2', '../assets/clouds/cloud2.png');
         this.load.image('cloud3', '../assets/clouds/cloud3.png');
@@ -115,6 +117,7 @@ export default class FarmScene extends Phaser.Scene {
         
         this.farm = new PlayerFarm();
         this.farm.createPlots(this);
+        this.farm.createDecorations(this);
 
 
 
@@ -193,6 +196,7 @@ export default class FarmScene extends Phaser.Scene {
             // If we are in FarmScene
             else {
                 this.originalPlots = this.farm.plots.map(plot => ({...plot}));
+                this.originalDecorations = this.farm.decorations.map(decoration => ({...decoration}));
             }
         });
 
@@ -232,6 +236,18 @@ export default class FarmScene extends Phaser.Scene {
                         this.farm.plots[i].placed = true;
                     }
                     this.farm.plots[i].wasDeleted = false;
+                }
+
+                for (let i = 0; i < this.farm.decorations.length; i++) {
+                    this.farm.decorations[i].x = this.originalDecorations[i].x;
+                    this.farm.decorations[i].y = this.originalDecorations[i].y;
+                    // If the decoration was deleted, place it back
+                    if(this.farm.decorations[i].wasDeleted == true) {
+                        this.farm.decorations[i].setVisible(true);
+                        this.farm.decorations[i].setActive(true);
+                        this.farm.decorations[i].placed = true;
+                    }
+                    this.farm.decorations[i].wasDeleted = false;
                 }
             }
         });
@@ -550,6 +566,15 @@ class PlayerFarm {
         }
         this.showCoins(scene, data.coins);
     }
+
+    createDecorations(scene) {
+        let data = Utility.getUserData();
+        for(let i = 0; i < data.decorations.length; i++){
+            let decoration = new Decoration({scene: scene, x: data.decorations[i].x, y: data.decorations[i].y, type: data.decorations[i].type, texture: data.decorations[i].type});
+            this.decorations.push(decoration);
+        }
+    }
+
     showCoins(scene, coins) {
 
     }
@@ -700,22 +725,24 @@ class Plot extends Phaser.GameObjects.Container{
         // Check if the plot is overlapping with another plot
         // Reset to last valid position if it is
         this.scene.input.on('dragend', (pointer, gameObject) => {
-            let overlapped = false;
-            for(let plot of this.scene.farm.plots){
-                if(plot !== gameObject && plot.placed === true) {
-                    let gameObjBounds = gameObject.plotSprite.getBounds();
-                    let plotBounds = plot.plotSprite.getBounds();
-        
-                    if (Phaser.Geom.Intersects.RectangleToRectangle(gameObjBounds, plotBounds)) {
-                        gameObject.x = gameObject.lastValidPosition.x;
-                        gameObject.y = gameObject.lastValidPosition.y;
-                        overlapped = true;
-                        break;
+            if(gameObject instanceof Plot) {
+                let overlapped = false;
+                for(let plot of this.scene.farm.plots){
+                    if(plot !== gameObject && plot.placed === true) {
+                        let gameObjBounds = gameObject.plotSprite.getBounds();
+                        let plotBounds = plot.plotSprite.getBounds();
+            
+                        if (Phaser.Geom.Intersects.RectangleToRectangle(gameObjBounds, plotBounds)) {
+                            gameObject.x = gameObject.lastValidPosition.x;
+                            gameObject.y = gameObject.lastValidPosition.y;
+                            overlapped = true;
+                            break;
+                        }
                     }
                 }
-            }
-            if(!overlapped) {
-                gameObject.lastValidPosition = {x: gameObject.x, y: gameObject.y};
+                if(!overlapped) {
+                    gameObject.lastValidPosition = {x: gameObject.x, y: gameObject.y};
+                }
             }
         });
 
@@ -1063,3 +1090,67 @@ class Furniture extends Phaser.GameObjects.Sprite {
         }
     }
 }
+
+class Decoration extends Phaser.GameObjects.Sprite {
+    constructor(config) {
+        super(config.scene, config.x, config.y, config.texture);
+
+        // Set the type of this furniture
+        this.type = config.type;
+
+        // Store a reference to the scene
+        this.scene = config.scene;
+
+        // Whether or not the furniture is currently placed on the scene
+        this.placed = true;
+
+        this.wasDeleted = false;
+
+        // Enable input for this object
+        this.setInteractive({ draggable: true });
+
+        // Add a hover effect to the furniture
+        Utility.addTintOnHover(this);
+
+        // Add this object to the scene
+        this.scene.add.existing(this);
+
+        // Add a pointerdown event listener
+        this.on('pointerdown', this.handleClick, this);
+
+        this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+            if(Utility.isEditMode()){
+                gameObject.x = Math.round(dragX / 8) * 8;
+                gameObject.y = Math.round(dragY / 8) * 8;
+
+                // Keep the plots within the bounds of the farm
+
+                // if(gameObject.x + 42 + gameObject.width / 2 > 640) {
+                //     gameObject.x = 592;
+                // }
+                
+                // if(gameObject.x - 42 - gameObject.width / 2 < 0) {
+                //     gameObject.x = 48;
+                // }
+                // if(gameObject.y + gameObject.height / 2 > 710) {
+                //     gameObject.y = Math.round(710 / 8) * 8 - gameObject.height / 2;
+                // }
+                // if(gameObject.y - gameObject.height / 2 < 605) {
+                //     gameObject.y = Math.round(605 / 8) * 8 + gameObject.height / 2;
+                // }
+                gameObject.setDepth(gameObject.y);
+            }
+        });
+    }
+
+    handleClick() {
+        if (Utility.isDeleteMode()) {
+            this.wasDeleted = true;
+            this.setVisible(false); // make the sprite invisible
+            this.setActive(false); // make the sprite inactive
+            this.setPosition(-1000, -1000); // move it off-screen
+            this.placed = false;
+        }
+    }
+}
+

@@ -101,13 +101,11 @@ export default class Utility {
                 {crop:"pumpkin", count: -1},
                 {crop:"flower", count: -1}
             ],
+            //plots should have coordinates saved also
             "plots": [
               {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework"}, 
               {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup"}, 
               {"id": 3, "crop": "carrot", "growthStage": 2},
-            //   {"id": 4, "crop": "carrot", "growthStage": 6},
-            //   {"id": 5, "crop": "nothing", "growthStage": 0},
-            //   {"id": 6, "crop": "nothing", "growthStage": 0},
               {"id": 7, "crop": "nothing", "growthStage": 0},
               {"id": 8, "crop": "sunflower", "growthStage": 10}
             ],
@@ -123,6 +121,9 @@ export default class Utility {
               {"type": "toilet", "x": 452, "y": 658},
               {"type": "bathtub", "x": 370, "y": 660},
               {"type": "fireplace", "x": 221, "y": 565}
+            ],
+            "decorations": [
+                {"type": "snowman", "x":50, "y":700}
             ]
           }
     
