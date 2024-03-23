@@ -214,7 +214,7 @@ export default class FarmScene extends Phaser.Scene {
                     this.farm.furniture[i].x = this.originalFurniture[i].x;
                     this.farm.furniture[i].y = this.originalFurniture[i].y;
                     // If the furniture was deleted, place it back
-                    if(this.farm.furniture[i].placed == false) {
+                    if(this.farm.furniture[i].wasDeleted == true) {
                         this.farm.furniture[i].setVisible(true);
                         this.farm.furniture[i].setActive(true);
                         this.farm.furniture[i].placed = true;
@@ -227,11 +227,12 @@ export default class FarmScene extends Phaser.Scene {
                     this.farm.plots[i].x = this.originalPlots[i].x;
                     this.farm.plots[i].y = this.originalPlots[i].y;
                     // If the plot was deleted, place it back
-                    if(this.farm.plots[i].placed == false) {
+                    if(this.farm.plots[i].wasDeleted == true) {
                         this.farm.plots[i].setVisible(true);
                         this.farm.plots[i].setActive(true);
                         this.farm.plots[i].placed = true;
                     }
+                    this.farm.plots[i].wasDeleted = false;
                 }
             }
         });
@@ -295,6 +296,16 @@ export default class FarmScene extends Phaser.Scene {
             crossButton.style.display = 'none';
             editButton.style.display = 'inline';
             
+            if(this.scene.isActive('InsideFarmhouseScene')) {
+                for(let furniture of this.farm.furniture){
+                    furniture.wasDeleted = false;
+                }
+            }
+            else {
+                for(let plot of this.farm.plots){
+                    plot.wasDeleted = false;
+                }
+            }
 
             // Save the furniture state to the database
         });
@@ -521,6 +532,7 @@ class Plot extends Phaser.GameObjects.Container{
         this.cropSprites = [];
         this.placed = true;
         this.lastValidPosition = {x: 0, y: 0};
+        this.wasDeleted = false;
 
 
         if (this.crop === "nothing") {
@@ -614,6 +626,7 @@ class Plot extends Phaser.GameObjects.Container{
 
         this.on('pointerdown', () => {
             if(Utility.isDeleteMode() && this.crop === "nothing") {
+                this.wasDeleted = true;
                 this.setVisible(false); // make the sprite invisible
                 this.setActive(false); // make the sprite inactive
                 this.setPosition(-1000, -1000); // move it off-screen
@@ -869,6 +882,8 @@ class Furniture extends Phaser.GameObjects.Sprite {
         // Whether or not the furniture is currently placed on the scene
         this.placed = true;
 
+        this.wasDeleted = false;
+
         // Enable input for this object
         this.setInteractive({ draggable: true });
 
@@ -944,6 +959,7 @@ class Furniture extends Phaser.GameObjects.Sprite {
             }
         }
         else{ 
+            this.wasDeleted = true;
             this.setVisible(false); // make the sprite invisible
             this.setActive(false); // make the sprite inactive
             this.setPosition(-1000, -1000); // move it off-screen
