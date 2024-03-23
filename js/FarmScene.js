@@ -613,7 +613,7 @@ class Plot extends Phaser.GameObjects.Container{
 
 
         this.on('pointerdown', () => {
-            if(Utility.isDeleteMode()) {
+            if(Utility.isDeleteMode() && this.crop === "nothing") {
                 this.setVisible(false); // make the sprite invisible
                 this.setActive(false); // make the sprite inactive
                 this.setPosition(-1000, -1000); // move it off-screen
