@@ -241,6 +241,49 @@ export default class FarmScene extends Phaser.Scene {
         
         });
 
+        plusButton.addEventListener('click', () => {
+            if(this.scene.isActive('InsideFarmhouseScene')) {
+                let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
+
+                let furnitureContainer = document.getElementById('furniture-container');
+
+                for(let furniture of this.farm.furniture){
+                    if(furniture.placed == false) {
+                        let furnitureDiv = document.createElement('div');
+                        furnitureDiv.style.width = '12vw';
+                        furnitureDiv.style.height = '12vw';
+                        furnitureDiv.style.display = 'flex';
+                        furnitureDiv.style.flexDirection = 'column';
+                        furnitureDiv.style.justifyContent = 'center';
+                        furnitureDiv.style.marginBottom = '1vh';
+
+                        let furnitureImg = document.createElement('img');
+                        furnitureImg.style.width = '100%';
+                        furnitureImg.style.height = 'calc(100% - 4vw)';
+                        furnitureImg.style.objectFit = 'contain';
+                        furnitureImg.classList.add('furniture-image');
+                        furnitureImg.src = './assets/house/furniture/' + furniture.type + '.png';
+
+                        let buttonDiv = document.createElement('div');
+                        buttonDiv.style.display = 'flex';
+                        buttonDiv.style.justifyContent = 'center';
+
+                        let furnitureButton = document.createElement('button');
+                        furnitureButton.classList.add('furniture-button');
+                        furnitureButton.id = furniture.type + '-button';
+                        furnitureButton.textContent = '+';
+
+                        buttonDiv.appendChild(furnitureButton);
+                        furnitureDiv.appendChild(furnitureImg);
+                        furnitureDiv.appendChild(buttonDiv);
+                        furnitureContainer.appendChild(furnitureDiv);
+                    }
+                }
+
+                Utility.toggleMenu(insideFarmhouseScene, "furnitureMenu");
+            }
+        });
+
         tickButton.addEventListener('click', () => {
             if(Utility.isDeleteMode()){
                 Utility.toggleDeleteMode();
@@ -254,6 +297,16 @@ export default class FarmScene extends Phaser.Scene {
             
 
             // Save the furniture state to the database
+        });
+
+        let furnitureExitButton = document.getElementById('furniture-exit-button');
+        furnitureExitButton.addEventListener('click', () => {
+            // Clear the furniture container
+            let furnitureContainer = document.getElementById('furniture-container');
+            while (furnitureContainer.firstChild) {
+                furnitureContainer.removeChild(furnitureContainer.firstChild);
+            }
+            Utility.toggleMenu(this.scene.get('InsideFarmhouseScene'), "furnitureMenu");
         });
     }
 
@@ -881,7 +934,7 @@ class Furniture extends Phaser.GameObjects.Sprite {
 
             else if(this.type === "lamp") {
                 if(!this.scene.lampTurnedOn) {
-                    this.setTexture('lampOn');
+                    this.setTexture('lamp-on');
                     this.scene.lampTurnedOn = true;
                 }
                 else {

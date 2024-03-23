@@ -53,10 +53,13 @@ export default class Utility {
             dialogContainer = document.querySelector('.menu-container.task-menu');
             dialog = document.querySelector('.menu.task-menu');
         }
-        // else if (menu === "furnitureMenu") {
-        else if (menu == "cropShop") {
+        else if (menu === "cropShop") {
             dialogContainer = document.querySelector('.menu-container.shop-menu');
             dialog = document.querySelector('.menu.shop-menu');
+        }
+        else if (menu === "furnitureMenu") {
+            dialogContainer = document.querySelector('.menu-container.furniture-menu');
+            dialog = document.querySelector('.menu.furniture-menu');
         }
     
 
@@ -108,8 +111,8 @@ export default class Utility {
               {"type": "carpet1", "x": 320, "y": 612},
               {"type": "bookshelf", "x": 281, "y": 580},
               {"type": "fridge", "x": 193, "y": 580},
-              {"type": "grandfatherClock", "x": 246, "y": 580},
-              {"type": "kitchenSink", "x": 408, "y": 600},
+              {"type": "grandfather-clock", "x": 246, "y": 580},
+              {"type": "kitchen-sink", "x": 408, "y": 600},
               {"type": "chair", "x": 210, "y": 650},
               {"type": "table", "x": 192, "y": 650},
               {"type": "lamp", "x": 345, "y": 580},

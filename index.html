@@ -197,7 +197,23 @@
         </dialog>
     </div>
 
-   
+    <div class="menu-container furniture-menu" style="display: none;">
+        <dialog class="menu furniture-menu"style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Choose furniture</p>
+                <button type="button" class="exit-button" id="furniture-exit-button">X</button>
+            </div>
+            <div id="furniture-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- <div style="width: 12vw; height: 12vw; display: flex; flex-direction: column; justify-content: center; margin-bottom: 1vh;">
+                    <img style="width: 100%; height: calc(100% - 4vw); object-fit: contain;" class="furniture-image" src="./assets/house/furniture/table.png" alt="">
+                    <div style="display: flex; justify-content: center;" >
+                        <button class="furniture-button" id="table-button">+</button>
+                    </div>
+                </div> -->
+            </div>
+        </dialog>
+    </div>
 
     <div id="edit-buttons-container">
         <button class="edit" id="edit-button"><img src="./assets/edit/edit.png" alt="Edit icon"></button>

@@ -187,6 +187,18 @@ select {
     padding: 0; 
 }
 
+.furniture-button {
+    background-color: #d39f20;
+    outline: 3px solid black;
+    cursor: pointer;
+    color: black;
+    font-size: 2.5vw; /* Decrease the font-size */
+    height: 3vw; /* Increase the height */
+    width: 3vw; /* Increase the width */
+    border: transparent;
+    padding: 0px;
+    margin-top: 1vh;
+}
 
 
 
