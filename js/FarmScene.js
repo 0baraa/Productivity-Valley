@@ -321,6 +321,7 @@ export default class FarmScene extends Phaser.Scene {
                 Utility.toggleMenu(insideFarmhouseScene, "furnitureMenu");
             }
 
+            // If we are in FarmScene
             else {
                 let plotContainer = document.getElementById('plot-container');
 
@@ -379,6 +380,62 @@ export default class FarmScene extends Phaser.Scene {
                     }
                 }
 
+                let decorationContainer = document.getElementById('decoration-container');
+
+                for(let decoration of this.farm.decorations){
+                    if(decoration.placed == false) {
+                        let decorationDiv = document.createElement('div');
+                        decorationDiv.style.width = '12vw';
+                        decorationDiv.style.height = '12vw';
+                        decorationDiv.style.display = 'flex';
+                        decorationDiv.style.flexDirection = 'column';
+                        decorationDiv.style.justifyContent = 'center';
+                        decorationDiv.style.marginBottom = '1vh';
+
+                        let decorationImg = document.createElement('img');
+                        decorationImg.style.width = '100%';
+                        decorationImg.style.height = 'calc(100% - 4vw)';
+                        decorationImg.style.objectFit = 'contain';
+                        decorationImg.src = './assets/decorations/' + decoration.type + '.png';
+
+                        let buttonDiv = document.createElement('div');
+                        buttonDiv.style.display = 'flex';
+                        buttonDiv.style.justifyContent = 'center';
+                        
+                        let decorationButton = document.createElement('button');
+                        decorationButton.classList.add('furniture-button');
+                        decorationButton.id = decoration.type + '-button';
+                        decorationButton.textContent = '+';
+
+                        buttonDiv.appendChild(decorationButton);
+                        decorationDiv.appendChild(decorationImg);
+                        decorationDiv.appendChild(buttonDiv);
+                        decorationContainer.appendChild(decorationDiv);
+                    }
+                }
+                for(let decoration of this.farm.decorations){
+                    let decorationButton = document.getElementById(decoration.type + '-button');
+                    if(decorationButton){
+                        decorationButton.onclick = () => {
+                            decoration.placed = true;
+                            decoration.setVisible(true);
+                            decoration.setActive(true);
+                            decoration.x = 320;
+                            decoration.y = 620;
+                            // Clear the decorations and plot containers
+                            let decorationContainer = document.getElementById('decoration-container');
+                            while (decorationContainer.firstChild) {
+                                decorationContainer.removeChild(decorationContainer.firstChild);
+                            }
+                            let plotContainer = document.getElementById('plot-container');
+                            while (plotContainer.firstChild) {
+                                plotContainer.removeChild(plotContainer.firstChild);
+                            }
+                            Utility.toggleMenu(this, "decorationPlotMenu");
+                        };
+                    }
+
+                }
                 Utility.toggleMenu(this, "decorationPlotMenu");
             }
         });
