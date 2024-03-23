@@ -188,7 +188,6 @@ export default class FarmScene extends Phaser.Scene {
 
             // If we are in InsideFarmhouseScene
             if(this.scene.isActive('InsideFarmhouseScene')) {
-                console.log('Inside farmhouse scene is active');
                 this.originalFurniture = this.farm.furniture.map(furniture => ({...furniture}));
             }
             // If we are in FarmScene
@@ -243,6 +242,9 @@ export default class FarmScene extends Phaser.Scene {
         });
 
         plusButton.addEventListener('click', () => {
+            if(Utility.isDeleteMode()){
+                Utility.toggleDeleteMode();
+            }
             if(this.scene.isActive('InsideFarmhouseScene')) {
                 let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
 
@@ -281,7 +283,31 @@ export default class FarmScene extends Phaser.Scene {
                     }
                 }
 
+                for(let furniture of this.farm.furniture){
+                    let furnitureButton = document.getElementById(furniture.type + '-button');
+                    if(furnitureButton){
+                        furnitureButton.onclick = () => {
+                            furniture.placed = true;
+                            furniture.setVisible(true);
+                            furniture.setActive(true);  
+                            furniture.x = 320;
+                            furniture.y = 620;
+                            this.scene.get('InsideFarmhouseScene').children.bringToTop(furniture);
+                            // Clear the furniture container
+                            let furnitureContainer = document.getElementById('furniture-container');
+                            while (furnitureContainer.firstChild) {
+                                furnitureContainer.removeChild(furnitureContainer.firstChild);
+                            }
+                            Utility.toggleMenu(this.scene.get('InsideFarmhouseScene'), "furnitureMenu");
+                        };
+                    }
+                }
+
                 Utility.toggleMenu(insideFarmhouseScene, "furnitureMenu");
+            }
+
+            else {
+                //
             }
         });
 
