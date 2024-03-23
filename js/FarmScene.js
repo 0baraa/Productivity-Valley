@@ -264,7 +264,6 @@ export default class FarmScene extends Phaser.Scene {
                         furnitureImg.style.width = '100%';
                         furnitureImg.style.height = 'calc(100% - 4vw)';
                         furnitureImg.style.objectFit = 'contain';
-                        furnitureImg.classList.add('furniture-image');
                         furnitureImg.src = './assets/house/furniture/' + furniture.type + '.png';
 
                         let buttonDiv = document.createElement('div');
@@ -298,7 +297,7 @@ export default class FarmScene extends Phaser.Scene {
                             while (furnitureContainer.firstChild) {
                                 furnitureContainer.removeChild(furnitureContainer.firstChild);
                             }
-                            Utility.toggleMenu(this.scene.get('InsideFarmhouseScene'), "furnitureMenu");
+                            Utility.toggleMenu(insideFarmhouseScene, "furnitureMenu");
                         };
                     }
                 }
@@ -307,6 +306,63 @@ export default class FarmScene extends Phaser.Scene {
             }
 
             else {
+                let plotContainer = document.getElementById('plot-container');
+
+                for(let plot of this.farm.plots){
+                    if(plot.placed == false) {
+                        let plotDiv = document.createElement('div');
+                        plotDiv.style.width = '12vw';
+                        plotDiv.style.height = '12vw';
+                        plotDiv.style.display = 'flex';
+                        plotDiv.style.flexDirection = 'column';
+                        plotDiv.style.justifyContent = 'center';
+                        plotDiv.style.marginBottom = '1vh';
+
+                        let plotImg = document.createElement('img');
+                        plotImg.style.width = '100%';
+                        plotImg.style.height = 'calc(100% - 4vw)';
+                        plotImg.style.objectFit = 'contain';
+                        plotImg.src = '../assets/larger_plot.png';
+
+                        let buttonDiv = document.createElement('div');
+                        buttonDiv.style.display = 'flex';
+                        buttonDiv.style.justifyContent = 'center';
+
+                        let plotButton = document.createElement('button');
+                        plotButton.classList.add('furniture-button');
+                        plotButton.id = plot.id + '-button';
+                        plotButton.textContent = '+';
+
+                        buttonDiv.appendChild(plotButton);
+                        plotDiv.appendChild(plotImg);
+                        plotDiv.appendChild(buttonDiv);
+                        plotContainer.appendChild(plotDiv);
+                    }
+                }
+
+                for(let plot of this.farm.plots){
+                    let plotButton = document.getElementById(plot.id + '-button');
+                    if(plotButton){
+                        plotButton.onclick = () => {
+                            plot.placed = true;
+                            plot.setVisible(true);
+                            plot.setActive(true);  
+                            plot.x = 320;
+                            plot.y = 620;
+                            // Clear the decorations and plot containers
+                            let decorationContainer = document.getElementById('decoration-container');
+                            while (decorationContainer.firstChild) {
+                                decorationContainer.removeChild(decorationContainer.firstChild);
+                            }
+                            let plotContainer = document.getElementById('plot-container');
+                            while (plotContainer.firstChild) {
+                                plotContainer.removeChild(plotContainer.firstChild);
+                            }
+                            Utility.toggleMenu(this, "decorationPlotMenu");
+                        };
+                    }
+                }
+
                 Utility.toggleMenu(this, "decorationPlotMenu");
             }
         });
@@ -344,6 +400,20 @@ export default class FarmScene extends Phaser.Scene {
                 furnitureContainer.removeChild(furnitureContainer.firstChild);
             }
             Utility.toggleMenu(this.scene.get('InsideFarmhouseScene'), "furnitureMenu");
+        });
+
+        let decorationPlotExitButton = document.getElementById('decoration-plot-exit-button');
+        decorationPlotExitButton.addEventListener('click', () => {
+            // Clear the decoration and plot containers
+            let decorationContainer = document.getElementById('decoration-container');
+            while (decorationContainer.firstChild) {
+                decorationContainer.removeChild(decorationContainer.firstChild);
+            }
+            let plotContainer = document.getElementById('plot-container');
+            while (plotContainer.firstChild) {
+                plotContainer.removeChild(plotContainer.firstChild);
+            }
+            Utility.toggleMenu(this, "decorationPlotMenu");
         });
     }
 
