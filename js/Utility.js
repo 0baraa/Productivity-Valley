@@ -149,7 +149,10 @@ export default class Utility {
             //update database.
             this.data.cropsOwned.push({crop: type, count: amount});
         }
-        this.data.coins -= price;
-        console.log(this.data.coins);
+        
+    }
+    static updateCoins(coins) {
+        let coinTab = document.getElementById("player-coins");
+        coinTab.innerText = coins;
     }
 }

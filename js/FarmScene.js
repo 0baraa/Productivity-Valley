@@ -296,11 +296,9 @@ class PlayerFarm {
             scene.input.enabled = false;
             scene.scene.launch('MarketScene');
         });
-        this.showCoins(scene, data.coins);
+        Utility.updateCoins(data.coins);
     }
-    showCoins(scene, coins) {
 
-    }
 
     createFurniture(scene){
         let data = Utility.getUserData();
