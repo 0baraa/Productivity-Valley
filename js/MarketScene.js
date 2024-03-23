@@ -15,6 +15,10 @@ export default class MarketScene extends Phaser.Scene {
 
 
     create () {
+        // Hide edit button
+        let editButton = document.getElementById('edit-button');
+        editButton.style.display = 'none';
+
         
         //Set camera zoom to 2x as canvas size of farmhouse interior is 320px wide, rather than 640px
         this.cameras.main.setZoom(2);
@@ -33,6 +37,8 @@ export default class MarketScene extends Phaser.Scene {
         //Swtich to farm scene when door is clicked
         this.farmSign.on('pointerdown', () => {
             this.scene.stop();
+            // Show edit button
+            editButton.style.display = 'inline';
             //Re-enable input for farm scene
             this.scene.get('FarmScene').input.enabled = true;
         });

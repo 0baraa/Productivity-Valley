@@ -10,28 +10,58 @@
 </head>
 <body>
     <script type="module" src="./js/game.js"></script>
+    <script>
+        function addSubtask() {
+            //
+            let taskTable = document.getElementById("task-menu-table");
+            
+            let row = taskTable.insertRow(taskTable.rows.length-2);
+            let cell = row.insertCell();
+            let input = document.createElement("input");
+            value.setAttribute("type", "text");
+            let bullet = document.createTextNode(" - ");
+            cell.appendChild(bullet);
+            cell.appendChild(input);
+
+
+        }
+    </script>
     <div id="game-container"></div>
-    
     <div class="menu-container task-menu" style="display: none;">
-        <dialog class="menu task-menu" style="display: flex; flex-direction: column;">
+        <dialog class="menu task-menu" style="display: inline-flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button class="info-button" id="task-info-button">?</button>
                 <p>Create a task</p>
                 <button class="exit-button" id="task-exit-button">X</button>
             </div>
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
-                <form id="task-form" style="display: flex; justify-content: center; flex: 1;">
-                    <table>
+                <form id="task-form" style="display: flex; justify-content: center;">
+                    <table id="task-menu-table">
                         <tr>
                             <td>
-                                <label for="taskName">Task Name:</label>
-                                <input type="text" id="taskName" name="taskName" maxlength="25" placeholder="Task 1"required><br>
+                                <label for="preset">Preset:</label>
+                                <select id="preset" name="preset">
+                                    <option value="new">New</option>
+                                    <option value=""></option>
+                                </select>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <label for="minutes">Minutes:</label>
-                                <input type="number" id="minutes" name="minutes" min="10" max="120" step="5" placeholder="10" required><br>
+                                <input type="text" id="taskName" name="taskName" maxlength="25" value="Task 1"required><br>
+                                <label for="taskName">Task Name:</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="minutes">Minutes/session:</label>
+                                <input type="number" id="minutes" name="minutes" min="10" max="120" step="5" value="25" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="repetitions">Sessions:</label>
+                                <input type="number" id="repetitions" name="repetitions" min="1" max="20" step="1" value="1" required>
                             </td>
                         </tr>
                         <tr>
@@ -43,6 +73,26 @@
                                 </select><br>
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" id="subtasks-query" name="subtasks-query">
+                                <label for="subtasks-query">Add Subtasks</label>
+                            </td>
+                        </tr>
+                        <tr class="subtask-row" style="display: none;">
+                            <td>
+                                <label for="subtask">- </label>
+                                <input type="text" class="subtask" name="subtask"></input>
+                            </td>
+                        </tr>
+                        <tr id="save-preset-row">
+                            <td>
+                                <input type="checkbox" id="save-preset" name="save-preset">
+                                <label for="save-preset">Save Preset</label>
+                            </td>
+                        </tr>
+
+
                         <tr>
                             <td>
                                 <div style="display: flex; justify-content: center;">
@@ -62,7 +112,7 @@
         <dialog class="menu shop-menu"style="display: flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button type="button" class="menu-top-spacer">X</button>
-                <p>Seed Stall</p>
+                <h1>Crop Shop</h1>
                 <button type="button" class="exit-button" id="shop-exit-button">X</button>
             </div>
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
@@ -75,19 +125,19 @@
                         <tc>
                             <td>
                                 <button class="sunflower-bags" id="1">Buy 1</button><br>
-                                <span class = "sunflower-price">50</span><span class="coin">&#9737;</span>
+                                <span class = "sunflower-price">50</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="sunflower-bags" id="3">Buy 3</button><br>
-                                <span class = "sunflower-price">140</span><span class="coin">&#9737;</span>
+                                <span class = "sunflower-price">140</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="sunflower-bags" id="10">Buy 10</button><br>
-                                <span class = "sunflower-price">400</span><span class="coin">&#9737;</span>
+                                <span class = "sunflower-price">400</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                     </tr>
@@ -100,19 +150,19 @@
                         <tc>
                             <td>
                                 <button class="carrot-bags" id="1">Buy 1</button><br>
-                                <span class = "carrot-price">50</span><span class="coin">&#9737;</span>
+                                <span class = "carrot-price">50</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="carrot-bags" id="3">Buy 3</button><br>
-                                <span class = "carrot-price">140</span><span class="coin">&#9737;</span>
+                                <span class = "carrot-price">140</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="carrot-bags" id="10">Buy 10</button><br>
-                                <span class = "carrot-price">400</span><span class="coin">&#9737;</span>
+                                <span class = "carrot-price">400</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                     </tr>
@@ -125,19 +175,19 @@
                         <tc>
                             <td>
                                 <button class="pumpkin-bags" id="1">Buy 1</button><br>
-                                <span class = "pumpkin-price">50</span><span class="coin">&#9737;</span>
+                                <span class = "pumpkin-price">50</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="pumpkin-bags" id="3">Buy 3</button><br>
-                                <span class = "pumpkin-price">140</span><span class="coin">&#9737;</span>
+                                <span class = "pumpkin-price">140</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="pumpkin-bags" id="10">Buy 10</button><br>
-                                <span class = "pumpkin-price">400</span><span class="coin">&#9737;</span>
+                                <span class = "pumpkin-price">400</span><span class="coin"><img src="../assets/coin-medium.png"></span>
                             </td>
                         </tc>
                     </tr>
@@ -145,6 +195,48 @@
                 </table>
             </div>
         </dialog>
+    </div>
+
+    <div class="menu-container decoration-plot-menu" style="display: none;">
+        <dialog class="menu decoration-plot-menu"style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Decorations</p>
+                <button type="button" class="exit-button" id="decoration-plot-exit-button">X</button>
+            </div>
+            <div id="decoration-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Decorations dynamically added here -->
+            </div>
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Plots</p>
+                <button type="button" class="menu-top-spacer">X</button>
+            </div>
+            <div id="plot-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Plots dynamically added here -->
+            </div>
+        </dialog>
+    </div>
+
+    <div class="menu-container furniture-menu" style="display: none;">
+        <dialog class="menu furniture-menu"style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Furniture</p>
+                <button type="button" class="exit-button" id="furniture-exit-button">X</button>
+            </div>
+            <div id="furniture-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Furniture dynamically added here -->
+            </div>
+        </dialog>
+    </div>
+
+    <div id="edit-buttons-container">
+        <button class="edit" id="edit-button"><img src="./assets/edit/edit.png" alt="Edit icon"></button>
+        <button class="edit" id="tick-button" style="display: none;"><img src="./assets/edit/tick.png" alt="Tick icon"></button>
+        <button class="edit" id="plus-button" style="display: none;"><img src="./assets/edit/plus.png" alt="Plus icon"></button>
+        <button class="edit" id="trash-button" style="display: none;"><img src="./assets/edit/trash.png" alt="Cross icon"></button>
+        <button class="edit" id="cross-button" style="display: none;"><img src="./assets/edit/cross.png" alt="Cross icon"></button>
     </div>
 </body>
 </html>

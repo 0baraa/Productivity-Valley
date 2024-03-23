@@ -14,9 +14,12 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('mountains', '../assets/mountains.png');
         this.load.image('fence', '../assets/fence.png');
         this.load.spritesheet('farmhouseSpritesheet', '../assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });
+        this.load.image('shackFarmhouse', '../assets/house/shack-farmhouse.png');
         this.load.image('marketSign', '../assets/market-sign.png');
         this.load.image('sun', '../assets/sun.png');
         this.load.image('plot', '../assets/larger_plot.png');
+
+        this.load.image('snowman', '../assets/decorations/snowman.png');
 
         this.load.image('cloud1', '../assets/clouds/cloud1.png');
         this.load.image('cloud2', '../assets/clouds/cloud2.png');
@@ -27,7 +30,8 @@ export default class FarmScene extends Phaser.Scene {
 
         this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
         this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
-        
+        this.load.spritesheet("butterfly1AS", "../assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16 })
+        this.load.spritesheet("butterfly2AS", "../assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16 })
     }
 
     create () {
@@ -42,18 +46,42 @@ export default class FarmScene extends Phaser.Scene {
         this.clouds = [];
         this.cloudImages = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
         
+        
         //Generate initial cloud
         generateCloud(this);
-
+        
+        
         //Generate a new cloud every 5 seconds
         this.time.addEvent({
-            delay: 2500,
+            delay: 8000,
             callback: () => generateCloud(this),
             loop: true
         });
-
+        
         this.add.image(320, 550, 'fence');
+        
 
+        this.butterflies = [];
+        this.anims.create({
+            key: "butterfly1Anim",
+            frames: this.anims.generateFrameNumbers("butterfly1AS", {start: 0, end: 3}),
+            frameRate: 20,
+            yoyo: true
+        })
+
+        this.time.addEvent({
+            delay: 5000,
+            callback: () => generateButterfly(this),
+            loop: true
+        })
+
+        //animation driver 20 fps
+        this.skip = 0; // skip frames for 10fps or 5fps or 4fps or 8.333 fps
+        this.time.addEvent({
+            delay: 50,
+            callback: () => this.updateAnimations(),
+            loop: true
+        })
 
 
         this.anims.create({
@@ -64,8 +92,8 @@ export default class FarmScene extends Phaser.Scene {
         });
 
         //Add farmhouse image and make it interactive
-        this.farmhouse = this.add.sprite(64, 560, 'farmhouseSpritesheet');
-        this.farmhouse.anims.play('farmhouseAnimation');
+        this.farmhouse = this.add.sprite(64, 560, 'shackFarmhouse');
+        //this.farmhouse.anims.play('farmhouseAnimation');
         this.farmhouse.setInteractive();
         Utility.addTintOnHover(this.farmhouse);
 
@@ -87,8 +115,9 @@ export default class FarmScene extends Phaser.Scene {
             repeat: 0
         })
         
-        this.farm = new PlayerFarm({coins: 0, cropsOwned: 0, decorationsOwned: 0, decorationsPlaced: 0, furnitureOwned: 0, animals: 0});
+        this.farm = new PlayerFarm();
         this.farm.createPlots(this);
+        this.farm.createDecorations(this);
 
 
 
@@ -105,8 +134,22 @@ export default class FarmScene extends Phaser.Scene {
         // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
         this.farmhouse.on('pointerdown', () => {
             // Disable input for FarmScene
-            this.input.enabled = false;
-            this.scene.launch('InsideFarmhouseScene');
+            if(!Utility.isEditMode()) {
+                this.input.enabled = false;
+                this.scene.launch('InsideFarmhouseScene');
+            }
+        });
+
+        //set market sign to be one more than the crops.
+        this.marketSign = this.add.image(600, 560, 'marketSign');
+        this.marketSign.setInteractive();
+        Utility.addTintOnHover(this.marketSign);
+        this.marketSign.on('pointerdown', () => {
+            // Disable input for FarmScene
+            if(!Utility.isEditMode()) {
+                this.input.enabled = false;
+                this.scene.launch('MarketScene');
+            }
         });
 
 
@@ -128,9 +171,338 @@ export default class FarmScene extends Phaser.Scene {
 
 
 
+        let editButton = document.getElementById('edit-button');
+        let tickButton = document.getElementById('tick-button');
+        let plusButton = document.getElementById('plus-button');
+        let trashButton = document.getElementById('trash-button');
+        let crossButton = document.getElementById('cross-button');
 
+        editButton.addEventListener('click', () => {
+
+
+            Utility.toggleEditMode();
+            editButton.style.display = 'none';
+            tickButton.style.display = 'inline';
+            plusButton.style.display = 'inline';
+            trashButton.style.display = 'inline';
+            crossButton.style.display = 'inline';
+
+            // Save initial positions of objects so they can be reset if the user cancels the edit
+
+            // If we are in InsideFarmhouseScene
+            if(this.scene.isActive('InsideFarmhouseScene')) {
+                this.originalFurniture = this.farm.furniture.map(furniture => ({...furniture}));
+            }
+            // If we are in FarmScene
+            else {
+                this.originalPlots = this.farm.plots.map(plot => ({...plot}));
+                this.originalDecorations = this.farm.decorations.map(decoration => ({...decoration}));
+            }
+        });
+
+        crossButton.addEventListener('click', () => {
+            if(Utility.isDeleteMode()){
+                Utility.toggleDeleteMode();
+            }
+            Utility.toggleEditMode();
+            tickButton.style.display = 'none';
+            plusButton.style.display = 'none';
+            trashButton.style.display = 'none';
+            crossButton.style.display = 'none';
+            editButton.style.display = 'inline';
+
+            // Reset the positions of the objects
+            if(this.scene.isActive('InsideFarmhouseScene')) {
+                for (let i = 0; i < this.farm.furniture.length; i++) {
+                    this.farm.furniture[i].x = this.originalFurniture[i].x;
+                    this.farm.furniture[i].y = this.originalFurniture[i].y;
+                    // If the furniture was deleted, place it back
+                    if(this.farm.furniture[i].wasDeleted == true) {
+                        this.farm.furniture[i].setVisible(true);
+                        this.farm.furniture[i].setActive(true);
+                        this.farm.furniture[i].placed = true;
+                    }
+                }
+            }
+            // If we are in FarmScene
+            else {
+                for (let i = 0; i < this.farm.plots.length; i++) {
+                    this.farm.plots[i].x = this.originalPlots[i].x;
+                    this.farm.plots[i].y = this.originalPlots[i].y;
+                    // If the plot was deleted, place it back
+                    if(this.farm.plots[i].wasDeleted == true) {
+                        this.farm.plots[i].setVisible(true);
+                        this.farm.plots[i].setActive(true);
+                        this.farm.plots[i].placed = true;
+                    }
+                    this.farm.plots[i].wasDeleted = false;
+                }
+
+                for (let i = 0; i < this.farm.decorations.length; i++) {
+                    this.farm.decorations[i].x = this.originalDecorations[i].x;
+                    this.farm.decorations[i].y = this.originalDecorations[i].y;
+                    // If the decoration was deleted, place it back
+                    if(this.farm.decorations[i].wasDeleted == true) {
+                        this.farm.decorations[i].setVisible(true);
+                        this.farm.decorations[i].setActive(true);
+                        this.farm.decorations[i].placed = true;
+                    }
+                    this.farm.decorations[i].wasDeleted = false;
+                }
+            }
+        });
+
+        trashButton.addEventListener('click', () => {
+            Utility.toggleDeleteMode();
+        
+        });
+
+        plusButton.addEventListener('click', () => {
+            if(Utility.isDeleteMode()){
+                Utility.toggleDeleteMode();
+            }
+            if(this.scene.isActive('InsideFarmhouseScene')) {
+                let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
+
+                let furnitureContainer = document.getElementById('furniture-container');
+
+                for(let furniture of this.farm.furniture){
+                    if(furniture.placed == false) {
+                        let furnitureDiv = document.createElement('div');
+                        furnitureDiv.style.width = '12vw';
+                        furnitureDiv.style.height = '12vw';
+                        furnitureDiv.style.display = 'flex';
+                        furnitureDiv.style.flexDirection = 'column';
+                        furnitureDiv.style.justifyContent = 'center';
+                        furnitureDiv.style.marginBottom = '1vh';
+
+                        let furnitureImg = document.createElement('img');
+                        furnitureImg.style.width = '100%';
+                        furnitureImg.style.height = 'calc(100% - 4vw)';
+                        furnitureImg.style.objectFit = 'contain';
+                        furnitureImg.src = './assets/house/furniture/' + furniture.type + '.png';
+
+                        let buttonDiv = document.createElement('div');
+                        buttonDiv.style.display = 'flex';
+                        buttonDiv.style.justifyContent = 'center';
+
+                        let furnitureButton = document.createElement('button');
+                        furnitureButton.classList.add('furniture-button');
+                        furnitureButton.id = furniture.type + '-button';
+                        furnitureButton.textContent = '+';
+
+                        buttonDiv.appendChild(furnitureButton);
+                        furnitureDiv.appendChild(furnitureImg);
+                        furnitureDiv.appendChild(buttonDiv);
+                        furnitureContainer.appendChild(furnitureDiv);
+                    }
+                }
+
+                for(let furniture of this.farm.furniture){
+                    let furnitureButton = document.getElementById(furniture.type + '-button');
+                    if(furnitureButton){
+                        furnitureButton.onclick = () => {
+                            furniture.placed = true;
+                            furniture.setVisible(true);
+                            furniture.setActive(true);  
+                            furniture.x = 320;
+                            furniture.y = 620;
+                            this.scene.get('InsideFarmhouseScene').children.bringToTop(furniture);
+                            // Clear the furniture container
+                            let furnitureContainer = document.getElementById('furniture-container');
+                            while (furnitureContainer.firstChild) {
+                                furnitureContainer.removeChild(furnitureContainer.firstChild);
+                            }
+                            Utility.toggleMenu(insideFarmhouseScene, "furnitureMenu");
+                        };
+                    }
+                }
+
+                Utility.toggleMenu(insideFarmhouseScene, "furnitureMenu");
+            }
+
+            // If we are in FarmScene
+            else {
+                let plotContainer = document.getElementById('plot-container');
+
+                for(let plot of this.farm.plots){
+                    if(plot.placed == false) {
+                        let plotDiv = document.createElement('div');
+                        plotDiv.style.width = '12vw';
+                        plotDiv.style.height = '12vw';
+                        plotDiv.style.display = 'flex';
+                        plotDiv.style.flexDirection = 'column';
+                        plotDiv.style.justifyContent = 'center';
+                        plotDiv.style.marginBottom = '1vh';
+
+                        let plotImg = document.createElement('img');
+                        plotImg.style.width = '100%';
+                        plotImg.style.height = 'calc(100% - 4vw)';
+                        plotImg.style.objectFit = 'contain';
+                        plotImg.src = '../assets/larger_plot.png';
+
+                        let buttonDiv = document.createElement('div');
+                        buttonDiv.style.display = 'flex';
+                        buttonDiv.style.justifyContent = 'center';
+
+                        let plotButton = document.createElement('button');
+                        plotButton.classList.add('furniture-button');
+                        plotButton.id = plot.id + '-button';
+                        plotButton.textContent = '+';
+
+                        buttonDiv.appendChild(plotButton);
+                        plotDiv.appendChild(plotImg);
+                        plotDiv.appendChild(buttonDiv);
+                        plotContainer.appendChild(plotDiv);
+                    }
+                }
+
+                for(let plot of this.farm.plots){
+                    let plotButton = document.getElementById(plot.id + '-button');
+                    if(plotButton){
+                        plotButton.onclick = () => {
+                            plot.placed = true;
+                            plot.setVisible(true);
+                            plot.setActive(true);  
+                            plot.x = 320;
+                            plot.y = 620;
+                            // Clear the decorations and plot containers
+                            let decorationContainer = document.getElementById('decoration-container');
+                            while (decorationContainer.firstChild) {
+                                decorationContainer.removeChild(decorationContainer.firstChild);
+                            }
+                            let plotContainer = document.getElementById('plot-container');
+                            while (plotContainer.firstChild) {
+                                plotContainer.removeChild(plotContainer.firstChild);
+                            }
+                            Utility.toggleMenu(this, "decorationPlotMenu");
+                        };
+                    }
+                }
+
+                let decorationContainer = document.getElementById('decoration-container');
+
+                for(let decoration of this.farm.decorations){
+                    if(decoration.placed == false) {
+                        let decorationDiv = document.createElement('div');
+                        decorationDiv.style.width = '12vw';
+                        decorationDiv.style.height = '12vw';
+                        decorationDiv.style.display = 'flex';
+                        decorationDiv.style.flexDirection = 'column';
+                        decorationDiv.style.justifyContent = 'center';
+                        decorationDiv.style.marginBottom = '1vh';
+
+                        let decorationImg = document.createElement('img');
+                        decorationImg.style.width = '100%';
+                        decorationImg.style.height = 'calc(100% - 4vw)';
+                        decorationImg.style.objectFit = 'contain';
+                        decorationImg.src = './assets/decorations/' + decoration.type + '.png';
+
+                        let buttonDiv = document.createElement('div');
+                        buttonDiv.style.display = 'flex';
+                        buttonDiv.style.justifyContent = 'center';
+                        
+                        let decorationButton = document.createElement('button');
+                        decorationButton.classList.add('furniture-button');
+                        decorationButton.id = decoration.type + '-button';
+                        decorationButton.textContent = '+';
+
+                        buttonDiv.appendChild(decorationButton);
+                        decorationDiv.appendChild(decorationImg);
+                        decorationDiv.appendChild(buttonDiv);
+                        decorationContainer.appendChild(decorationDiv);
+                    }
+                }
+                for(let decoration of this.farm.decorations){
+                    let decorationButton = document.getElementById(decoration.type + '-button');
+                    if(decorationButton){
+                        decorationButton.onclick = () => {
+                            decoration.placed = true;
+                            decoration.setVisible(true);
+                            decoration.setActive(true);
+                            decoration.x = 320;
+                            decoration.y = 620;
+                            // Clear the decorations and plot containers
+                            let decorationContainer = document.getElementById('decoration-container');
+                            while (decorationContainer.firstChild) {
+                                decorationContainer.removeChild(decorationContainer.firstChild);
+                            }
+                            let plotContainer = document.getElementById('plot-container');
+                            while (plotContainer.firstChild) {
+                                plotContainer.removeChild(plotContainer.firstChild);
+                            }
+                            Utility.toggleMenu(this, "decorationPlotMenu");
+                        };
+                    }
+
+                }
+                Utility.toggleMenu(this, "decorationPlotMenu");
+            }
+        });
+
+        tickButton.addEventListener('click', () => {
+            if(Utility.isDeleteMode()){
+                Utility.toggleDeleteMode();
+            }
+            Utility.toggleEditMode();
+            tickButton.style.display = 'none';
+            plusButton.style.display = 'none';
+            trashButton.style.display = 'none';
+            crossButton.style.display = 'none';
+            editButton.style.display = 'inline';
+            
+            if(this.scene.isActive('InsideFarmhouseScene')) {
+                for(let furniture of this.farm.furniture){
+                    furniture.wasDeleted = false;
+                }
+            }
+            else {
+                for(let plot of this.farm.plots){
+                    plot.wasDeleted = false;
+                }
+            }
+
+            // Save the furniture state to the database
+        });
+
+        let furnitureExitButton = document.getElementById('furniture-exit-button');
+        furnitureExitButton.addEventListener('click', () => {
+            // Clear the furniture container
+            let furnitureContainer = document.getElementById('furniture-container');
+            while (furnitureContainer.firstChild) {
+                furnitureContainer.removeChild(furnitureContainer.firstChild);
+            }
+            Utility.toggleMenu(this.scene.get('InsideFarmhouseScene'), "furnitureMenu");
+        });
+
+        let decorationPlotExitButton = document.getElementById('decoration-plot-exit-button');
+        decorationPlotExitButton.addEventListener('click', () => {
+            // Clear the decoration and plot containers
+            let decorationContainer = document.getElementById('decoration-container');
+            while (decorationContainer.firstChild) {
+                decorationContainer.removeChild(decorationContainer.firstChild);
+            }
+            let plotContainer = document.getElementById('plot-container');
+            while (plotContainer.firstChild) {
+                plotContainer.removeChild(plotContainer.firstChild);
+            }
+            Utility.toggleMenu(this, "decorationPlotMenu");
+        });
     }
 
+    updateAnimations() {
+        for (let i = 0; i < this.butterflies.length; i++) {
+            this.butterflies[i].updateY();
+        }
+        if (this.skip == 3) {
+            this.skip = 0;
+            for (let j = 0; j < this.clouds.length; j++) {
+                this.clouds[j].moveX();
+            }
+        }
+        this.skip++;
+        
+    }
 
 
 }
@@ -144,11 +516,12 @@ function generateCloud(scene) {
     let randomImage = scene.cloudImages[randomIndex];
 
     // Create a new cloud at left edge of the screen and at the random y position, setDepth(-1) to make sure the clouds are behind the mountains
-    let cloud = scene.physics.add.image(-50, y, randomImage).setDepth(-1);
-    cloud.setScale(Phaser.Math.Between(50, 75) / 100);
+    let cloud = new Cloud({scene: scene, x: -50, y: y, texture: randomImage})
+    // scene.physics.add.image(-50, y, randomImage).setDepth(-1);
+    //cloud.setScale(Phaser.Math.Between(50, 75) / 100);
 
-    // Set the cloud's velocity to the right
-    cloud.setVelocityX(20);
+    // // Set the cloud's velocity to the right
+    // cloud.setVelocityX(20);
 
     // Add the cloud to the clouds array
     scene.clouds.push(cloud);
@@ -162,22 +535,45 @@ function generateCloud(scene) {
     }
 }
 
+function generateButterfly(scene) {
+    let y = Math.floor(Math.random() * 200) + 450;
+    let x = -20;
+    let butterfly = new Butterfly ({
+        animalName: "butterfly1",
+        scene: scene,
+        x: x,
+        y: y,
+        frameStartEnd: [0, 3],
+        })
+    butterfly.seed();
+    scene.butterflies.push(butterfly);
+
+    for(let i = 0; i < scene.butterflies.length; i++) {
+        scene.butterflies[i].setDepth(10000);
+    }
+    
+
+    for (let i = 0; i < scene.butterflies.length; i++) {
+        if ((scene.butterflies[i].x < -20) || scene.butterflies[i].x > (screen.width + 40) ) {
+            scene.butterflies[i].destroy();
+            scene.butterflies.splice(i, 1);
+        }
+    }
+}
 
 
 
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
-    constructor(config){
+    constructor(){
         // load playerstate from database
-        this.coins = config.coins;
+        this.coins = 0;
         this.plots = [];
-        this.furniturePlaced = [];
-        this.cropsOwned = config.cropsOwned;
-        this.decorationsOwned = config.decorationsOwned;
-        this.decorationsPlaced = config.decorationsPlaced;
-        this.furnitureOwned = config.furnitureOwned;
-        this.animals = config.animals;
+        this.cropsOwned = [];
+        this.furniture = [];
+        this.decorations = [];
+        this.animals = [];
     }
 
     createPlots(scene){
@@ -225,28 +621,82 @@ class PlayerFarm {
             let plot = new Plot({scene: scene, x: plotX, y: plotY, id: data.plots[i].id , crop: data.plots[i].crop, counter: data.plots[i].growthStage});
             this.plots.push(plot);
         }
+        this.showCoins(scene, data.coins);
+    }
 
-        //set market sign to be one more than the crops.
-        this.marketSign = scene.add.image(600, 560, 'marketSign');
-        this.marketSign.setInteractive();
-        Utility.addTintOnHover(this.marketSign);
-        this.marketSign.on('pointerdown', () => {
-            // Disable input for FarmScene
-            scene.input.enabled = false;
-            scene.scene.launch('MarketScene');
-        });
+    createDecorations(scene) {
+        let data = Utility.getUserData();
+        for(let i = 0; i < data.decorations.length; i++){
+            let decoration = new Decoration({scene: scene, x: data.decorations[i].x, y: data.decorations[i].y, type: data.decorations[i].type, texture: data.decorations[i].type});
+            this.decorations.push(decoration);
+        }
+    }
+
+    showCoins(scene, coins) {
+
     }
 
     createFurniture(scene){
         let data = Utility.getUserData();
 
         for(let i = 0; i < data.furniture.length; i++){
-            let furniture = new Furniture({scene: scene, x: data.furniture[i].x, y: data.furniture[i].y, type: data.furniture[i].type, texture: data.furniture[i].type});
-            this.furniturePlaced.push(furniture);
+            let furniture = new Furniture({scene: scene, 
+                                           x: data.furniture[i].x, 
+                                           y: data.furniture[i].y, 
+                                           type: data.furniture[i].type, 
+                                           texture: data.furniture[i].type});
+            this.furniture.push(furniture);
         }
     }
-
 }
+
+class Animal extends Phaser.GameObjects.Sprite{
+    constructor (config) {
+        super(config.scene, config.x, config.y, config.animalName+"AS")
+        this.spritesheet = config.animalName + "AS";
+        this.animal = config.animalName;
+        this.scene = config.scene;
+        this.animation = config.animalName + "Anim";
+        this.scene.add.existing(this);
+    }
+}
+
+class Cloud extends Phaser.GameObjects.Sprite {
+    constructor(config) {
+        super(config.scene, config.x, config.y, config.texture);
+
+        config.scene.add.existing(this);
+    }
+    moveX () {
+        this.x ++;
+    }
+}
+
+class Butterfly extends Animal {
+    //this would work better with birds tbh.
+
+    seed () {
+        this.offset1 = (Math.random() * 2) | 0 + 2
+        this.offset2 = (Math.random() * 3) | 0
+        this.startingy = this.y;
+    }
+    graph (x) {
+        let y = this.startingy + 20*(Math.sin(this.offset1*x ) + 4*Math.sin(1/5*x + this.offset2)) | 0;
+        let deriv = 20*(Math.cos(this.offset1*x) + 4/5*Math.sin(1/5*x + this.offset2))
+        let second_deriv =  20*( - 9*Math.sin(this.offset1*x ) - 4/25*Math.sin(1/5*x + this.offset2));
+        if (second_deriv < 0 || deriv < -6) {
+            if (!this.anims.isPlaying)
+                this.anims.play(this.animation);
+        }
+        return y
+    }
+    updateY () {
+        this.x += 2;
+        this.y = this.graph(this.x/50);
+    }
+}
+
+
 
 class Plot extends Phaser.GameObjects.Container{
     constructor(config) {
@@ -258,6 +708,9 @@ class Plot extends Phaser.GameObjects.Container{
         this.growthStage = config.counter || 0;
         this.growthStep = config.step || 0;
         this.cropSprites = [];
+        this.placed = true;
+        this.lastValidPosition = {x: 0, y: 0};
+        this.wasDeleted = false;
 
 
         if (this.crop === "nothing") {
@@ -280,65 +733,151 @@ class Plot extends Phaser.GameObjects.Container{
         this.setInteractive({
             hitArea: new Phaser.Geom.Rectangle(-this.plotSprite.width/2, -this.plotSprite.height/2, this.plotSprite.width, this.plotSprite.height),
             hitAreaCallback: Phaser.Geom.Rectangle.Contains,
-            draggable: false
+            draggable: true
         });
 
         // Add a hover effect to the plot sprite of the container(for some reason Utility.addTintOnHover doesn't work here)
         this.on('pointerover', () => {
-            this.plotSprite.setTint(0xdddddd); // Change the color to your liking
+            if(Utility.isDeleteMode()) {
+                this.plotSprite.setTint(0xff0000);
+            }
+            else {
+                this.plotSprite.setTint(0xdddddd);
+            }
         });
 
         this.on('pointerout', () => {
             this.plotSprite.clearTint();
         });
 
-        
+        this.scene.input.on('dragstart', function (pointer, gameObject) {
+            gameObject.lastValidPosition = {x: gameObject.x, y: gameObject.y};
+        });
+
         // Dragging code (set draggable to true in setInteractive to enable dragging)
-        // scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
-        //     gameObject.x = dragX;
-        //     gameObject.y = dragY;
-        // });
+        this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+            if(Utility.isEditMode()){
+                gameObject.x = Math.round(dragX / 8) * 8;
+                gameObject.y = Math.round(dragY / 8) * 8;
 
-        // scene.input.on('dragstart', function (pointer, gameObject) {
-        //     // Bring the gameObject to the top of the display list
-        //     this.children.bringToTop(gameObject);
-        // }, this.scene);
-        
-        // Add the container to the scene
+                // Keep the plots within the bounds of the farm
 
-
-        this.on('pointerdown', () => {
-            // if occupied, attempt harvest, if unoccupied, open start task menu.
-            if (this.occupied) {
-                this.harvest();
-                this.occupied = false;
-            }
-            else {
-                //show menu
-                Utility.toggleMenu(this.scene, "taskMenu");
-                const self = this;
-                let form = document.getElementById("task-form");
-                let taskExitButton = document.getElementById('task-exit-button');
-                const func = function submitHandler(event) {
-                    //starts crop growth, removes listeners, or just removes listeners
-                    form.removeEventListener('submit', func);
-                    taskExitButton.removeEventListener('click', func)
-                    Utility.toggleMenu(self.scene, "taskMenu");
-                    if (event.type == "submit") {
-                        event.preventDefault();
-                        self.setupCrops();
-                    }
+                if(gameObject.x + 42 + gameObject.width / 2 > 640) {
+                    gameObject.x = 592;
                 }
-                //add submit listener
-                form.addEventListener('submit', func);
-                //add exit listener
-                taskExitButton.addEventListener('click', func);
-
                 
+                if(gameObject.x - 42 - gameObject.width / 2 < 0) {
+                    gameObject.x = 48;
+                }
+                if(gameObject.y + gameObject.height / 2 > 710) {
+                    gameObject.y = Math.round(710 / 8) * 8 - gameObject.height / 2;
+                }
+                if(gameObject.y - gameObject.height / 2 < 605) {
+                    gameObject.y = Math.round(605 / 8) * 8 + gameObject.height / 2;
+                }
+                gameObject.setDepth(gameObject.y);
             }
         });
 
-        
+        // Check if the plot is overlapping with another plot
+        // Reset to last valid position if it is
+        this.scene.input.on('dragend', (pointer, gameObject) => {
+            if(gameObject instanceof Plot) {
+                let overlapped = false;
+                for(let plot of this.scene.farm.plots){
+                    if(plot !== gameObject && plot.placed === true) {
+                        let gameObjBounds = gameObject.plotSprite.getBounds();
+                        let plotBounds = plot.plotSprite.getBounds();
+            
+                        if (Phaser.Geom.Intersects.RectangleToRectangle(gameObjBounds, plotBounds)) {
+                            gameObject.x = gameObject.lastValidPosition.x;
+                            gameObject.y = gameObject.lastValidPosition.y;
+                            overlapped = true;
+                            break;
+                        }
+                    }
+                }
+                if(!overlapped) {
+                    gameObject.lastValidPosition = {x: gameObject.x, y: gameObject.y};
+                }
+            }
+        });
+
+
+        this.on('pointerdown', () => {
+            if(Utility.isDeleteMode() && this.crop === "nothing") {
+                this.wasDeleted = true;
+                this.setVisible(false); // make the sprite invisible
+                this.setActive(false); // make the sprite inactive
+                this.setPosition(-1000, -1000); // move it off-screen
+                this.placed = false;
+                return;
+            }
+            if(!Utility.isEditMode()) {
+                // if occupied, attempt harvest, if unoccupied, open start task menu.
+                if (this.occupied) {
+                    this.harvest();
+                    this.occupied = false;
+                }
+                else {
+                    //show menu
+                    Utility.toggleMenu(this.scene, "taskMenu");
+                    const self = this;
+                    let form = document.getElementById("task-form");
+                    let taskExitButton = document.getElementById('task-exit-button');
+                    let subtasksCheck = document.getElementById("subtasks-query");
+                const showHideSubtasks = function openHideSubtasks(event) {
+                    let subtasksRows = document.getElementsByClassName("subtask-row");
+
+                    for (let i = 0; i < subtasksRows.length; i++) {
+                        if(subtasksCheck.checked) {subtasksRows[i].style.display = "block";} 
+                        else {subtasksRows[i].style.display = "none";}
+                    }
+                }
+                const addSubtask = function (event) {
+                    let filled = true;
+                    let subtasks = document.getElementsByClassName("subtask");
+                    for (let i = 0; i < subtasks.length; i++) {
+                        if (subtasks[i].value == "") {
+                            filled = false;
+                        }
+                    }
+                    if (filled && subtasks.length < 10) {
+                        let table = document.getElementById("task-menu-table")
+                        let newSubtask = document.createElement('input')
+                        newSubtask.value = "";
+                        let row = table.insertRow(table.rows.length - 2);
+                        let cell = row.insertCell(0);
+                        row.class = "subtask-row";
+                        cell.innerHTML = '<label for="subtask"> - </label><input type ="text" class="subtask" name="subtask"></input>';
+                    }
+                }
+                const close = function submitHandler(event) {
+                        //starts crop growth, removes listeners, or just removes listeners
+                        form.removeEventListener('submit', close);
+                        taskExitButton.removeEventListener('click', close)
+                    subtasksCheck.removeEventListener('click', showHideSubtasks);
+                        Utility.toggleMenu(self.scene, "taskMenu");
+                        if (event.type == "submit") {
+                            event.preventDefault();
+                            self.setupCrops();
+                            Utility.sendCreatedTaskData();
+                    }
+                    }
+                    //add subtask listener
+                subtasksCheck.addEventListener('click', showHideSubtasks);
+                //add subtaskfilled listener
+                form.addEventListener('keydown', addSubtask);
+                //add submit listener
+                    form.addEventListener('submit', close);
+                    //add exit listener
+                    taskExitButton.addEventListener('click', close);
+
+                    
+                }
+            }
+            
+        });
         this.scene.add.existing(this);
     }
 
@@ -409,7 +948,6 @@ class Plot extends Phaser.GameObjects.Container{
         if (this.growthStep === this.cropSprites.length) {
             this.growthStep = 0;
             this.growthStage++;
-            //console.log("Max " + this.cropsLeft.length);
 
             //send current state and time to database to save growthStage
         }
@@ -435,7 +973,7 @@ class Plot extends Phaser.GameObjects.Container{
         let rand = (Math.random() * this.cropsLeft.length) | 0;
 
         let upordown = (Math.random() * 2) | 0; // makes it seem more random when cycling through.
-        //console.log(num);
+
         //crop selection logic
         for (let i = 0; i < this.cropsLeft.length; i++) {
             if (this.cropSprites[this.cropsLeft[rand]].anims.getFrameName() > this.growthStage + 1) {
@@ -521,6 +1059,11 @@ class Furniture extends Phaser.GameObjects.Sprite {
         // Store a reference to the scene
         this.scene = config.scene;
 
+        // Whether or not the furniture is currently placed on the scene
+        this.placed = true;
+
+        this.wasDeleted = false;
+
         // Enable input for this object
         this.setInteractive({ draggable: true });
 
@@ -534,13 +1077,34 @@ class Furniture extends Phaser.GameObjects.Sprite {
         this.on('pointerdown', this.handleClick, this);
 
         this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
+            if(Utility.isEditMode()) {
+                // Snap the furniture to a grid
+                gameObject.x = Math.round(dragX / 4) * 4;
+                gameObject.y = Math.round(dragY / 4) * 4;
+
+                // Keep the furniture within the bounds of the room
+                if(gameObject.x + gameObject.width / 2 > 464) {
+                    gameObject.x = 464 - gameObject.width / 2;
+                }
+                if(gameObject.x - gameObject.width / 2 < 176) {
+                    gameObject.x = 176 + gameObject.width / 2;
+                }
+                if(gameObject.y + gameObject.height / 2 > 674) {
+                    gameObject.y = 674 - gameObject.height / 2;
+                }
+                if(gameObject.y - gameObject.height / 2 < 526) {
+                    gameObject.y = 526 + gameObject.height / 2;
+                }
+            }
+
+
         });
 
         this.scene.input.on('dragstart', function (pointer, gameObject) {
             // Bring the gameObject to the top of the display list
-            this.children.bringToTop(gameObject);
+            if(Utility.isEditMode()){
+                this.children.bringToTop(gameObject);
+            }
         }, this.scene);
 
         if(this.type === "fireplace") {
@@ -550,27 +1114,100 @@ class Furniture extends Phaser.GameObjects.Sprite {
     }
 
     handleClick() {
-        if(this.type === "fireplace"){
-            if(!this.scene.fireplaceTurnedOn) {
-                this.anims.resume();
-                this.scene.fireplaceTurnedOn = true
+        if (!Utility.isDeleteMode()) {
+            if(this.type === "fireplace"){
+                if(!this.scene.fireplaceTurnedOn) {
+                    this.anims.resume();
+                    this.scene.fireplaceTurnedOn = true
+                }
+                else {
+                    this.anims.pause();
+                    this.setTexture('fireplace');
+                    this.scene.fireplaceTurnedOn = false;
+                }
             }
-            else {
-                this.anims.pause();
-                this.setTexture('fireplace');
-                this.scene.fireplaceTurnedOn = false;
+
+            else if(this.type === "lamp") {
+                if(!this.scene.lampTurnedOn) {
+                    this.setTexture('lamp-on');
+                    this.scene.lampTurnedOn = true;
+                }
+                else {
+                    this.setTexture('lamp');
+                    this.scene.lampTurnedOn = false;
+                }
             }
         }
-
-        else if(this.type === "lamp") {
-            if(!this.scene.lampTurnedOn) {
-                this.setTexture('lampOn');
-                this.scene.lampTurnedOn = true;
-            }
-            else {
-                this.setTexture('lamp');
-                this.scene.lampTurnedOn = false;
-            }
+        else{ 
+            this.wasDeleted = true;
+            this.setVisible(false); // make the sprite invisible
+            this.setActive(false); // make the sprite inactive
+            this.setPosition(-1000, -1000); // move it off-screen
+            this.placed = false;
         }
     }
 }
+
+class Decoration extends Phaser.GameObjects.Sprite {
+    constructor(config) {
+        super(config.scene, config.x, config.y, config.texture);
+
+        // Set the type of this furniture
+        this.type = config.type;
+
+        // Store a reference to the scene
+        this.scene = config.scene;
+
+        // Whether or not the furniture is currently placed on the scene
+        this.placed = true;
+
+        this.wasDeleted = false;
+
+        // Enable input for this object
+        this.setInteractive({ draggable: true });
+
+        // Add a hover effect to the furniture
+        Utility.addTintOnHover(this);
+
+        // Add this object to the scene
+        this.scene.add.existing(this);
+
+        // Add a pointerdown event listener
+        this.on('pointerdown', this.handleClick, this);
+
+        this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+            if(Utility.isEditMode()){
+                gameObject.x = Math.round(dragX / 8) * 8;
+                gameObject.y = Math.round(dragY / 8) * 8;
+
+                // Keep the plots within the bounds of the farm
+
+                // if(gameObject.x + 42 + gameObject.width / 2 > 640) {
+                //     gameObject.x = 592;
+                // }
+                
+                // if(gameObject.x - 42 - gameObject.width / 2 < 0) {
+                //     gameObject.x = 48;
+                // }
+                // if(gameObject.y + gameObject.height / 2 > 710) {
+                //     gameObject.y = Math.round(710 / 8) * 8 - gameObject.height / 2;
+                // }
+                // if(gameObject.y - gameObject.height / 2 < 605) {
+                //     gameObject.y = Math.round(605 / 8) * 8 + gameObject.height / 2;
+                // }
+                gameObject.setDepth(gameObject.y);
+            }
+        });
+    }
+
+    handleClick() {
+        if (Utility.isDeleteMode()) {
+            this.wasDeleted = true;
+            this.setVisible(false); // make the sprite invisible
+            this.setActive(false); // make the sprite inactive
+            this.setPosition(-1000, -1000); // move it off-screen
+            this.placed = false;
+        }
+    }
+}
+

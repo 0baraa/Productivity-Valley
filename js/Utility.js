@@ -1,6 +1,24 @@
 //import UserData from "../../connection/UserData.js"
 //""
 export default class Utility {
+    static editMode = false;
+    static deleteMode = false;
+
+    static toggleEditMode() {
+        this.editMode = !this.editMode;
+    }
+
+    static isEditMode() {
+        return this.editMode;
+    }
+
+    static toggleDeleteMode() {
+        this.deleteMode = !this.deleteMode;
+    }
+
+    static isDeleteMode() {
+        return this.deleteMode;
+    }
 
     static toggleFullscreen() {
         if(!document.fullscreenElement){
@@ -13,7 +31,12 @@ export default class Utility {
 
     static addTintOnHover(sprite) {
         sprite.on('pointerover', () => {
-            sprite.setTint(0xdddddd); // Set tint to light grey
+            if(this.isDeleteMode()) {
+                sprite.setTint(0xff0000); // Set tint to red
+            }
+            else {
+                sprite.setTint(0xdddddd); // Set tint to light grey
+            }
         });
         
         sprite.on('pointerout', () => {
@@ -30,10 +53,17 @@ export default class Utility {
             dialogContainer = document.querySelector('.menu-container.task-menu');
             dialog = document.querySelector('.menu.task-menu');
         }
-        // else if (menu === "furnitureMenu") {
-        else if (menu == "cropShop") {
+        else if (menu === "cropShop") {
             dialogContainer = document.querySelector('.menu-container.shop-menu');
             dialog = document.querySelector('.menu.shop-menu');
+        }
+        else if (menu === "furnitureMenu") {
+            dialogContainer = document.querySelector('.menu-container.furniture-menu');
+            dialog = document.querySelector('.menu.furniture-menu');
+        }
+        else if(menu === "decorationPlotMenu") {
+            dialogContainer = document.querySelector('.menu-container.decoration-plot-menu');
+            dialog = document.querySelector('.menu.decoration-plot-menu');
         }
     
 
@@ -71,13 +101,11 @@ export default class Utility {
                 {crop:"pumpkin", count: -1},
                 {crop:"flower", count: -1}
             ],
+            //plots should have coordinates saved also
             "plots": [
               {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework"}, 
               {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup"}, 
               {"id": 3, "crop": "carrot", "growthStage": 2},
-              {"id": 4, "crop": "carrot", "growthStage": 6},
-              {"id": 5, "crop": "nothing", "growthStage": 0},
-              {"id": 6, "crop": "nothing", "growthStage": 0},
               {"id": 7, "crop": "nothing", "growthStage": 0},
               {"id": 8, "crop": "sunflower", "growthStage": 10}
             ],
@@ -85,19 +113,50 @@ export default class Utility {
               {"type": "carpet1", "x": 320, "y": 612},
               {"type": "bookshelf", "x": 281, "y": 580},
               {"type": "fridge", "x": 193, "y": 580},
-              {"type": "grandfatherClock", "x": 246, "y": 580},
-              {"type": "kitchenSink", "x": 408, "y": 600},
+              {"type": "grandfather-clock", "x": 246, "y": 580},
+              {"type": "kitchen-sink", "x": 408, "y": 600},
               {"type": "chair", "x": 210, "y": 650},
               {"type": "table", "x": 192, "y": 650},
               {"type": "lamp", "x": 345, "y": 580},
               {"type": "toilet", "x": 452, "y": 658},
               {"type": "bathtub", "x": 370, "y": 660},
               {"type": "fireplace", "x": 221, "y": 565}
+            ],
+            "decorations": [
+                {"type": "snowman", "x":50, "y":700}
             ]
           }
     
           return this.data;
     }
+
+    static sendCreatedTaskData() {
+        let form = document.getElementById("task-form");
+        let taskName = form.taskName.value;
+        let time = form.minutes.value;
+        let repetitions = form.repetitions.value;
+        let crop = form.crop.value;
+        let subtaskCheck = document.getElementById("subtasks-query").checked;
+        let savePreset = document.getElementById("save-preset").checked;
+        let task = {name: taskName, time: time, repetitions: repetitions, crop: crop};
+        if (subtaskCheck) {
+            //add subtasks to save;
+            let subtasks = document.getElementsByClassName("subtask");
+            let subtasklist = []
+            for (let i = 0; i<subtasks.length; i++) {
+                if (subtasks[i].value != "") {
+                    subtasklist.push(subtasks[i].value);
+                }
+            }
+            task.subtasks = subtasklist;
+        }
+        if (savePreset) {
+            //save to player's presets.
+        }
+        console.log(task);
+
+    }
+
     static getPlotData() {
         //get plot data specifically
     }

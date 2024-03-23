@@ -18,10 +18,10 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         this.load.image('chair', '../assets/house/furniture/chair.png');
         this.load.image('couch', '../assets/house/furniture/couch.png');
         this.load.image('fridge', '../assets/house/furniture/fridge.png');
-        this.load.image('grandfatherClock', '../assets/house/furniture/grandfather-clock.png');
-        this.load.image('kitchenSink', '../assets/house/furniture/kitchen-sink.png');
+        this.load.image('grandfather-clock', '../assets/house/furniture/grandfather-clock.png');
+        this.load.image('kitchen-sink', '../assets/house/furniture/kitchen-sink.png');
         this.load.image('lamp', '../assets/house/furniture/lamp.png');
-        this.load.image('lampOn', '../assets/house/furniture/lamp-on.png');
+        this.load.image('lamp-on', '../assets/house/furniture/lamp-on.png');
         this.load.image('table', '../assets/house/furniture/table.png');
         this.load.image('bathtub', '../assets/house/furniture/bathtub.png');
         this.load.image('toilet', '../assets/house/furniture/toilet.png');
@@ -63,7 +63,8 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         });
         
         let FarmScene = this.scene.get('FarmScene');
-        FarmScene.farm.createFurniture(this);
+        this.farm = FarmScene.farm;
+        this.farm.createFurniture(this);
 
 
 
@@ -77,9 +78,11 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
 
         //Swtich to farm scene when door is clicked
         this.door.on('pointerdown', () => {
-            this.scene.stop();
-            //Re-enable input for farm scene
-            this.scene.get('FarmScene').input.enabled = true;
+            if(!Utility.isEditMode()) {
+                this.scene.stop();
+                //Re-enable input for farm scene
+                this.scene.get('FarmScene').input.enabled = true;
+            }
         });
     }
 }
