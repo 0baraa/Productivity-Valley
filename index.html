@@ -197,20 +197,36 @@
         </dialog>
     </div>
 
+    <div class="menu-container decoration-plot-menu" style="display: none;">
+        <dialog class="menu decoration-plot-menu"style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Decorations</p>
+                <button type="button" class="exit-button" id="decoration-plot-exit-button">X</button>
+            </div>
+            <div id="decoration-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Decorations dynamically added here -->
+            </div>
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Plots</p>
+                <button type="button" class="menu-top-spacer">X</button>
+            </div>
+            <div id="plot-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Plots dynamically added here -->
+            </div>
+        </dialog>
+    </div>
+
     <div class="menu-container furniture-menu" style="display: none;">
         <dialog class="menu furniture-menu"style="display: flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button type="button" class="menu-top-spacer">X</button>
-                <p>Choose furniture</p>
+                <p>Furniture</p>
                 <button type="button" class="exit-button" id="furniture-exit-button">X</button>
             </div>
             <div id="furniture-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
-                <!-- <div style="width: 12vw; height: 12vw; display: flex; flex-direction: column; justify-content: center; margin-bottom: 1vh;">
-                    <img style="width: 100%; height: calc(100% - 4vw); object-fit: contain;" class="furniture-image" src="./assets/house/furniture/table.png" alt="">
-                    <div style="display: flex; justify-content: center;" >
-                        <button class="furniture-button" id="table-button">+</button>
-                    </div>
-                </div> -->
+                <!-- Furniture dynamically added here -->
             </div>
         </dialog>
     </div>
@@ -221,7 +237,6 @@
         <button class="edit" id="plus-button" style="display: none;"><img src="./assets/edit/plus.png" alt="Plus icon"></button>
         <button class="edit" id="trash-button" style="display: none;"><img src="./assets/edit/trash.png" alt="Cross icon"></button>
         <button class="edit" id="cross-button" style="display: none;"><img src="./assets/edit/cross.png" alt="Cross icon"></button>
-        
     </div>
 </body>
 </html>

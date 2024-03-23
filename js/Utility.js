@@ -61,6 +61,10 @@ export default class Utility {
             dialogContainer = document.querySelector('.menu-container.furniture-menu');
             dialog = document.querySelector('.menu.furniture-menu');
         }
+        else if(menu === "decorationPlotMenu") {
+            dialogContainer = document.querySelector('.menu-container.decoration-plot-menu');
+            dialog = document.querySelector('.menu.decoration-plot-menu');
+        }
     
 
         

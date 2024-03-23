@@ -307,7 +307,7 @@ export default class FarmScene extends Phaser.Scene {
             }
 
             else {
-                //
+                Utility.toggleMenu(this, "decorationPlotMenu");
             }
         });
 
