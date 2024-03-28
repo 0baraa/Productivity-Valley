@@ -55,7 +55,7 @@ class TasksView(APIView):
         if taskName is None or username is None:
             return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            task = Tasks.objects.get(taskName=taskName, user__username= username)
+            task = Tasks.objects.get(taskName=taskName, username= username)
             task.delete()
             return Response({"message": f"Task with name {taskName} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Users.DoesNotExist:

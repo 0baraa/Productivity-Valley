@@ -59,26 +59,26 @@ const newUserTask = {
 };
 
 const tasks = new TasksData();
-//tasks.createTask(apiUrl, newUserTask)
-// tasks.fetchUserTasks(newUserTask.username)
-//     .then(data => {
-//         console.log("Tasks:", data); // Add logging here to check the fetched data
-//     })
-//     .catch(error => {
-//         console.error("Error fetching tasks:", error); // Handle any errors
-//     });
-tasks.deleteUserTask(apiUrl, newUserTask.username, newUserTask.taskName)
-    .then(() => {
-        console.log('User deleted successfully');
-        // Fetch data after successful deletion
-        tasks.fetchUserTasks(apiUrl)
-            .then(data => {
-                console.log('Data fetched successfully:', data);
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
+tasks.createTask(apiUrl, newUserTask)
+tasks.fetchUserTasks(newUserTask.username)
+    .then(data => {
+        console.log("Tasks:", data); // Add logging here to check the fetched data
     })
     .catch(error => {
-        console.error('Error deleting user:', error);
+        console.error("Error fetching tasks:", error); // Handle any errors
     });
+// tasks.deleteUserTask(apiUrl, newUserTask.username, newUserTask.taskName)
+//     .then(() => {
+//         console.log('User deleted successfully');
+//         // Fetch data after successful deletion
+//         tasks.fetchUserTasks(apiUrl)
+//             .then(data => {
+//                 console.log('Data fetched successfully:', data);
+//             })
+//             .catch(error => {
+//                 console.error('Error fetching data:', error);
+//             });
+//     })
+//     .catch(error => {
+//         console.error('Error deleting user:', error);
+//     });
