@@ -174,7 +174,7 @@ export default class FarmScene extends Phaser.Scene {
         // disable input when menu is shown
         // this.sys.game.input.enabled = false;
 
-        // const pomodoro = new Pomodoro(this, 100, 100, 100);
+        const pomodoro = new Pomodoro(this, 160, 220, 80);
 
 
 
@@ -576,7 +576,7 @@ function createSun(){
     // const longBreakTime = document.getElementById('').value;
     // const noOfPomodoros = document.getElementById('').value;
 
-    const pomodoro = new Pomodoro(this, 100, 100, 100, workTime);
+    const pomodoro = new Pomodoro(this, 100, 120, 60, workTime);
 }
 
 class SectorCircle extends Phaser.GameObjects.Graphics {
@@ -629,7 +629,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.color = color;
 
         // Generate the text
-        this.timeString = scene.add.text(this.x + 62, this.y + 125, '', { color: '#000000' });
+        this.timeString = scene.add.text(this.x + 127, this.y*2 + 15, '', { color: '#000000', fontSize: '14px'});
         this.timeString.setDepth(1);
 
         // Add the text to the scene
@@ -685,7 +685,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.clear();
 
         const angle = (this.elapsedTime / this.totalTimeInSeconds) * Phaser.Math.PI2 - Phaser.Math.PI2 / 4;
-        const handLength = this.radius * 0.7;
+        const handLength = this.radius * 0.62;
 
         this.lineStyle(3, 0xff0000);
         this.beginPath();
@@ -752,7 +752,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.fillCircle = new SectorCircle(this.scene, this.x, this.y, this.radius - 30, -90, Phaser.Math.RadToDeg(angle), this.color);
 
         // Draw timer hand
-        const handLength = this.radius * 0.7;
+        const handLength = this.radius * 0.62;
         this.lineStyle(3, 0xff0000);
         this.beginPath();
         this.moveTo(this.x, this.y);
@@ -849,21 +849,21 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
     createButtons() {
         // create play button image
-        this.playButton = this.scene.add.image(this.x + 98, this.y + 100, 'play-button').setScale(.30);
+        this.playButton = this.scene.add.image(this.x + 160, this.y*2 - 10, 'play-button').setScale(.23);
         this.playButton.setDepth(1);
         this.playButton.setVisible(false);
         this.playButton.setInteractive();
         // Utility.addTintOnHover(this.playButton);
 
         // create pause button image
-        this.pauseButton = this.scene.add.image(this.x + 75, this.y + 100, 'pause-button').setScale(.30);
+        this.pauseButton = this.scene.add.image(this.x + 140, this.y*2 - 10, 'pause-button').setScale(.23);
         this.pauseButton.setDepth(1);
         this.pauseButton.setVisible(false);
         this.pauseButton.setInteractive();
         // Utility.addTintOnHover(this.pauseButton);
 
         // create skip button image
-        this.skipButton = this.scene.add.image(this.x + 125, this.y + 100, 'skip-button').setScale(.30);
+        this.skipButton = this.scene.add.image(this.x + 185, this.y*2 - 10, 'skip-button').setScale(.23);
         this.skipButton.setDepth(1);
         this.skipButton.setVisible(false);
         this.skipButton.setInteractive();
