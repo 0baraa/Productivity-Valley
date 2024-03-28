@@ -174,9 +174,12 @@ export default class FarmScene extends Phaser.Scene {
         // disable input when menu is shown
         // this.sys.game.input.enabled = false;
 
-        const pomodoro = new Pomodoro(this, 160, 220, 80);
+        // Calculate the dimensions of the screen for better positioning
+        const screenWidth = this.sys.game.config.width;
+        const screenHeight = this.sys.game.config.height;
 
-
+        const pomodoroY = screenHeight * 0.185;
+        const pomodoro = new Pomodoro(this, 160, pomodoroY, 75);
 
         let editButton = document.getElementById('edit-button');
         let tickButton = document.getElementById('tick-button');
@@ -685,7 +688,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.clear();
 
         const angle = (this.elapsedTime / this.totalTimeInSeconds) * Phaser.Math.PI2 - Phaser.Math.PI2 / 4;
-        const handLength = this.radius * 0.62;
+        const handLength = this.radius * 0.6;
 
         this.lineStyle(3, 0xff0000);
         this.beginPath();
@@ -752,7 +755,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.fillCircle = new SectorCircle(this.scene, this.x, this.y, this.radius - 30, -90, Phaser.Math.RadToDeg(angle), this.color);
 
         // Draw timer hand
-        const handLength = this.radius * 0.62;
+        const handLength = this.radius * 0.6;
         this.lineStyle(3, 0xff0000);
         this.beginPath();
         this.moveTo(this.x, this.y);
