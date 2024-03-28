@@ -9,7 +9,7 @@ class UsersSerializer(serializers.ModelSerializer):
 class TasksSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tasks
-        fields = ['taskName', 'taskCompleted', 'taskStatus', 'plotNumber', 'pomodorros']
+        fields = ['taskName', 'projectName', 'username' 'taskCompleted', 'taskStatus', 'plotNumber', 'pomodorros']
 
 class DecorationsSerializer(serializers.ModelSerializer):
     class Meta:

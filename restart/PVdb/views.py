@@ -34,6 +34,8 @@ class UsersView(APIView):
 class TasksView(APIView):
     def get(self, request):
         output = [{"taskName":output.taskName,
+                   "projectName":output.projectName,
+                   "username":output.username,
                   "taskCompleted":output.taskCompleted,
                   "taskStatus":output.taskStatus,
                   "plotNumber":output.plotNumber,
@@ -47,10 +49,12 @@ class TasksView(APIView):
             return Response(serializer.data)
     def delete(self, request):
         taskName = request.data.get('taskName', None)
-        if taskName is None:
+        username = request.data.get('username', None)
+
+        if taskName is None or username is None:
             return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            task = Tasks.objects.get(taskName=taskName)
+            task = Tasks.objects.get(taskName=taskName, user__username= username)
             task.delete()
             return Response({"message": f"Task with name {taskName} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Users.DoesNotExist:
