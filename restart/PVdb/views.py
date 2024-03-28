@@ -11,7 +11,8 @@ class UsersView(APIView):
                   "lastName":output.lastName,
                   "username":output.username,
                   "email":output.email,
-                  "money":output.money}
+                  "money":output.money,
+                  "houseStatus":output.houseStatus}
                   for output in Users.objects.all()]
         return Response(output)
     def post (self, request):
@@ -35,7 +36,7 @@ class TasksView(APIView):
     def get(self, request):
         output = [{"taskName":output.taskName,
                    "projectName":output.projectName,
-                   "username":output.username,
+                   "username":output.username.username,
                   "taskCompleted":output.taskCompleted,
                   "taskStatus":output.taskStatus,
                   "plotNumber":output.plotNumber,

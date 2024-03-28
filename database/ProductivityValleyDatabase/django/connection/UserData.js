@@ -111,12 +111,11 @@ const newUser = {
     lastName: 'Doe',
     username: 'johndoe',
     email: 'johndoe@example.com',
-    money: 0
 };
 const userData = new UserData();
 //userData.addUserCrop(apiUrlalt1, newUserCrop)
-userData.fetchUserCrops(newUserCrop.username)
-//userData.createUser(apiUrl, newUser)
+//userData.fetchUserCrops(newUserCrop.username)
+userData.createUser(apiUrl, newUser)
 // userData.deleteUser(apiUrl, 'johndoe')
 //     .then(() => {
 //         console.log('User deleted successfully');
