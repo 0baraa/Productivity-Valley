@@ -7,32 +7,6 @@ export default class FarmScene extends Phaser.Scene {
     }
 
 
-    // preload () {
-    //     this.load.bitmapFont('pixelFont', '../fonts/pixeloperatorbitmap.png', '../fonts/pixeloperatorbitmap.xml');
-    //
-    //     this.load.image('farmBackground', '../assets/farm-background.png');
-    //     // this.load.bitmapFont('pixelFont', STATIC_URL + 'fonts/pixeloperatorbitmap.png', STATIC_URL + 'fonts/pixeloperatorbitmap.xml');
-    //     // this.load.image('farmBackground', STATIC_URL + 'assets/farm-background.png');
-    //
-    //     this.load.image('mountains', '../assets/mountains.png');
-    //     this.load.image('fence', '../assets/fence.png');
-    //     this.load.spritesheet('farmhouseSpritesheet', '../assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });
-    //     this.load.image('marketSign', '../assets/market-sign.png');
-    //     this.load.image('sun', '../assets/sun.png');
-    //     this.load.image('plot', '../assets/larger_plot.png');
-    //
-    //     this.load.image('cloud1', '../assets/clouds/cloud1.png');
-    //     this.load.image('cloud2', '../assets/clouds/cloud2.png');
-    //     this.load.image('cloud3', '../assets/clouds/cloud3.png');
-    //     this.load.image('cloud4', '../assets/clouds/cloud4.png');
-    //     this.load.image('cloud5', '../assets/clouds/cloud5.png');
-    //     this.load.image('cloud6', '../assets/clouds/cloud6.png');
-    //
-    //     this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
-    //     this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
-    //
-    // }
-
     preload() {
         // 辅助函数，自动添加 STATIC_URL 前缀
         const loadStatic = (key, file) => this.load.image(key, STATIC_URL + file);
@@ -47,17 +21,24 @@ export default class FarmScene extends Phaser.Scene {
         loadStatic('mountains', 'assets/mountains.png');
         loadStatic('fence', 'assets/fence.png');
         loadSpritesheet('farmhouseSpritesheet', 'assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });
+        loadStatic('shackFarmhouse', 'assets/house/shack-farmhouse.png');
         loadStatic('marketSign', 'assets/market-sign.png');
         loadStatic('sun', 'assets/sun.png');
         loadStatic('plot', 'assets/larger_plot.png');
+        loadStatic('snowman', 'assets/decorations/snowman.png');
         loadStatic('cloud1', 'assets/clouds/cloud1.png');
         loadStatic('cloud2', 'assets/clouds/cloud2.png');
         loadStatic('cloud3', 'assets/clouds/cloud3.png');
         loadStatic('cloud4', 'assets/clouds/cloud4.png');
         loadStatic('cloud5', 'assets/clouds/cloud5.png');
         loadStatic('cloud6', 'assets/clouds/cloud6.png');
+
         loadSpritesheet("carrotGrowth", "assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
         loadSpritesheet("sunflowerGrowth", "assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
+        loadSpritesheet("butterfly1AS", "assets/animals/butterfly2-as.png", {frameWidth: 19, frameHeight: 41});
+        loadSpritesheet("butterfly2AS", "assets/animals/butterfly2-as.png", {frameWidth: 19, frameHeight: 41});
+    //     这里的butterfly图片都是2
+
     }
 
 
@@ -72,7 +53,7 @@ export default class FarmScene extends Phaser.Scene {
 
         this.clouds = [];
         this.cloudImages = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
-        
+
         //Generate initial cloud
         generateCloud(this);
 
@@ -101,7 +82,7 @@ export default class FarmScene extends Phaser.Scene {
         Utility.addTintOnHover(this.farmhouse);
 
         //Add market sign image and make it interactive
-        
+
 
 
         //Create crop animations.
@@ -117,7 +98,7 @@ export default class FarmScene extends Phaser.Scene {
             frameRate: 1,
             repeat: 0
         })
-        
+
         this.farm = new PlayerFarm({coins: 0, cropsOwned: 0, decorationsOwned: 0, decorationsPlaced: 0, furnitureOwned: 0, animals: 0});
         this.farm.createPlots(this);
 
@@ -145,7 +126,7 @@ export default class FarmScene extends Phaser.Scene {
         // this.add.text(50, 450, 'Coins: ' + farm.coins , {fontSize: 20, fill: '#000000'});
         // this.coinsText = this.add.bitmapText(50, 480, 'pixelFont', 'Coins: ' + this.farm.coins, 32);
         // this.coinsText.setTint(0x000000);
-        
+
 
     }
 
@@ -194,14 +175,14 @@ function getUserData() {
         "coins": 300,
         "cropsOwned": ["tomato", "sunflower", "carrot", "potato"],
         "plots": [
-          {"id": 1, "crop": "sunflower", "growthStage": 3}, 
-          {"id": 2, "crop": "sunflower", "growthStage": 9}, 
-        //   {"id": 3, "crop": "carrot", "growthStage": 2}, 
+          {"id": 1, "crop": "sunflower", "growthStage": 3},
+          {"id": 2, "crop": "sunflower", "growthStage": 9},
+        //   {"id": 3, "crop": "carrot", "growthStage": 2},
         //   {"id": 4, "crop": "carrot", "growthStage": 6},
-        //   {"id": 5, "crop": "nothing", "growthStage": 0}, 
-        //   {"id": 6, "crop": "sunflower", "growthStage": 6}, 
+        //   {"id": 5, "crop": "nothing", "growthStage": 0},
+        //   {"id": 6, "crop": "sunflower", "growthStage": 6},
         //   {"id": 7, "crop": "nothing", "growthStage": 0},
-        //   {"id": 8, "crop": "sunflower", "growthStage": 10} 
+        //   {"id": 8, "crop": "sunflower", "growthStage": 10}
         ],
         "furniture": [
           {"type": "carpet1", "x": 320, "y": 612},
@@ -236,7 +217,7 @@ class PlayerFarm {
 
     createPlots(scene){
         let data = getUserData();
-        
+
         let x, zoom;
         let y = 0;
         let along = false;
@@ -275,7 +256,7 @@ class PlayerFarm {
             }
             //adjustable plot numbers:
 
-            
+
             let plot = new Plot({scene: scene, x: plotX, y: plotY, id: data.plots[i].id , crop: data.plots[i].crop, gs: data.plots[i].growthStage});
             this.plots.push(plot);
         }
@@ -311,7 +292,7 @@ class Plot extends Phaser.GameObjects.Container{
         this.crop = config.crop || "nothing";
         this.growthStage = config.gs || 0;
         this.growthStep = 0
-        
+
         this.cropSprites = [];
 
 
@@ -360,13 +341,13 @@ class Plot extends Phaser.GameObjects.Container{
                 this.crop = "carrot"; //testing purposes
 
                 this.plantCrops();
-                
+
                 this.playGrowth();
             }
-            
+
         });
 
-        
+
 
         // Dragging code (set draggable to true in setInteractive to enable dragging)
 
@@ -379,7 +360,7 @@ class Plot extends Phaser.GameObjects.Container{
         //     // Bring the gameObject to the top of the display list
         //     this.children.bringToTop(gameObject);
         // }, this.scene);
-        
+
         // Add the container to the scene
         this.scene.add.existing(this);
     }
@@ -475,13 +456,13 @@ class Plot extends Phaser.GameObjects.Container{
                 else if (rand == 0) {
                     rand = this.cropsLeft.length - 1;
                 }
-                
-                
-            } 
+
+
+            }
             else {this.growSelectedCrop(this.cropsLeft[rand],rand); break;} //viable crop found
         }
     }
-    growSelectedCrop(num,rand) { 
+    growSelectedCrop(num,rand) {
         //actually increment the frame of the crop
         if (this.cropsLeft.length != 0) { //here for safety's sake
             this.cropSprites[num].anims.nextFrame(1);
@@ -527,9 +508,9 @@ class Plot extends Phaser.GameObjects.Container{
         this.crop = "nothing";
         this.growthStage = 0;
         this.cropSprites = [];
-    
+
     }
-    
+
 }
 
 

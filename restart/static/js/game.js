@@ -1,7 +1,8 @@
 import FarmScene from "./FarmScene.js";
 import InsideFarmhouseScene from "./InsideFarmhouseScene.js";
 import MarketScene from "./MarketScene.js";
-// import ChartScene from "./chart.js";
+import ChartScene from './ChartScene.js';
+
 
 const config = {
     type: Phaser.AUTO,
@@ -14,8 +15,11 @@ const config = {
             gravity: { y: 0 }, // Top down game, no gravity
         }
     },
-    scene: [FarmScene, InsideFarmhouseScene, MarketScene],
-    // scene: [FarmScene, InsideFarmhouseScene, MarketScene,ChartScene],
+    parent: 'game-container',
+    // dom: {
+    //     createContainer: true
+    //   },
+    scene: [FarmScene, InsideFarmhouseScene, MarketScene,ChartScene],
     scale: {
         mode: Phaser.Scale.ENVELOP,
         autoCenter: Phaser.Scale.CENTER_BOTH
@@ -23,13 +27,3 @@ const config = {
 };
 
 let game = new Phaser.Game(config);
-
-
-
-
-// Prevent spacebar from scrolling down the page
-window.addEventListener('keydown', function(e) {
-    if(e.key === ' ' && e.target === document.body) {
-        e.preventDefault();
-    }
-});

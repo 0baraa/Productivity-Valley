@@ -1,5 +1,4 @@
-{#可能js,css动态功能导致header的功能无法实现#}
-{#to do #}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,39 +15,271 @@
     <script type="module" src="{% static 'js/libs/phaser.js' %}"></script>
 </head>
 <body>
-    {% include "_partials/header.html" %}
-    <div class="ui container">
+{#    {% include "_partials/header.html" %}#}
+{#    <div class="ui container">#}
     <div id="game-container"></div> <!-- Phaser 游戏或图表将在这里渲染 -->
     </div>
         <script type="module" src="{% static 'js/game.js' %}"></script>
+        <script>
+                function addSubtask() {
+                    //
+                    let taskTable = document.getElementById("task-menu-table");
+                    
+                    let row = taskTable.insertRow(taskTable.rows.length-2);
+                    let cell = row.insertCell();
+                    let input = document.createElement("input");
+                    value.setAttribute("type", "text");
+                    {#可能需要改为input.set...#}
+                    let bullet = document.createTextNode(" - ");
+                    cell.appendChild(bullet);
+                    cell.appendChild(input);
+                     }
+        </script>
+<div id="game-container"></div>
+{#表格的背景,在body的尾巴加了script协助chart引库#}
+    <div class="menu-container chart-menu" style="display: none;">
+        <dialog class="menu chart-menu" style="display: inline-flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <h1>Working Hours</h1>
+                <button class="exit-button" id="chart-exit-button">X</button>
+            </div>
+            <div id="chart-content" style="flex: 1; overflow: auto; display: flex; justify-content: center; align-items: center;">
+                <!-- 折线图的 Canvas 或 Phaser 渲染的内容将在这里显示 -->
+                <canvas id="Chart"></canvas>
+            </div>
+        </dialog>
+    </div>
+
+
+
+    <div class="menu-container task-menu" style="display: none;">
+        <dialog class="menu task-menu" style="display: inline-flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button class="info-button" id="task-info-button">?</button>
+                <p>Create a task</p>
+                <button class="exit-button" id="task-exit-button">X</button>
+            </div>
+            <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
+                <form id="task-form" style="display: flex; justify-content: center;">
+                    <table id="task-menu-table">
+                        <tr>
+                            <td>
+                                <label for="preset">Preset:</label>
+                                <select id="preset" name="preset">
+                                    <option value="new">New</option>
+                                    <option value=""></option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" id="taskName" name="taskName" maxlength="25" value="Task 1"required><br>
+                                <label for="taskName">Task Name:</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="minutes">Minutes/session:</label>
+                                <input type="number" id="minutes" name="minutes" min="10" max="120" step="5" value="25" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="repetitions">Sessions:</label>
+                                <input type="number" id="repetitions" name="repetitions" min="1" max="20" step="1" value="1" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="crop">Crop:</label>
+                                <select id="crop" name="crop">
+                                    <option value="sunflower">Sunflower</option>
+                                    <option value="carrot">Carrot</option>
+                                </select><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" id="subtasks-query" name="subtasks-query">
+                                <label for="subtasks-query">Add Subtasks</label>
+                            </td>
+                        </tr>
+                        <tr class="subtask-row" style="display: none;">
+                            <td>
+                                <label for="subtask">- </label>
+                                <input type="text" class="subtask" name="subtask"></input>
+                            </td>
+                        </tr>
+                        <tr id="save-preset-row">
+                            <td>
+                                <input type="checkbox" id="save-preset" name="save-preset">
+                                <label for="save-preset">Save Preset</label>
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <td>
+                                <div style="display: flex; justify-content: center;">
+                                    <button type="submit">Create</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </dialog>
+    </div>
+
+    
+
+    <div class="menu-container shop-menu" style="display: none;">
+        <dialog class="menu shop-menu"style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <h1>Crop Shop</h1>
+                <button type="button" class="exit-button" id="shop-exit-button">X</button>
+            </div>
+            <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
+                <table class = "menu-table" id = "seed-menu" style="display: none;">
+                    <tr class="menu-row" id="sunflower">
+                        <tc>
+                            <td>
+{#                                <img class="seed-bags" id="sunflower"src="/assets/seed-bags/sunflower-seeds-4x.png">#}
+                                  <img class="seed-bags" id="sunflower"src="{% static 'assets/seed-bags/sunflower-seeds-4x.png' %}">
+                            </td>
+                        </tc>
+                        <tc>
+                            <td>
+                                <button class="sunflower-bags" id="1">Buy 1</button><br>
+{#                                <span class = "sunflower-price">50</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
+                                <span class="sunflower-price">50</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+
+                            </td>
+                        </tc>
+                        <tc>
+                            <td>
+                                <button class="sunflower-bags" id="3">Buy 3</button><br>
+{#                                <span class = "sunflower-price">140</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
+                                <span class = "sunflower-price">140</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                            </td>
+                        </tc>
+                        <tc>
+                            <td>
+                                <button class="sunflower-bags" id="10">Buy 10</button><br>
+{#                                <span class = "sunflower-price">400</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
+                                <span class = "sunflower-price">400</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                            </td>
+                        </tc>
+                    </tr>
+                    <tr class="menu-row" id="carrot">
+                        <tc> 
+                            <td>
+{#                                <img class="seed-bags" id="carrot" src="/assets/seed-bags/carrot-seeds-4x.png">#}
+                                <img class="seed-bags" id="carrot" src="{% static 'assets/seed-bags/carrot-seeds-4x.png' %}">
+                            </td>
+                        </tc>
+                        <tc>
+                            <td>
+                                <button class="carrot-bags" id="1">Buy 1</button><br>
+{#                                <span class = "carrot-price">50</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
+                                <span class = "carrot-price">50</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                            </td>
+                        </tc>
+                        <tc>
+                            <td>
+                                <button class="carrot-bags" id="3">Buy 3</button><br>
+{#                                <span class = "carrot-price">140</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
+                                <span class = "carrot-price">140</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                            </td>
+                        </tc>
+                        <tc>
+                            <td>
+                                <button class="carrot-bags" id="10">Buy 10</button><br>
+{#                                <span class = "carrot-price">400</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
+                                <span class = "carrot-price">400</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                            </td>
+                        </tc>
+                    </tr>
+                    <tr class="menu-row" id="pumpkin">
+                        <tc>
+                            <td>
+{#                                <img class="seed-bags" id="pumpkin" src="/assets/seed-bags/pumpkin-seeds-4x.png">#}
+                                <img class="seed-bags" id="pumpkin" src="{% static 'assets/seed-bags/pumpkin-seeds-4x.png' %}">
+                            </td>
+                        </tc>
+                        <tc>
+                            <td>
+                                <button class="pumpkin-bags" id="1">Buy 1</button><br>
+{#                                <span class = "pumpkin-price">50</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
+                                <span class = "pumpkin-price">50</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                            </td>
+                        </tc>
+                        <tc>
+                            <td>
+                                <button class="pumpkin-bags" id="3">Buy 3</button><br>
+{#                                <span class = "pumpkin-price">140</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
+                                <span class = "pumpkin-price">140</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                            </td>
+                        </tc>
+                        <tc>
+                            <td>
+                                <button class="pumpkin-bags" id="10">Buy 10</button><br>
+{#                                <span class = "pumpkin-price">400</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
+                                <span class = "pumpkin-price">400</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                            </td>
+                        </tc>
+                    </tr>
+
+                </table>
+            </div>
+        </dialog>
+    </div>
+
+    <div class="menu-container decoration-plot-menu" style="display: none;">
+        <dialog class="menu decoration-plot-menu"style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Decorations</p>
+                <button type="button" class="exit-button" id="decoration-plot-exit-button">X</button>
+            </div>
+            <div id="decoration-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Decorations dynamically added here -->
+            </div>
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Plots</p>
+                <button type="button" class="menu-top-spacer">X</button>
+            </div>
+            <div id="plot-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Plots dynamically added here -->
+            </div>
+        </dialog>
+    </div>
+
+    <div class="menu-container furniture-menu" style="display: none;">
+        <dialog class="menu furniture-menu"style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Furniture</p>
+                <button type="button" class="exit-button" id="furniture-exit-button">X</button>
+            </div>
+            <div id="furniture-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Furniture dynamically added here -->
+            </div>
+        </dialog>
+    </div>
+
+
+    <div id="edit-buttons-container">
+        <button class="edit" id="edit-button"><img src="{% static 'assets/edit/edit.png' %}" alt="Edit icon"></button>
+        <button class="edit" id="tick-button" style="display: none;"><img src="{% static 'assets/edit/tick.png' %}" alt="Tick icon"></button>
+        <button class="edit" id="plus-button" style="display: none;"><img src="{% static 'assets/edit/plus.png' %}" alt="Plus icon"></button>
+        <button class="edit" id="trash-button" style="display: none;"><img src="{% static 'assets/edit/trash.png' %}" alt="Cross icon"></button>
+        <button class="edit" id="cross-button" style="display: none;"><img src="{% static 'assets/edit/cross.png' %}" alt="Cross icon"></button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
-
-{#{% extends 'base.html' %}#}
-{##}
-{#{% load static %}#}
-{##}
-{#{% block title %}Productivity Valley{% endblock title %}#}
-{##}
-{#{% block styles %}#}
-{#    {{ block.super }}#}
-{#    <link rel="stylesheet" href="{% static 'css/styles.css' %}">#}
-{#{% endblock styles %}#}
-{##}
-{#{% block head_extra %}#}
-{#    <link rel="icon" href="{% static 'assets/sun.ico' %}" type="image/x-icon">#}
-{#    <script type="text/javascript">#}
-{#        var STATIC_URL = "{% static '' %}";#}
-{#    </script>#}
-{#{% endblock head_extra %}#}
-{##}
-{#{% block scripts %}#}
-{#    {{ block.super }}#}
-{#    <script type="module" src="{% static 'js/libs/phaser.js' %}"></script>#}
-{#    <script type="module" src="{% static 'js/game.js' %}"></script>#}
-{#{% endblock scripts %}#}
-{##}
-{#{% block content %}#}
-    {# 在这里添加游戏内容和其他页面特有内容 #}
-    {# 例如: <div id="game-container"></div> #}
-{#{% endblock content %}#}
