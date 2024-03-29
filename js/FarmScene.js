@@ -528,8 +528,6 @@ export default class FarmScene extends Phaser.Scene {
                     gameObject.x = Math.round(dragX / 8) * 8;
                     gameObject.y = Math.round(dragY / 8) * 8;
 
-                    console.log(gameObject.x, gameObject.y);
-
                     if(gameObject.x - gameObject.width / 2 < 0) {
                         gameObject.x = gameObject.width / 2;
                     }
