@@ -104,7 +104,7 @@ export default class FarmScene extends Phaser.Scene {
 
         //Add market sign image and make it interactive
 
-        let farmhouse = new Farmhouse({scene: this, x: 70, y: 560, level: 1, texture: "level1farmhouse"});
+
 
 
 
@@ -126,7 +126,8 @@ export default class FarmScene extends Phaser.Scene {
         this.farm.createPlots(this);
         this.farm.createDecorations(this);
 
-
+        let farmhouse = new Farmhouse({scene: this, x: 70, y: 560, level: 1, texture: "level1farmhouse"});
+        this.farm.farmhouse = farmhouse;
 
 
 
@@ -209,6 +210,7 @@ export default class FarmScene extends Phaser.Scene {
             else {
                 this.originalPlots = this.farm.plots.map(plot => ({...plot}));
                 this.originalDecorations = this.farm.decorations.map(decoration => ({...decoration}));
+                this.originalFarmhouse = {...this.farm.farmhouse};
             }
         });
 
@@ -261,6 +263,9 @@ export default class FarmScene extends Phaser.Scene {
                     }
                     this.farm.decorations[i].wasDeleted = false;
                 }
+
+                this.farm.farmhouse.x = this.originalFarmhouse.x;
+                this.farm.farmhouse.y = this.originalFarmhouse.y;
             }
         });
 
@@ -474,6 +479,8 @@ export default class FarmScene extends Phaser.Scene {
                 }
             }
 
+            this.farm.farmhouse.wasDeleted = false;
+
             // Save the furniture state to the database
         });
 
@@ -546,7 +553,7 @@ export default class FarmScene extends Phaser.Scene {
                         gameObject.y = 530 + gameObject.height / 2;
                     }
                     
-                    gameObject.setDepth(gameObject.y * 10);
+                    gameObject.setDepth(gameObject.y * 2);
                 }
 
                 else if (gameObject instanceof Farmhouse) {
@@ -1078,6 +1085,7 @@ class PlayerFarm {
         this.furniture = [];
         this.decorations = [];
         this.animals = [];
+        this.farmhouse = null;
     }
 
     createPlots(scene) {
@@ -1690,6 +1698,8 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
 
         // Add this object to the scene
         this.scene.add.existing(this);
+
+        this.setDepth(9999);
 
         // Add a pointerdown event listener
         this.on('pointerdown', this.handleClick, this);
