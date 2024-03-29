@@ -13,7 +13,7 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('mountains', '../assets/mountains.png');
         this.load.image('fence', '../assets/fence.png');
         this.load.spritesheet('farmhouseSpritesheet', '../assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });
-        this.load.image('shackFarmhouse', '../assets/house/shack-farmhouse.png');
+        this.load.image('level1farmhouse', '../assets/house/level1farmhouse.png');
         this.load.image('marketSign', '../assets/market-sign.png');
         this.load.image('sun', '../assets/sun.png');
         this.load.image('plot', '../assets/larger_plot.png');
@@ -89,20 +89,22 @@ export default class FarmScene extends Phaser.Scene {
         })
 
 
-        this.anims.create({
-            key: 'farmhouseAnimation',
-            frames: this.anims.generateFrameNumbers('farmhouseSpritesheet', { start: 0, end: 4 }),
-            frameRate: 6,
-            repeat: -1 // Repeat indefinitely
-        });
+        // this.anims.create({
+        //     key: 'farmhouseAnimation',
+        //     frames: this.anims.generateFrameNumbers('farmhouseSpritesheet', { start: 0, end: 4 }),
+        //     frameRate: 6,
+        //     repeat: -1 // Repeat indefinitely
+        // });
 
         //Add farmhouse image and make it interactive
-        this.farmhouse = this.add.sprite(64, 560, 'shackFarmhouse');
+        // this.farmhouse = this.add.sprite(64, 560, 'level1farmhouse');
         //this.farmhouse.anims.play('farmhouseAnimation');
-        this.farmhouse.setInteractive();
-        Utility.addTintOnHover(this.farmhouse);
+        // this.farmhouse.setInteractive();
+        // Utility.addTintOnHover(this.farmhouse);
 
         //Add market sign image and make it interactive
+
+        let farmhouse = new Farmhouse({scene: this, x: 70, y: 560, level: 1, texture: "level1farmhouse"});
 
 
 
@@ -137,13 +139,13 @@ export default class FarmScene extends Phaser.Scene {
         // the market sign has moved to this.farm.createPlots()
 
         // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
-        this.farmhouse.on('pointerdown', () => {
-            // Disable input for FarmScene
-            if(!Utility.isEditMode()) {
-                this.input.enabled = false;
-                this.scene.launch('InsideFarmhouseScene');
-            }
-        });
+        // this.farmhouse.on('pointerdown', () => {
+        //     // Disable input for FarmScene
+        //     if(!Utility.isEditMode()) {
+        //         this.input.enabled = false;
+        //         this.scene.launch('InsideFarmhouseScene');
+        //     }
+        // });
 
         //set market sign to be one more than the crops.
         this.marketSign = this.add.image(600, 560, 'marketSign');
@@ -545,6 +547,27 @@ export default class FarmScene extends Phaser.Scene {
                     }
                     
                     gameObject.setDepth(gameObject.y * 10);
+                }
+
+                else if (gameObject instanceof Farmhouse) {
+                    gameObject.x = Math.round(dragX / 8) * 8;
+                    gameObject.y = Math.round(dragY / 8) * 8;
+
+                    if(gameObject.x - gameObject.width / 2 < 0) {
+                        gameObject.x = gameObject.width / 2;
+                    }
+
+                    if(gameObject.x + gameObject.width / 2 > 640) {
+                        gameObject.x = 640 - gameObject.width / 2;
+                    }
+
+                    if(gameObject.y + gameObject.height / 2 > 758) {
+                        gameObject.y = 758 - gameObject.height / 2;
+                    }
+
+                    if(gameObject.y - gameObject.height / 2 < 515) {
+                        gameObject.y = 515 + gameObject.height / 2;
+                    }
                 }
             }
         });
@@ -1644,3 +1667,40 @@ class Decoration extends Phaser.GameObjects.Sprite {
     }
 }
 
+class Farmhouse extends Phaser.GameObjects.Sprite {
+    constructor(config) {
+        super(config.scene, config.x, config.y, config.texture);
+
+        // Set the type of this furniture
+        this.level = config.level;
+
+        // Store a reference to the scene
+        this.scene = config.scene;
+
+        // Whether or not the furniture is currently placed on the scene
+        this.placed = true;
+
+        this.wasDeleted = false;
+
+        // Enable input for this object
+        this.setInteractive({ draggable: true });
+
+        // Add a hover effect to the furniture
+        Utility.addTintOnHover(this);
+
+        // Add this object to the scene
+        this.scene.add.existing(this);
+
+        // Add a pointerdown event listener
+        this.on('pointerdown', this.handleClick, this);
+    }
+
+    handleClick() {
+        // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
+        // Disable input for FarmScene
+        if(!Utility.isEditMode()) {
+            this.scene.input.enabled = false;
+            this.scene.scene.launch('InsideFarmhouseScene');
+        }
+    }
+}
