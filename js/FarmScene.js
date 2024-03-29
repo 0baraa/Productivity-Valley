@@ -498,6 +498,58 @@ export default class FarmScene extends Phaser.Scene {
             }
             Utility.toggleMenu(this, "decorationPlotMenu");
         });
+
+        // Dragging code (set draggable to true in setInteractive to enable dragging)
+        this.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+            if(Utility.isEditMode()){
+                if(gameObject instanceof Plot) {
+                    gameObject.x = Math.round(dragX / 8) * 8;
+                    gameObject.y = Math.round(dragY / 8) * 8;
+
+                    // Keep the plots within the bounds of the farm
+
+                    if(gameObject.x + 42 + gameObject.width / 2 > 640) {
+                        gameObject.x = 592;
+                    }
+                    
+                    if(gameObject.x - 42 - gameObject.width / 2 < 0) {
+                        gameObject.x = 48;
+                    }
+                    if(gameObject.y + gameObject.height / 2 > 710) {
+                        gameObject.y = Math.round(710 / 8) * 8 - gameObject.height / 2;
+                    }
+                    if(gameObject.y - gameObject.height / 2 < 605) {
+                        gameObject.y = Math.round(605 / 8) * 8 + gameObject.height / 2;
+                    }
+                    gameObject.setDepth(gameObject.y);
+                }
+
+                else if (gameObject instanceof Decoration) {
+                    gameObject.x = Math.round(dragX / 8) * 8;
+                    gameObject.y = Math.round(dragY / 8) * 8;
+
+                    console.log(gameObject.x, gameObject.y);
+
+                    if(gameObject.x - gameObject.width / 2 < 0) {
+                        gameObject.x = gameObject.width / 2;
+                    }
+
+                    if(gameObject.x + gameObject.width / 2 > 640) {
+                        gameObject.x = 640 - gameObject.width / 2;
+                    }
+
+                    if(gameObject.y + gameObject.height / 2 > 758) {
+                        gameObject.y = 758 - gameObject.height / 2;
+                    }
+
+                    if(gameObject.y - gameObject.height / 2 < 530) {
+                        gameObject.y = 530 + gameObject.height / 2;
+                    }
+                    
+                    gameObject.setDepth(gameObject.y * 10);
+                }
+            }
+        });
     }
 
     updateAnimations() {
@@ -1185,30 +1237,6 @@ class Plot extends Phaser.GameObjects.Container {
             gameObject.lastValidPosition = {x: gameObject.x, y: gameObject.y};
         });
 
-        // Dragging code (set draggable to true in setInteractive to enable dragging)
-        this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
-            if(Utility.isEditMode()){
-                gameObject.x = Math.round(dragX / 8) * 8;
-                gameObject.y = Math.round(dragY / 8) * 8;
-
-                // Keep the plots within the bounds of the farm
-
-                if(gameObject.x + 42 + gameObject.width / 2 > 640) {
-                    gameObject.x = 592;
-                }
-                
-                if(gameObject.x - 42 - gameObject.width / 2 < 0) {
-                    gameObject.x = 48;
-                }
-                if(gameObject.y + gameObject.height / 2 > 710) {
-                    gameObject.y = Math.round(710 / 8) * 8 - gameObject.height / 2;
-                }
-                if(gameObject.y - gameObject.height / 2 < 605) {
-                    gameObject.y = Math.round(605 / 8) * 8 + gameObject.height / 2;
-                }
-                gameObject.setDepth(gameObject.y);
-            }
-        });
 
         // Check if the plot is overlapping with another plot
         // Reset to last valid position if it is
@@ -1605,30 +1633,6 @@ class Decoration extends Phaser.GameObjects.Sprite {
 
         // Add a pointerdown event listener
         this.on('pointerdown', this.handleClick, this);
-
-        this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
-            if(Utility.isEditMode()){
-                gameObject.x = Math.round(dragX / 8) * 8;
-                gameObject.y = Math.round(dragY / 8) * 8;
-
-                // Keep the plots within the bounds of the farm
-
-                // if(gameObject.x + 42 + gameObject.width / 2 > 640) {
-                //     gameObject.x = 592;
-                // }
-                
-                // if(gameObject.x - 42 - gameObject.width / 2 < 0) {
-                //     gameObject.x = 48;
-                // }
-                // if(gameObject.y + gameObject.height / 2 > 710) {
-                //     gameObject.y = Math.round(710 / 8) * 8 - gameObject.height / 2;
-                // }
-                // if(gameObject.y - gameObject.height / 2 < 605) {
-                //     gameObject.y = Math.round(605 / 8) * 8 + gameObject.height / 2;
-                // }
-                gameObject.setDepth(gameObject.y);
-            }
-        });
     }
 
     handleClick() {
