@@ -103,11 +103,10 @@ export default class Utility {
             ],
             //plots should have coordinates saved also
             "plots": [
-              {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework"}, 
-              {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup"}, 
-              {"id": 3, "crop": "carrot", "growthStage": 2},
-              {"id": 7, "crop": "nothing", "growthStage": 0},
-              {"id": 8, "crop": "sunflower", "growthStage": 10}
+              {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616}, 
+              {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616}, 
+              {"id": 3, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616},
+              {"id": 4, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616},
             ],
             "furniture": [
               {"type": "carpet1", "x": 320, "y": 612, "placed": true},

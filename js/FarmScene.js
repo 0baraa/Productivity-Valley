@@ -467,6 +467,8 @@ export default class FarmScene extends Phaser.Scene {
                     gameObject.x = Math.round(dragX / 8) * 8;
                     gameObject.y = Math.round(dragY / 8) * 8;
 
+                    console.log(gameObject.x, gameObject.y);
+
                     // Keep the plots within the bounds of the farm
 
                     if(gameObject.x + 42 + gameObject.width / 2 > 640) {
@@ -1081,17 +1083,17 @@ class PlayerFarm {
         let plotX, plotY;
         for (let i = 0; i < data.plots.length; i++) {
 
-            if (along) {
-                plotX = 165 + (100 * (i));
-                plotY = 610;
-            } else {
-                plotX = 165 + (100 * (i % (data.plots.length / 2)));
-                plotY = 610 + (100 * Math.floor(i / (data.plots.length / 2)));
-            }
+            // if (along) {
+            //     plotX = 165 + (100 * (i));
+            //     plotY = 610;
+            // } else {
+            //     plotX = 165 + (100 * (i % (data.plots.length / 2)));
+            //     plotY = 610 + (100 * Math.floor(i / (data.plots.length / 2)));
+            // }
             //adjustable plot numbers:
 
 
-            let plot = new Plot({ scene: scene, x: plotX, y: plotY, id: data.plots[i].id, crop: data.plots[i].crop, counter: data.plots[i].growthStage });
+            let plot = new Plot({ scene: scene, x: data.plots[i].x, y: data.plots[i].y, id: data.plots[i].id, crop: data.plots[i].crop, counter: data.plots[i].growthStage });
             this.plots.push(plot);
         }
         this.showCoins(scene, data.coins);
