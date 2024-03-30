@@ -103,10 +103,10 @@ export default class Utility {
             ],
             //plots should have coordinates saved also
             "plots": [
-              {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616}, 
-              {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616}, 
-              {"id": 3, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616},
-              {"id": 4, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616},
+              {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616, "placed": true}, 
+              {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true}, 
+              {"id": 3, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616, "placed": true},
+              {"id": 4, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616, "placed": true},
             ],
             "furniture": [
               {"type": "carpet1", "x": 320, "y": 612, "placed": true},
@@ -128,7 +128,7 @@ export default class Utility {
               {"type": "table2", "x": 400, "y": 590, "placed": false}
             ],
             "decorations": [
-                {"type": "snowman", "x":50, "y":700}
+                {"type": "snowman", "x":50, "y":700, "placed": false}
             ],
             "farmhouse":[
                 {"level": 1, "x": 70, "y": 570}

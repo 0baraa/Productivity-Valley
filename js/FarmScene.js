@@ -1093,7 +1093,7 @@ class PlayerFarm {
             //adjustable plot numbers:
 
 
-            let plot = new Plot({ scene: scene, x: data.plots[i].x, y: data.plots[i].y, id: data.plots[i].id, crop: data.plots[i].crop, counter: data.plots[i].growthStage });
+            let plot = new Plot({ scene: scene, x: data.plots[i].x, y: data.plots[i].y, id: data.plots[i].id, crop: data.plots[i].crop, counter: data.plots[i].growthStage, placed: data.plots[i].placed});
             this.plots.push(plot);
         }
         this.showCoins(scene, data.coins);
@@ -1102,7 +1102,7 @@ class PlayerFarm {
     createDecorations(scene) {
         let data = Utility.getUserData();
         for(let i = 0; i < data.decorations.length; i++){
-            let decoration = new Decoration({scene: scene, x: data.decorations[i].x, y: data.decorations[i].y, type: data.decorations[i].type, texture: data.decorations[i].type});
+            let decoration = new Decoration({scene: scene, x: data.decorations[i].x, y: data.decorations[i].y, type: data.decorations[i].type, texture: data.decorations[i].type, placed: data.decorations[i].placed});
             this.decorations.push(decoration);
         }
     }
@@ -1188,8 +1188,8 @@ class Plot extends Phaser.GameObjects.Container {
         this.crop = config.crop || "nothing";
         this.growthStage = config.counter || 0;
         this.growthStep = config.step || 0;
+        this.placed = config.placed;
         this.cropSprites = [];
-        this.placed = true;
         this.lastValidPosition = {x: 0, y: 0};
         this.wasDeleted = false;
 
@@ -1336,6 +1336,12 @@ class Plot extends Phaser.GameObjects.Container {
             
         });
         this.scene.add.existing(this);
+
+        if(!this.placed) {
+            this.setVisible(false); // make the sprite invisible
+            this.setActive(false); // make the sprite inactive
+            this.setPosition(-1000, -1000); // move it off-screen
+        }
     }
 
     setupCrops() {
@@ -1622,7 +1628,7 @@ class Decoration extends Phaser.GameObjects.Sprite {
         this.scene = config.scene;
 
         // Whether or not the furniture is currently placed on the scene
-        this.placed = true;
+        this.placed = config.placed;
 
         this.wasDeleted = false;
 
@@ -1634,6 +1640,12 @@ class Decoration extends Phaser.GameObjects.Sprite {
 
         // Add this object to the scene
         this.scene.add.existing(this);
+
+        if(!this.placed) {
+            this.setVisible(false); // make the sprite invisible
+            this.setActive(false); // make the sprite inactive
+            this.setPosition(-1000, -1000); // move it off-screen
+        }
 
         // Add a pointerdown event listener
         this.on('pointerdown', this.handleClick, this);
