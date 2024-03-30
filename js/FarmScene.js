@@ -98,18 +98,6 @@ export default class FarmScene extends Phaser.Scene {
             repeat: -1 // Repeat indefinitely
         });
 
-        //Add farmhouse image and make it interactive
-        // this.farmhouse = this.add.sprite(64, 560, 'level1farmhouse');
-        //this.farmhouse.anims.play('farmhouseAnimation');
-        // this.farmhouse.setInteractive();
-        // Utility.addTintOnHover(this.farmhouse);
-
-        //Add market sign image and make it interactive
-
-
-
-
-
         //Create crop animations.
         this.anims.create({
             key: 'carrotAnim',
@@ -129,25 +117,6 @@ export default class FarmScene extends Phaser.Scene {
         this.farm.createDecorations(this);
         this.farm.createFarmhouse(this);
 
-
-
-
-        //When F key is pressed call toggleFullscreen function
-        //Disabled for now as it doesn't quite work with the dialog element
-        // this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F).on('down', Utility.toggleFullscreen);
-
-
-        // the market sign has moved to this.farm.createPlots()
-
-        // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
-        // this.farmhouse.on('pointerdown', () => {
-        //     // Disable input for FarmScene
-        //     if(!Utility.isEditMode()) {
-        //         this.input.enabled = false;
-        //         this.scene.launch('InsideFarmhouseScene');
-        //     }
-        // });
-
         //set market sign to be one more than the crops.
         this.marketSign = this.add.image(600, 560, 'marketSign');
         this.marketSign.setInteractive();
@@ -159,23 +128,6 @@ export default class FarmScene extends Phaser.Scene {
                 this.scene.launch('MarketScene');
             }
         });
-
-
-
-
-        // this.add.text(50, 450, 'Coins: ' + farm.coins , {fontSize: 20, fill: '#000000'});
-        // this.coinsText = this.add.bitmapText(50, 480, 'pixelFont', 'Coins: ' + this.farm.coins, 32);
-        // this.coinsText.setTint(0x000000);
-
-
-        // const element = this.add.dom(320, 600).createFromCache('form');
-        // element.addListener('click');
-
-        // this.add.dom(320, 600, 'div', 'background-color: orange; width: 20vw; height: 20vw; font: 48px pixel-font', 'Phaser');
-
-
-        // disable input when menu is shown
-        // this.sys.game.input.enabled = false;
 
         // Calculate the dimensions of the screen for better positioning
         const screenWidth = this.sys.game.config.width;
