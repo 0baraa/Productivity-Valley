@@ -123,7 +123,10 @@ export default class Utility {
               {"type": "fireplace", "x": 221, "y": 565, "placed": true},
               {"type": "couch", "x": 221, "y": 565, "placed": false},
               {"type": "bookshelf2", "x": 221, "y": 565, "placed": false},
-              {"type": "smallbookshelf", "x": 400, "y": 590, "placed": true}
+              {"type": "coatrack", "x": 350, "y": 580, "placed": true},
+              {"type": "plant", "x": 245, "y": 590, "placed": true},
+              {"type": "vinylplayer", "x": 400, "y": 590, "placed": false},
+              {"type": "table2", "x": 400, "y": 590, "placed": false}
             ],
             "decorations": [
                 {"type": "snowman", "x":50, "y":700}
