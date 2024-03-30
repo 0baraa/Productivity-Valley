@@ -105,6 +105,8 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
                 this.scene.get('FarmScene').input.enabled = true;
             }
         });
+
+        
     }
 }
 

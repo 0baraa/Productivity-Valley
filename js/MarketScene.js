@@ -34,7 +34,56 @@ export default class MarketScene extends Phaser.Scene {
         this.furnitureShop.setInteractive();
         Utility.addTintOnHover(this.furnitureShop);
         this.furnitureShop.on('pointerdown', () => {
+            let farm = this.scene.get('FarmScene').farm;
+            let allFurniture = this.scene.get('FarmScene').allFurniture;
+            let furnitureOwned = false;
+            let furnitureContainer = document.getElementById('furniture-shop-container');
+
+            let data = Utility.getUserData();
+
+            for(let furnitureAll of allFurniture) {
+                for(let furnitureFarm of data.furniture) {
+                    if(furnitureAll === furnitureFarm.type) {
+                        // means that the furniture is already owned
+                        console.log(furnitureAll + ' is already owned');
+                        furnitureOwned = true;
+                    }
+                }
+                if(!furnitureOwned) {
+                    console.log(furnitureAll + ' is not owned');
+                    let furnitureDiv = document.createElement('div');
+                    furnitureDiv.style.width = '12vw';
+                    furnitureDiv.style.height = '12vw';
+                    furnitureDiv.style.display = 'flex';
+                    furnitureDiv.style.flexDirection = 'column';
+                    furnitureDiv.style.justifyContent = 'center';
+                    furnitureDiv.style.marginBottom = '1vh';
+
+                    let furnitureImg = document.createElement('img');
+                    furnitureImg.style.width = '100%';
+                    furnitureImg.style.height = 'calc(100% - 4vw)';
+                    furnitureImg.style.objectFit = 'contain';
+                    furnitureImg.src = './assets/house/furniture/' + furnitureAll + '.png';
+
+                    let buttonDiv = document.createElement('div');
+                    buttonDiv.style.display = 'flex';
+                    buttonDiv.style.justifyContent = 'center';
+                    
+                    let furnitureButton = document.createElement('button');
+                    furnitureButton.classList.add('furniture-button');
+                    furnitureButton.id = furnitureAll + '-shop-button';
+                    furnitureButton.textContent = '+';
+
+                    buttonDiv.appendChild(furnitureButton);
+                    furnitureDiv.appendChild(furnitureImg);
+                    furnitureDiv.appendChild(buttonDiv);
+                    furnitureContainer.appendChild(furnitureDiv);
+                }
+            }
+
+
             Utility.toggleMenu(this, 'furnitureShopMenu');
+
         });
         //this.furnitureShop = new Shop({scene: this, x: 400, y: 620, sprite:'furnitureShop'});
 
@@ -49,16 +98,6 @@ export default class MarketScene extends Phaser.Scene {
             editButton.style.display = 'inline';
             //Re-enable input for farm scene
             this.scene.get('FarmScene').input.enabled = true;
-        });
-
-        let furnitureShopExitButton = document.getElementById('furniture-shop-exit-button');
-        furnitureShopExitButton.addEventListener('click', () => {
-            // Clear the furniture container
-            // let furnitureContainer = document.getElementById('furniture-container');
-            // while (furnitureContainer.firstChild) {
-            //     furnitureContainer.removeChild(furnitureContainer.firstChild);
-            // }
-            Utility.toggleMenu(this, "furnitureShopMenu");
         });
     }
 }

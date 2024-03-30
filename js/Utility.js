@@ -124,11 +124,8 @@ export default class Utility {
               {"type": "toilet", "x": 452, "y": 658, "placed": true},
               {"type": "bathtub", "x": 370, "y": 660, "placed": true},
               {"type": "fireplace", "x": 221, "y": 565, "placed": true},
-              {"type": "couch", "x": 221, "y": 565, "placed": false},
-              {"type": "bookshelf2", "x": 221, "y": 565, "placed": false},
               {"type": "coatrack", "x": 350, "y": 580, "placed": true},
               {"type": "plant", "x": 245, "y": 590, "placed": true},
-              {"type": "vinylplayer", "x": 400, "y": 590, "placed": false},
               {"type": "table2", "x": 400, "y": 590, "placed": false}
             ],
             "decorations": [
