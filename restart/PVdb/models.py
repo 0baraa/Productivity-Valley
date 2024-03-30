@@ -21,7 +21,12 @@ class Tasks(models.Model):   #table for tasks
     class Meta:
         # Define composite primary key using unique_together
         unique_together = [['taskName', 'username']]
-    
+
+class UserDates(models.Model):
+    username = models.ForeignKey(Users, on_delete=models.CASCADE, to_field='username', default=False)
+    date = models.DateField(default=False)
+    class Meta:
+        unique_together = [['username', 'date']]
 class Decorations(models.Model):    #table for decorations
     name = models.CharField(max_length=30, unique = True, primary_key=True)
     price = models.PositiveIntegerField(default=0)

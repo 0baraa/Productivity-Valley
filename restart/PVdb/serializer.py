@@ -11,6 +11,10 @@ class TasksSerializer(serializers.ModelSerializer):
         model = Tasks
         fields = ['taskName', 'projectName', 'username', 'plotNumber', 'pomodorros']
 
+class UserDatesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserDates
+        fields = ['username', 'date']
 class DecorationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Decorations
