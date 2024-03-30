@@ -1122,7 +1122,8 @@ class PlayerFarm {
                                            x: data.furniture[i].x, 
                                            y: data.furniture[i].y, 
                                            type: data.furniture[i].type, 
-                                           texture: data.furniture[i].type});
+                                           texture: data.furniture[i].type,
+                                           placed: data.furniture[i].placed});
             this.furniture.push(furniture);
         }
     }
@@ -1514,7 +1515,7 @@ class Furniture extends Phaser.GameObjects.Sprite {
         this.scene = config.scene;
 
         // Whether or not the furniture is currently placed on the scene
-        this.placed = true;
+        this.placed = config.placed;
 
         this.wasDeleted = false;
 
@@ -1526,6 +1527,12 @@ class Furniture extends Phaser.GameObjects.Sprite {
 
         // Add this object to the scene
         this.scene.add.existing(this);
+
+        if(!this.placed) {
+            this.setVisible(false); // make the sprite invisible
+            this.setActive(false); // make the sprite inactive
+            this.setPosition(-1000, -1000); // move it off-screen
+        }
 
         // Add a pointerdown event listener
         this.on('pointerdown', this.handleClick, this);

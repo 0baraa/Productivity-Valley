@@ -26,6 +26,27 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         this.load.image('bathtub', '../assets/house/furniture/bathtub.png');
         this.load.image('toilet', '../assets/house/furniture/toilet.png');
 
+        this.load.image('bookshelf2', '../assets/house/furniture/bookshelf2.png');
+        this.load.image('coatrack', '../assets/house/furniture/coatrack.png');
+        this.load.image('mirror', '../assets/house/furniture/mirror.png');
+        this.load.image('cooker', '../assets/house/furniture/cooker.png');
+        this.load.image('plant', '../assets/house/furniture/plant.png');
+        this.load.image('roundtable', '../assets/house/furniture/roundtable.png');
+        this.load.image('sink', '../assets/house/furniture/sink.png');
+        this.load.image('smallbookshelf', '../assets/house/furniture/smallbookshelf.png');
+        this.load.image('smallcouch', '../assets/house/furniture/smallcouch.png');
+        this.load.image('table2', '../assets/house/furniture/table2.png');
+        this.load.image('vinylplayer', '../assets/house/furniture/vinylplayer.png');
+
+
+
+
+        
+
+
+
+        
+
         this.load.image('fireplace', '../assets/house/furniture/fireplace.png');
         this.load.spritesheet('fireplaceSpritesheet', '../assets/house/furniture/fireplace-animation.png', { frameWidth: 24, frameHeight: 78 });
 
