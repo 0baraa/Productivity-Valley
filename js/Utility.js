@@ -128,7 +128,7 @@ export default class Utility {
               {"type": "table2", "x": 400, "y": 590, "placed": false}
             ],
             "decorations": [
-                {"type": "snowman", "x":50, "y":700, "placed": false}
+                {"type": "snowman", "x":50, "y":700, "placed": true}
             ],
             "farmhouse":[
                 {"level": 1, "x": 70, "y": 570}

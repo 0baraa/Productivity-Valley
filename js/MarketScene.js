@@ -11,6 +11,7 @@ export default class MarketScene extends Phaser.Scene {
         this.load.image('mountains-market', '../assets/mountains-market.png');
         this.load.image('farmSign', '../assets/farm-sign.png');
         this.load.image('cropShop', '../assets/market/market_stall_seeds.png');
+        this.load.image('furnitureShop', '../assets/market/furnituresale.png')
     }
 
 
@@ -27,6 +28,8 @@ export default class MarketScene extends Phaser.Scene {
         this.add.image(320, 559, 'mountains-market');
         //instantiate all the shops
         this.cropShop = new Shop({scene: this, x:320, y:580, sprite:'cropShop'});
+
+        this.furnitureShop = new Shop({scene: this, x: 438, y: 620, sprite:'furnitureShop'});
 
         //this.furnitureShop = new Shop({scene: this, x: 400, y: 620, sprite:'furnitureShop'});
 
