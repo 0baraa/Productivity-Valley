@@ -12,8 +12,10 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('farmBackground', '../assets/farm-background.png');
         this.load.image('mountains', '../assets/mountains.png');
         this.load.image('fence', '../assets/fence.png');
-        this.load.spritesheet('farmhouseSpritesheet', '../assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });
         this.load.image('level1farmhouse', '../assets/house/level1farmhouse.png');
+        this.load.image('level2farmhouse', '../assets/house/level2farmhouse.png');
+        this.load.spritesheet('level2farmhousespritesheet', '../assets/house/level2farmhouseanimation.png', { frameWidth: 80, frameHeight: 128 });
+        
         this.load.image('marketSign', '../assets/market-sign.png');
         this.load.image('sun', '../assets/sun.png');
         this.load.image('plot', '../assets/larger_plot.png');
@@ -89,12 +91,12 @@ export default class FarmScene extends Phaser.Scene {
         })
 
 
-        // this.anims.create({
-        //     key: 'farmhouseAnimation',
-        //     frames: this.anims.generateFrameNumbers('farmhouseSpritesheet', { start: 0, end: 4 }),
-        //     frameRate: 6,
-        //     repeat: -1 // Repeat indefinitely
-        // });
+        this.anims.create({
+            key: 'level2farmhouseAnimation',
+            frames: this.anims.generateFrameNumbers('level2farmhousespritesheet', { start: 0, end: 4 }),
+            frameRate: 6,
+            repeat: -1 // Repeat indefinitely
+        });
 
         //Add farmhouse image and make it interactive
         // this.farmhouse = this.add.sprite(64, 560, 'level1farmhouse');
@@ -125,9 +127,7 @@ export default class FarmScene extends Phaser.Scene {
         this.farm = new PlayerFarm();
         this.farm.createPlots(this);
         this.farm.createDecorations(this);
-
-        let farmhouse = new Farmhouse({scene: this, x: 70, y: 560, level: 1, texture: "level1farmhouse"});
-        this.farm.farmhouse = farmhouse;
+        this.farm.createFarmhouse(this);
 
 
 
@@ -553,7 +553,7 @@ export default class FarmScene extends Phaser.Scene {
                         gameObject.y = 530 + gameObject.height / 2;
                     }
                     
-                    gameObject.setDepth(gameObject.y * 2);
+                    gameObject.setDepth(gameObject.y);
                 }
 
                 else if (gameObject instanceof Farmhouse) {
@@ -572,9 +572,18 @@ export default class FarmScene extends Phaser.Scene {
                         gameObject.y = 758 - gameObject.height / 2;
                     }
 
-                    if(gameObject.y - gameObject.height / 2 < 515) {
-                        gameObject.y = 515 + gameObject.height / 2;
+                    if(gameObject.level == 2) {
+                        if(gameObject.y - gameObject.height / 2 < 490) {
+                            gameObject.y = 490 + gameObject.height / 2;
+                        }
                     }
+                    else {
+                        if(gameObject.y - gameObject.height / 2 < 515) {
+                            gameObject.y = 515 + gameObject.height / 2;
+                        }
+                    }
+
+                    gameObject.setDepth(gameObject.y);
                 }
             }
         });
@@ -1144,6 +1153,11 @@ class PlayerFarm {
         }
     }
 
+    createFarmhouse(scene) {
+        let data = Utility.getUserData();
+        this.farmhouse = new Farmhouse({scene: scene, x: data.farmhouse[0].x, y: data.farmhouse[0].y, level: data.farmhouse[0].level, texture: 'level' + data.farmhouse[0].level + 'farmhouse'});
+    }
+
     showCoins(scene, coins) {
 
     }
@@ -1699,10 +1713,13 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
         // Add this object to the scene
         this.scene.add.existing(this);
 
-        this.setDepth(9999);
 
         // Add a pointerdown event listener
         this.on('pointerdown', this.handleClick, this);
+
+        if(this.level === 2) {
+            this.anims.play('level2farmhouseAnimation');
+        }
     }
 
     handleClick() {
@@ -1712,5 +1729,12 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
             this.scene.input.enabled = false;
             this.scene.scene.launch('InsideFarmhouseScene');
         }
+    }
+
+    // Upgrade the farmhouse to the next level
+    upgrade() {
+        this.level++;
+        this.setTexture('level' + this.level + 'farmhouse');
+        this.anims.play('level' + this.level + 'farmhouseAnimation');
     }
 }

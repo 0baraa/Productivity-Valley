@@ -124,6 +124,9 @@ export default class Utility {
             ],
             "decorations": [
                 {"type": "snowman", "x":50, "y":700}
+            ],
+            "farmhouse":[
+                {"level": 2, "x": 70, "y": 570}
             ]
           }
     
