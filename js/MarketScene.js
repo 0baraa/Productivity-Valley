@@ -29,8 +29,13 @@ export default class MarketScene extends Phaser.Scene {
         //instantiate all the shops
         this.cropShop = new Shop({scene: this, x:320, y:580, sprite:'cropShop'});
 
-        this.furnitureShop = new Shop({scene: this, x: 438, y: 620, sprite:'furnitureShop'});
-
+        // this.furnitureShop = new Shop({scene: this, x: 438, y: 610, sprite:'furnitureShop'});
+        this.furnitureShop = this.add.sprite(438, 610, 'furnitureShop');
+        this.furnitureShop.setInteractive();
+        Utility.addTintOnHover(this.furnitureShop);
+        this.furnitureShop.on('pointerdown', () => {
+            Utility.toggleMenu(this, 'furnitureShopMenu');
+        });
         //this.furnitureShop = new Shop({scene: this, x: 400, y: 620, sprite:'furnitureShop'});
 
         this.farmSign = this.add.sprite(200, 610, 'farmSign');
@@ -44,6 +49,16 @@ export default class MarketScene extends Phaser.Scene {
             editButton.style.display = 'inline';
             //Re-enable input for farm scene
             this.scene.get('FarmScene').input.enabled = true;
+        });
+
+        let furnitureShopExitButton = document.getElementById('furniture-shop-exit-button');
+        furnitureShopExitButton.addEventListener('click', () => {
+            // Clear the furniture container
+            // let furnitureContainer = document.getElementById('furniture-container');
+            // while (furnitureContainer.firstChild) {
+            //     furnitureContainer.removeChild(furnitureContainer.firstChild);
+            // }
+            Utility.toggleMenu(this, "furnitureShopMenu");
         });
     }
 }

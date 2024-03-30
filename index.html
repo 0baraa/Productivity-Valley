@@ -231,6 +231,19 @@
         </dialog>
     </div>
 
+    <div class="menu-container furniture-shop-menu" style="display: none;">
+        <dialog class="menu furniture-shop-menu"style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Furniture Shop</p>
+                <button type="button" class="exit-button" id="furniture-shop-exit-button">X</button>
+            </div>
+            <div id="furniture-shop-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Furniture dynamically added here -->
+            </div>
+        </dialog>
+    </div>
+
     <div id="edit-buttons-container">
         <button class="edit" id="edit-button"><img src="./assets/edit/edit.png" alt="Edit icon"></button>
         <button class="edit" id="tick-button" style="display: none;"><img src="./assets/edit/tick.png" alt="Tick icon"></button>
