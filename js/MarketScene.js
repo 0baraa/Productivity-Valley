@@ -75,9 +75,9 @@ export default class MarketScene extends Phaser.Scene {
                 buttonDiv.style.justifyContent = 'center';
                 
                 let furnitureButton = document.createElement('button');
-                furnitureButton.classList.add('furniture-button');
+                furnitureButton.classList.add('price-button');
                 furnitureButton.id = furniture + '-shop-button';
-                furnitureButton.textContent = '+';
+                furnitureButton.textContent = 'Buy';
 
                 buttonDiv.appendChild(furnitureButton);
                 furnitureDiv.appendChild(furnitureImg);
