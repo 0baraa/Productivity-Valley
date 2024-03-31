@@ -543,14 +543,14 @@ export default class FarmScene extends Phaser.Scene {
         });
 
         let furnitureShopExitButton = document.getElementById('furniture-shop-exit-button');
+        let furnitureShopContainer = document.getElementById('furniture-shop-container');
+        
         furnitureShopExitButton.addEventListener('click', () => {
+            while (furnitureShopContainer.firstChild) {
+                furnitureShopContainer.removeChild(furnitureShopContainer.firstChild);
+            }
             Utility.toggleMenu(this.scene.get('MarketScene'), "furnitureShopMenu");
         });
-
-        this.allFurniture = ['bookshelf', 'carpet1', 'chair', 'couch', 'fridge', 'grandfather-clock',
-        'kitchen-sink', 'lamp', 'table', 'bathtub', 'toilet', 'bookshelf2', 'coatrack', 'mirror',
-         'cooker', 'plant', 'roundtable', 'sink', 'smallbookshelf', 'smallcouch', 'table2',
-          'vinylplayer', 'fireplace'];
     }
 
     updateAnimations() {

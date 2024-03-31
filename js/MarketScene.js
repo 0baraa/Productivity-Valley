@@ -20,6 +20,10 @@ export default class MarketScene extends Phaser.Scene {
         let editButton = document.getElementById('edit-button');
         editButton.style.display = 'none';
 
+        this.allFurniture = ['bookshelf', 'carpet1', 'chair', 'couch', 'fridge', 'grandfather-clock',
+        'kitchen-sink', 'lamp', 'table', 'bathtub', 'toilet', 'bookshelf2', 'coatrack', 'mirror',
+         'cooker', 'plant', 'roundtable', 'sink', 'smallbookshelf', 'smallcouch', 'table2',
+          'vinylplayer', 'fireplace'];
         
         //Set camera zoom to 2x as canvas size of farmhouse interior is 320px wide, rather than 640px
         this.cameras.main.setZoom(2);
@@ -32,53 +36,53 @@ export default class MarketScene extends Phaser.Scene {
         // this.furnitureShop = new Shop({scene: this, x: 438, y: 610, sprite:'furnitureShop'});
         this.furnitureShop = this.add.sprite(438, 610, 'furnitureShop');
         this.furnitureShop.setInteractive();
+
         Utility.addTintOnHover(this.furnitureShop);
         this.furnitureShop.on('pointerdown', () => {
-            let farm = this.scene.get('FarmScene').farm;
-            let allFurniture = this.scene.get('FarmScene').allFurniture;
-            let furnitureOwned = false;
             let furnitureContainer = document.getElementById('furniture-shop-container');
-
+            
             let data = Utility.getUserData();
 
-            for(let furnitureAll of allFurniture) {
-                for(let furnitureFarm of data.furniture) {
-                    if(furnitureAll === furnitureFarm.type) {
-                        // means that the furniture is already owned
-                        console.log(furnitureAll + ' is already owned');
-                        furnitureOwned = true;
-                    }
-                }
-                if(!furnitureOwned) {
-                    console.log(furnitureAll + ' is not owned');
-                    let furnitureDiv = document.createElement('div');
-                    furnitureDiv.style.width = '12vw';
-                    furnitureDiv.style.height = '12vw';
-                    furnitureDiv.style.display = 'flex';
-                    furnitureDiv.style.flexDirection = 'column';
-                    furnitureDiv.style.justifyContent = 'center';
-                    furnitureDiv.style.marginBottom = '1vh';
+            let userFurniture = []
+            for(let furniture of data.furniture) {
+                userFurniture.push(furniture.type);
+            }
 
-                    let furnitureImg = document.createElement('img');
-                    furnitureImg.style.width = '100%';
-                    furnitureImg.style.height = 'calc(100% - 4vw)';
-                    furnitureImg.style.objectFit = 'contain';
-                    furnitureImg.src = './assets/house/furniture/' + furnitureAll + '.png';
+            // lockedFurniture contains furniture which the user does not currently own
+            let lockedFurniture = this.allFurniture.filter(furniture => !userFurniture.includes(furniture));
 
-                    let buttonDiv = document.createElement('div');
-                    buttonDiv.style.display = 'flex';
-                    buttonDiv.style.justifyContent = 'center';
-                    
-                    let furnitureButton = document.createElement('button');
-                    furnitureButton.classList.add('furniture-button');
-                    furnitureButton.id = furnitureAll + '-shop-button';
-                    furnitureButton.textContent = '+';
+            for(let furniture of lockedFurniture) {
+                console.log(furniture);
+            }
 
-                    buttonDiv.appendChild(furnitureButton);
-                    furnitureDiv.appendChild(furnitureImg);
-                    furnitureDiv.appendChild(buttonDiv);
-                    furnitureContainer.appendChild(furnitureDiv);
-                }
+            for(let furniture of lockedFurniture) {
+                let furnitureDiv = document.createElement('div');
+                furnitureDiv.style.width = '12vw';
+                furnitureDiv.style.height = '12vw';
+                furnitureDiv.style.display = 'flex';
+                furnitureDiv.style.flexDirection = 'column';
+                furnitureDiv.style.justifyContent = 'center';
+                furnitureDiv.style.marginBottom = '1vh';
+
+                let furnitureImg = document.createElement('img');
+                furnitureImg.style.width = '100%';
+                furnitureImg.style.height = 'calc(100% - 4vw)';
+                furnitureImg.style.objectFit = 'contain';
+                furnitureImg.src = './assets/house/furniture/' + furniture + '.png';
+
+                let buttonDiv = document.createElement('div');
+                buttonDiv.style.display = 'flex';
+                buttonDiv.style.justifyContent = 'center';
+                
+                let furnitureButton = document.createElement('button');
+                furnitureButton.classList.add('furniture-button');
+                furnitureButton.id = furniture + '-shop-button';
+                furnitureButton.textContent = '+';
+
+                buttonDiv.appendChild(furnitureButton);
+                furnitureDiv.appendChild(furnitureImg);
+                furnitureDiv.appendChild(buttonDiv);
+                furnitureContainer.appendChild(furnitureDiv);
             }
 
 

@@ -115,15 +115,6 @@ export default class Utility {
             "furniture": [
               {"type": "carpet1", "x": 320, "y": 612, "placed": true},
               {"type": "bookshelf", "x": 281, "y": 580, "placed": true},
-              {"type": "fridge", "x": 193, "y": 580, "placed": true},
-              {"type": "grandfather-clock", "x": 246, "y": 580, "placed": false},
-              {"type": "kitchen-sink", "x": 408, "y": 600, "placed": false},
-              {"type": "chair", "x": 210, "y": 650, "placed": true},
-              {"type": "table", "x": 192, "y": 650, "placed": true},
-              {"type": "lamp", "x": 345, "y": 580, "placed": false},
-              {"type": "toilet", "x": 452, "y": 658, "placed": true},
-              {"type": "bathtub", "x": 370, "y": 660, "placed": true},
-              {"type": "fireplace", "x": 221, "y": 565, "placed": true},
               {"type": "coatrack", "x": 350, "y": 580, "placed": true},
               {"type": "plant", "x": 245, "y": 590, "placed": true},
               {"type": "table2", "x": 400, "y": 590, "placed": false}
