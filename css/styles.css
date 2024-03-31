@@ -108,7 +108,7 @@ button {
 } */
 .task-row {
     height: 24%;
-    width: 
+    /* width:  */
 }
 
 .exit-button {
@@ -203,6 +203,18 @@ select {
     margin-top: 1vh;
 }
 
+.settings-icon-container{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    border: none;
+    padding: 0;
+}
+
+.settings-icon-container img{
+    scale: 0.8;
+    cursor: pointer;
+}
 
 
 
