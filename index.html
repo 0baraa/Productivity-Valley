@@ -252,5 +252,85 @@
         <button class="edit" id="cross-button" style="display: none;"><img src="./assets/edit/cross.png" alt="Cross icon"></button>
     </div>
     
+    <!--Settings-->
+    <div class="settings-icon-container">
+        <img src="/assets/settings.png" alt="Settings Icon">
+    </div>
+
+    <!--Settings Popup-->
+    <div class="settings-container settings-menu" style="display: none;">
+        <dialog class="menu settings-menu" style="display: inline-flex; flex-direction: column;">
+            <div class="settings-top-container">
+                <button class="info-button" id="settings-info-button">?</button>
+                <p>Settings</p>
+                <button class="exit-button" id="settings-exit-button">X</button>
+            </div>
+            <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
+                <form id="settings-form" style="display: flex; justify-content: center;">
+                    <table id="settings-menu-table">
+                        <tr>
+                            <td>
+                                <label for="workTime">Pomodoro:</label>
+                                <input type="number" id="workTime" name="workTime" min="10" max="120" step="5" value="25" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="shortBreakTime">Short Break:</label>
+                                <input type="number" id="shortBreakTime" name="shortBreak" min="1" max="120" step="5" value="5" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="longBreakTime">Long Break:</label>
+                                <input type="number" id="longBreakTime" name="longBreak" min="1" max="120" step="5" value="15" required>
+                            </td>
+                        </tr>
+                        <!-- <tr class="subtask-row" style="display: none;">
+                            <td>
+                                <label for="subtask">- </label>
+                                <input type="text" class="subtask" name="subtask"></input>
+                            </td>
+                        </tr> -->
+                        <tr>
+                            <td>
+                                <input type="checkbox" id="autoStartPomodoro" name="autoStartPomodoro">
+                                <label for="autoStartPomodoro">Auto Start Pomodoro</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" id="autoStartBreak" name="autoStartBreak">
+                                <label for="autoStartBreak">Auto Start Break</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="font">Font:</label>
+                                <select id="font" name="font">
+                                    <option value="pixelArt">Pixel Art (Default)</option>
+                                    <option value="standard">Standard</option>
+                                    <option value="dyslexic">Dyslexic</option>
+                                </select><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="display: flex; justify-content: center;">
+                                    <button type="submit">Save</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="longBreakInterval">Long Break Interval:</label>
+                                <input type="number" id="longBreakInterval" name="longBreakInterval" min="2" max="20" step="5" value="4" required>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </dialog>
+    </div>
 </body>
 </html>

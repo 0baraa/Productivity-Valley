@@ -108,7 +108,7 @@ button {
 } */
 .task-row {
     height: 24%;
-    width: 
+    /* width:  */
 }
 
 .exit-button {
@@ -216,6 +216,31 @@ select {
     margin-top: 1vh;
 }
 
+.price-button {
+    background-color: #d39f20;
+    outline: 3px solid black;
+    cursor: pointer;
+    color: black;
+    font-size: 2.5vw; /* Decrease the font-size */
+    height: 3vw; /* Increase the height */
+    width: 6vw; /* Increase the width */
+    border: transparent;
+    padding: 0px;
+    margin-top: 1vh;
+}
+
+.settings-icon-container{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    border: none;
+    padding: 0;
+}
+
+.settings-icon-container img{
+    scale: 0.8;
+    cursor: pointer;
+}
 
 
 
