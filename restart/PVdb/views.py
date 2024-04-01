@@ -4,6 +4,8 @@ from .models import *
 from .serializer import *
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models import F
+
 
 class UsersView(APIView):
     def get(self, request):
@@ -11,7 +13,8 @@ class UsersView(APIView):
                   "lastName":output.lastName,
                   "username":output.username,
                   "email":output.email,
-                  "money":output.money}
+                  "money":output.money,
+                  "houseStatus":output.houseStatus}
                   for output in Users.objects.all()]
         return Response(output)
     def post (self, request):
@@ -31,9 +34,23 @@ class UsersView(APIView):
             return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    def changeMoney(self, request):
+        username = request.data.get('username', None)
+        money = request.data.get('money', None)
+        if username is None or money is None:
+            return Response({"error": "Username or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Users.objects.filter(username=username).update(money=F('money') + money)
+            return Response({"message": f"Money updated successfully for user {username}"}, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class TasksView(APIView):
     def get(self, request):
         output = [{"taskName":output.taskName,
+                   "projectName":output.projectName,
+                   "username":output.username.username,
                   "taskCompleted":output.taskCompleted,
                   "taskStatus":output.taskStatus,
                   "plotNumber":output.plotNumber,
@@ -47,16 +64,30 @@ class TasksView(APIView):
             return Response(serializer.data)
     def delete(self, request):
         taskName = request.data.get('taskName', None)
-        if taskName is None:
+        username = request.data.get('username', None)
+
+        if taskName is None or username is None:
             return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            task = Tasks.objects.get(taskName=taskName)
+            task = Tasks.objects.get(taskName=taskName, username= username)
             task.delete()
             return Response({"message": f"Task with name {taskName} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Users.DoesNotExist:
             return Response({"error": f"Task with name {taskName} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+class UserDatesView(APIView):
+    def get(self, request):
+        userDates = UserDates.objects.all()
+        serializer = UserDatesSerializer(userDates, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UserDatesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class DecorationsView(APIView):
     def get(self, request):
         output = [{"name":output.name,

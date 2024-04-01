@@ -11,9 +11,11 @@ export default class MarketScene extends Phaser.Scene {
 
         // 使用辅助函数加载资源
         loadStatic('marketBackground', 'assets/market-background.png');
-        loadStatic('farmSign', 'assets/farm-sign.png');
         loadStatic('mountains-market', 'assets/mountains-market.png');
+        loadStatic('farmSign', 'assets/farm-sign.png');
         loadStatic('cropShop', 'assets/market/market_stall_seeds.png');
+        loadStatic('furnitureShop', 'assets/market/furnituresale.png');
+
     }
 
 
@@ -22,6 +24,33 @@ export default class MarketScene extends Phaser.Scene {
         let editButton = document.getElementById('edit-button');
         editButton.style.display = 'none';
 
+        this.farm = this.scene.get('FarmScene').farm;
+
+        this.allFurniture = [
+            { type: 'bookshelf', price: 100 },
+            { type: 'carpet1', price: 100 },
+            { type: 'chair', price: 100 },
+            { type: 'couch', price: 100 },
+            { type: 'fridge', price: 100 },
+            { type: 'grandfather-clock', price: 100 },
+            { type: 'kitchen-sink', price: 100 },
+            { type: 'lamp', price: 100 },
+            { type: 'table', price: 100 },
+            { type: 'bathtub', price: 100 },
+            { type: 'toilet', price: 100 },
+            { type: 'bookshelf2', price: 100 },
+            { type: 'coatrack', price: 100 },
+            { type: 'mirror', price: 100 },
+            { type: 'cooker', price: 100 },
+            { type: 'plant', price: 100 },
+            { type: 'roundtable', price: 100 },
+            { type: 'sink', price: 100 },
+            { type: 'smallbookshelf', price: 100 },
+            { type: 'smallcouch', price: 100 },
+            { type: 'table2', price: 100 },
+            { type: 'vinylplayer', price: 100 },
+            { type: 'fireplace', price: 100 }
+        ];
 
         //Set camera zoom to 2x as canvas size of farmhouse interior is 320px wide, rather than 640px
         this.cameras.main.setZoom(2);
@@ -31,7 +60,85 @@ export default class MarketScene extends Phaser.Scene {
         //instantiate all the shops
         this.cropShop = new Shop({scene: this, x:320, y:580, sprite:'cropShop'});
 
-        //this.furnitureShop = new Shop({scene: this, x: 400, y: 620, sprite:'furnitureShop'});
+        // this.furnitureShop = new Shop({scene: this, x: 400, y: 620, sprite:'furnitureShop'});
+        // this.farmSign = this.add.sprite(200, 610, 'farmSign');
+        // this.farmSign.setInteractive();
+        //
+        // Utility.addTintOnHover(this.farmSign);
+
+        this.furnitureShop = this.add.sprite(438, 610, 'furnitureShop');
+        this.furnitureShop.setInteractive();
+
+        Utility.addTintOnHover(this.furnitureShop);
+
+        this.furnitureShop.on('pointerdown', () => {
+            let furnitureContainer = document.getElementById('furniture-shop-container');
+
+
+            let userFurniture = []
+            for(let furniture of this.farm.furniture) {
+                userFurniture.push(furniture.type);
+            }
+
+            // lockedFurniture contains furniture which the user does not currently own
+            let lockedFurniture = this.allFurniture.filter(furniture => !userFurniture.includes(furniture.type));
+
+            for(let furniture of lockedFurniture) {
+                let furnitureDiv = document.createElement('div');
+                furnitureDiv.style.width = '12vw';
+                furnitureDiv.style.height = '12vw';
+                furnitureDiv.style.display = 'flex';
+                furnitureDiv.style.flexDirection = 'column';
+                furnitureDiv.style.justifyContent = 'center';
+                furnitureDiv.style.marginBottom = '1vh';
+
+                let furnitureImg = document.createElement('img');
+                furnitureImg.style.width = '100%';
+                furnitureImg.style.height = 'calc(100% - 4vw)';
+                furnitureImg.style.objectFit = 'contain';
+                // furnitureImg.src = './assets/house/furniture/' + furniture.type + '.png';
+                furnitureImg.src = '/static/assets/house/furniture/' + furniture.type + '.png';
+
+                let buttonDiv = document.createElement('div');
+                buttonDiv.style.display = 'flex';
+                buttonDiv.style.justifyContent = 'center';
+
+                let furnitureButton = document.createElement('button');
+                furnitureButton.classList.add('price-button');
+                furnitureButton.id = furniture.type + '-shop-button';
+                furnitureButton.textContent = furniture.price;
+
+                buttonDiv.appendChild(furnitureButton);
+                furnitureDiv.appendChild(furnitureImg);
+                furnitureDiv.appendChild(buttonDiv);
+                furnitureContainer.appendChild(furnitureDiv);
+            }
+
+            for(let furniture of lockedFurniture) {
+                let furnitureButton = document.getElementById(furniture.type + '-shop-button');
+                if(furnitureButton) [
+                    furnitureButton.onclick = () => {
+                        // if this.farm.coins >= furniture.price (using true for testing)
+                        if(true) {
+                            // this.farm.coins -= furniture.price;
+                            console.log('asdf');
+                            let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
+                            let farmScene = this.scene.get('FarmScene');
+                            farmScene.farm.addFurniture(insideFarmhouseScene, furniture.type);
+                            let furnitureShopContainer = document.getElementById('furniture-shop-container');
+                            while (furnitureShopContainer.firstChild) {
+                                furnitureShopContainer.removeChild(furnitureShopContainer.firstChild);
+                            }
+
+                            Utility.toggleMenu(this, 'furnitureShopMenu');
+                        }
+                    }
+                ]
+            }
+
+            Utility.toggleMenu(this, 'furnitureShopMenu');
+
+        });
 
         this.farmSign = this.add.sprite(200, 610, 'farmSign');
         this.farmSign.setInteractive();
