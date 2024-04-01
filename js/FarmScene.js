@@ -112,10 +112,7 @@ export default class FarmScene extends Phaser.Scene {
             repeat: 0
         })
         
-        this.farm = new PlayerFarm();
-        this.farm.createPlots(this);
-        this.farm.createDecorations(this);
-        this.farm.createFarmhouse(this);
+
 
         //set market sign to be one more than the crops.
         this.marketSign = this.add.image(600, 560, 'marketSign');
@@ -155,7 +152,7 @@ export default class FarmScene extends Phaser.Scene {
             // Save initial positions of objects so they can be reset if the user cancels the edit
 
             // If we are in InsideFarmhouseScene
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            if(!this.input.enabled) {
                 this.originalFurniture = this.farm.furniture.map(furniture => ({...furniture}));
             }
             // If we are in FarmScene
@@ -178,7 +175,7 @@ export default class FarmScene extends Phaser.Scene {
             editButton.style.display = 'inline';
 
             // Reset the positions of the objects
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            if(!this.input.enabled) {
                 for (let i = 0; i < this.farm.furniture.length; i++) {
                     this.farm.furniture[i].x = this.originalFurniture[i].x;
                     this.farm.furniture[i].y = this.originalFurniture[i].y;
@@ -230,7 +227,7 @@ export default class FarmScene extends Phaser.Scene {
             if(Utility.isDeleteMode()){
                 Utility.toggleDeleteMode();
             }
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            if(!this.input.enabled) {
                 let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
 
                 let furnitureContainer = document.getElementById('furniture-container');
@@ -420,7 +417,7 @@ export default class FarmScene extends Phaser.Scene {
             crossButton.style.display = 'none';
             editButton.style.display = 'inline';
             
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            if(!this.input.enabled) {
                 for(let furniture of this.farm.furniture){
                     furniture.wasDeleted = false;
                 }
@@ -554,12 +551,26 @@ export default class FarmScene extends Phaser.Scene {
 
 
         // Launch InsideFarmhouseScene to load the textures in that scene (don't remove pls ;) needed for creating furniture if the user hasn't entered the house before)
+        // this.scene.launch('InsideFarmhouseScene');
+        // // Get the InsideFarmhouseScene instance
+        // let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
+        // // wait for scene to load then close it
+        // insideFarmhouseScene.load.on('complete', () => {
+        //     this.scene.stop('InsideFarmhouseScene');
+        // });
+
+        // Launch the FarmhouseScene (which is hidden at first)
+
+
         this.scene.launch('InsideFarmhouseScene');
         // Get the InsideFarmhouseScene instance
         let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
         // wait for scene to load then close it
         insideFarmhouseScene.load.on('complete', () => {
-            this.scene.stop('InsideFarmhouseScene');
+            this.farm = new PlayerFarm(this);
+            this.farm.createPlots(this);
+            this.farm.createDecorations(this);
+            this.farm.createFarmhouse(this);
         });
     }
 
@@ -1060,8 +1071,9 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
-    constructor(){
+    constructor(scene){
         // load playerstate from database
+        this.scene = scene;
         this.coins = 0;
         this.plots = [];
         this.cropsOwned = [];
@@ -1069,6 +1081,15 @@ class PlayerFarm {
         this.decorations = [];
         this.animals = [];
         this.farmhouse = null;
+
+
+        let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
+
+        let data = Utility.getUserData();
+
+        this.createFurniture(insideFarmhouseScene, data);
+
+        
     }
 
     createPlots(scene) {
@@ -1136,9 +1157,7 @@ class PlayerFarm {
 
     }
 
-    createFurniture(scene) {
-        let data = Utility.getUserData();
-
+    createFurniture(scene, data) {
         for(let i = 0; i < data.furniture.length; i++){
             let furniture = new Furniture({scene: scene, 
                                            x: data.furniture[i].x, 
@@ -1150,11 +1169,8 @@ class PlayerFarm {
         }
     }
 
-    addFurniture(scene, type) {
-        let furniture = new Furniture({scene: scene, x: -1000, y: -1000, type: type, texture: type});
-        furniture.setVisible(false); // make the sprite invisible
-        furniture.setActive(false); // make the sprite inactive
-        furniture.placed = false;
+    addFurnitureToInventory(scene, type) {
+        let furniture = new Furniture({scene: scene, x: -1000, y: -1000, type: type, texture: type, placed: false});
         this.furniture.push(furniture);
     }
 }
@@ -1561,6 +1577,8 @@ class Furniture extends Phaser.GameObjects.Sprite {
         // Add a hover effect to the furniture
         Utility.addTintOnHover(this);
 
+        this.setDepth(10);
+
         // Add this object to the scene
         this.scene.add.existing(this);
 
@@ -1724,12 +1742,8 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
     }
 
     handleClick() {
-        // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
-        // Disable input for FarmScene
-        if(!Utility.isEditMode()) {
-            this.scene.input.enabled = false;
-            this.scene.scene.launch('InsideFarmhouseScene');
-        }
+        let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
+        insideFarmhouseScene.toggleHideScene(this.scene);
     }
 
     // Upgrade the farmhouse to the next level
