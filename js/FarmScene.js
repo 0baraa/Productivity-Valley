@@ -568,9 +568,6 @@ export default class FarmScene extends Phaser.Scene {
         // wait for scene to load then close it
         insideFarmhouseScene.load.on('complete', () => {
             this.farm = new PlayerFarm(this);
-            this.farm.createPlots(this);
-            this.farm.createDecorations(this);
-            this.farm.createFarmhouse(this);
         });
     }
 
@@ -1087,14 +1084,13 @@ class PlayerFarm {
 
         let data = Utility.getUserData();
 
+        this.createPlots(this.scene, data);
+        this.createDecorations(this.scene, data);
+        this.createFarmhouse(this.scene, data);
         this.createFurniture(insideFarmhouseScene, data);
-
-        
     }
 
-    createPlots(scene) {
-        let data = Utility.getUserData();
-
+    createPlots(scene, data) {
         let x, zoom;
         let y = 0;
         let along = false;
@@ -1140,16 +1136,14 @@ class PlayerFarm {
         this.showCoins(scene, data.coins);
     }
 
-    createDecorations(scene) {
-        let data = Utility.getUserData();
+    createDecorations(scene, data) {
         for(let i = 0; i < data.decorations.length; i++){
             let decoration = new Decoration({scene: scene, x: data.decorations[i].x, y: data.decorations[i].y, type: data.decorations[i].type, texture: data.decorations[i].type, placed: data.decorations[i].placed});
             this.decorations.push(decoration);
         }
     }
 
-    createFarmhouse(scene) {
-        let data = Utility.getUserData();
+    createFarmhouse(scene, data) {
         this.farmhouse = new Farmhouse({scene: scene, x: data.farmhouse[0].x, y: data.farmhouse[0].y, level: data.farmhouse[0].level, texture: 'level' + data.farmhouse[0].level + 'farmhouse'});
     }
 
