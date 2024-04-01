@@ -1729,12 +1729,8 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
     }
 
     handleClick() {
-        // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
-        // Disable input for FarmScene
-        if(!Utility.isEditMode()) {
-            this.scene.input.enabled = false;
-            this.scene.scene.launch('InsideFarmhouseScene');
-        }
+        let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
+        insideFarmhouseScene.toggleHideScene(this.scene);
     }
 
     // Upgrade the farmhouse to the next level
