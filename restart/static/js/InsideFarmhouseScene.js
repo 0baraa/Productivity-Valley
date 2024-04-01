@@ -10,7 +10,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         const loadStatic = (key, file) => this.load.image(key, STATIC_URL + file);
 
         loadStatic('insideFarmhouseBackground', 'assets/farmhouse-background.png');
-        loadStatic('door1', 'assets/house/doors/door1.png');
+        loadStatic('door1', 'assets/house/doors/house-door.png');
         loadStatic('wall1', 'assets/house/walls/wall1.png');
         loadStatic('floor1', 'assets/house/floors/floor1.png');
         loadStatic('window', 'assets/house/window.png');
@@ -27,6 +27,20 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         loadStatic('table', 'assets/house/furniture/table.png');
         loadStatic('bathtub', 'assets/house/furniture/bathtub.png');
         loadStatic('toilet', 'assets/house/furniture/toilet.png');
+
+        loadStatic('bookshelf2', 'assets/house/furniture/bookshelf2.png');
+        loadStatic('coatrack', 'assets/house/furniture/coatrack.png');
+        loadStatic('mirror', 'assets/house/furniture/mirror.png');
+        loadStatic('cooker', 'assets/house/furniture/cooker.png');
+        loadStatic('plant', 'assets/house/furniture/plant.png');
+        loadStatic('roundtable', 'assets/house/furniture/roundtable.png');
+        loadStatic('sink', 'assets/house/furniture/sink.png');
+        loadStatic('smallbookshelf', 'assets/house/furniture/smallbookshelf.png');
+        loadStatic('smallcouch', 'assets/house/furniture/smallcouch.png');
+        loadStatic('table2', 'assets/house/furniture/table2.png');
+        loadStatic('vinylplayer', 'assets/house/furniture/vinylplayer.png');
+
+
 
         loadStatic('fireplace', 'assets/house/furniture/fireplace.png');
         this.load.spritesheet('fireplaceSpritesheet', STATIC_URL + 'assets/house/furniture/fireplace-animation.png', { frameWidth: 24, frameHeight: 78 });
