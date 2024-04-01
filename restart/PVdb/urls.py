@@ -21,11 +21,12 @@ from PVdb.views import *
 from .views import UsersView
 urlpatterns = [
 # path('admin/', admin.site.urls),
-path('users', UsersView.as_view(), name='Users'),
-path('tasks', TasksView.as_view(), name='Tasks'),
+path('users/', UsersView.as_view(), name='Users'),
+path('users/change-money/', UsersView.as_view(), name='change-money'),
 path('decorations', DecorationsView.as_view(), name='Decorations'),
 path('crops', CropsView.as_view(), name='Crops'),
 path('user-decorations/', UserDecorationsView.as_view(), name='user_decorations'),
 path('user-crops/', UserCropsView.as_view(), name='user_crops'),
-path('users', UsersView.as_view(), name='users'),
+path('tasks/', TasksView.as_view(), name='tasks'),
+path('user-dates/', UserDatesView.as_view(), name='user_dates')
 ]
