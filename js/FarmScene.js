@@ -1564,9 +1564,6 @@ class Furniture extends Phaser.GameObjects.Sprite {
         // Add this object to the scene
         this.scene.add.existing(this);
 
-        console.log('Texture key:', config.texture);
-        console.log('Scene:', config.scene);
-
         if(!this.placed) {
             this.setVisible(false); // make the sprite invisible
             this.setActive(false); // make the sprite inactive
