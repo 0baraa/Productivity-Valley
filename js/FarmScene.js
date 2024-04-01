@@ -112,10 +112,7 @@ export default class FarmScene extends Phaser.Scene {
             repeat: 0
         })
         
-        this.farm = new PlayerFarm();
-        this.farm.createPlots(this);
-        this.farm.createDecorations(this);
-        this.farm.createFarmhouse(this);
+
 
         //set market sign to be one more than the crops.
         this.marketSign = this.add.image(600, 560, 'marketSign');
@@ -563,7 +560,18 @@ export default class FarmScene extends Phaser.Scene {
         // });
 
         // Launch the FarmhouseScene (which is hidden at first)
+
+
         this.scene.launch('InsideFarmhouseScene');
+        // Get the InsideFarmhouseScene instance
+        let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
+        // wait for scene to load then close it
+        insideFarmhouseScene.load.on('complete', () => {
+            this.farm = new PlayerFarm(this);
+            this.farm.createPlots(this);
+            this.farm.createDecorations(this);
+            this.farm.createFarmhouse(this);
+        });
     }
 
     updateAnimations() {
@@ -1063,8 +1071,9 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
-    constructor(){
+    constructor(scene){
         // load playerstate from database
+        this.scene = scene;
         this.coins = 0;
         this.plots = [];
         this.cropsOwned = [];
@@ -1072,6 +1081,15 @@ class PlayerFarm {
         this.decorations = [];
         this.animals = [];
         this.farmhouse = null;
+
+
+        let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
+
+        let data = Utility.getUserData();
+
+        this.createFurniture(insideFarmhouseScene, data);
+
+        
     }
 
     createPlots(scene) {
@@ -1139,10 +1157,7 @@ class PlayerFarm {
 
     }
 
-    createFurniture(scene) {
-        let data = Utility.getUserData();
-
-        let createdFurniture = []
+    createFurniture(scene, data) {
         for(let i = 0; i < data.furniture.length; i++){
             let furniture = new Furniture({scene: scene, 
                                            x: data.furniture[i].x, 
@@ -1150,16 +1165,12 @@ class PlayerFarm {
                                            type: data.furniture[i].type, 
                                            texture: data.furniture[i].type,
                                            placed: data.furniture[i].placed});
-            createdFurniture.push(furniture);
+            this.furniture.push(furniture);
         }
-        this.furniture = createdFurniture;
     }
 
-    addFurniture(scene, type) {
-        let furniture = new Furniture({scene: scene, x: -1000, y: -1000, type: type, texture: type});
-        furniture.setVisible(false); // make the sprite invisible
-        furniture.setActive(false); // make the sprite inactive
-        furniture.placed = false;
+    addFurnitureToInventory(scene, type) {
+        let furniture = new Furniture({scene: scene, x: -1000, y: -1000, type: type, texture: type, placed: false});
         this.furniture.push(furniture);
     }
 }
@@ -1565,6 +1576,8 @@ class Furniture extends Phaser.GameObjects.Sprite {
 
         // Add a hover effect to the furniture
         Utility.addTintOnHover(this);
+
+        this.setDepth(10);
 
         // Add this object to the scene
         this.scene.add.existing(this);

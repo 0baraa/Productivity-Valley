@@ -83,24 +83,10 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
             repeat: -1 // Repeat indefinitely
         });
         
-        let FarmScene = this.scene.get('FarmScene');
-        this.farm = FarmScene.farm;
-        this.farm.createFurniture(this);
-
-
-
-
-
-
-
-
-
-
-
         //Swtich to farm scene when door is clicked
         this.door.on('pointerdown', () => {
             let farmScene = this.scene.get('FarmScene');
-            this.toggleHideScene(FarmScene);
+            this.toggleHideScene(farmScene);
             
         });
 
