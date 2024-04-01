@@ -83,30 +83,29 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
             repeat: -1 // Repeat indefinitely
         });
         
-        let FarmScene = this.scene.get('FarmScene');
-        this.farm = FarmScene.farm;
-        this.farm.createFurniture(this);
-
-
-
-
-
-
-
-
-
-
-
         //Swtich to farm scene when door is clicked
         this.door.on('pointerdown', () => {
-            if(!Utility.isEditMode()) {
-                this.scene.stop();
-                //Re-enable input for farm scene
-                this.scene.get('FarmScene').input.enabled = true;
-            }
+            let farmScene = this.scene.get('FarmScene');
+            this.toggleHideScene(farmScene);
+            
         });
 
-        
+        this.children.each(child => child.setVisible(false));
+        this.hidden = true;
+    }
+
+    toggleHideScene(farmScene) {
+        if(!Utility.isEditMode()) {
+            farmScene.input.enabled = !farmScene.input.enabled;
+            if(this.hidden) {
+                this.children.each(child => child.setVisible(true));
+                this.hidden = !this.hidden;
+            }
+            else {
+                this.children.each(child => child.setVisible(false));
+                this.hidden = !this.hidden;
+            }
+        }
     }
 }
 

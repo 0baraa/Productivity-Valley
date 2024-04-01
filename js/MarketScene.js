@@ -112,10 +112,9 @@ export default class MarketScene extends Phaser.Scene {
                         // if this.farm.coins >= furniture.price (using true for testing)
                         if(true) {
                             // this.farm.coins -= furniture.price;
-                            console.log('asdf');
                             let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
                             let farmScene = this.scene.get('FarmScene');
-                            farmScene.farm.addFurniture(insideFarmhouseScene, furniture.type);
+                            farmScene.farm.addFurnitureToInventory(insideFarmhouseScene, furniture.type);
                             let furnitureShopContainer = document.getElementById('furniture-shop-container');
                             while (furnitureShopContainer.firstChild) {
                                 furnitureShopContainer.removeChild(furnitureShopContainer.firstChild);
