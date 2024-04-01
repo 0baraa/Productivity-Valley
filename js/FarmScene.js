@@ -152,7 +152,7 @@ export default class FarmScene extends Phaser.Scene {
             // Save initial positions of objects so they can be reset if the user cancels the edit
 
             // If we are in InsideFarmhouseScene
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            if(!this.input.enabled) {
                 this.originalFurniture = this.farm.furniture.map(furniture => ({...furniture}));
             }
             // If we are in FarmScene
@@ -175,7 +175,7 @@ export default class FarmScene extends Phaser.Scene {
             editButton.style.display = 'inline';
 
             // Reset the positions of the objects
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            if(!this.input.enabled) {
                 for (let i = 0; i < this.farm.furniture.length; i++) {
                     this.farm.furniture[i].x = this.originalFurniture[i].x;
                     this.farm.furniture[i].y = this.originalFurniture[i].y;
@@ -227,7 +227,7 @@ export default class FarmScene extends Phaser.Scene {
             if(Utility.isDeleteMode()){
                 Utility.toggleDeleteMode();
             }
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            if(!this.input.enabled) {
                 let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
 
                 let furnitureContainer = document.getElementById('furniture-container');
@@ -417,7 +417,7 @@ export default class FarmScene extends Phaser.Scene {
             crossButton.style.display = 'none';
             editButton.style.display = 'inline';
             
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            if(!this.input.enabled) {
                 for(let furniture of this.farm.furniture){
                     furniture.wasDeleted = false;
                 }
