@@ -554,13 +554,16 @@ export default class FarmScene extends Phaser.Scene {
 
 
         // Launch InsideFarmhouseScene to load the textures in that scene (don't remove pls ;) needed for creating furniture if the user hasn't entered the house before)
+        // this.scene.launch('InsideFarmhouseScene');
+        // // Get the InsideFarmhouseScene instance
+        // let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
+        // // wait for scene to load then close it
+        // insideFarmhouseScene.load.on('complete', () => {
+        //     this.scene.stop('InsideFarmhouseScene');
+        // });
+
+        // Launch the FarmhouseScene (which is hidden at first)
         this.scene.launch('InsideFarmhouseScene');
-        // Get the InsideFarmhouseScene instance
-        let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
-        // wait for scene to load then close it
-        insideFarmhouseScene.load.on('complete', () => {
-            this.scene.stop('InsideFarmhouseScene');
-        });
     }
 
     updateAnimations() {
@@ -1139,6 +1142,7 @@ class PlayerFarm {
     createFurniture(scene) {
         let data = Utility.getUserData();
 
+        let createdFurniture = []
         for(let i = 0; i < data.furniture.length; i++){
             let furniture = new Furniture({scene: scene, 
                                            x: data.furniture[i].x, 
@@ -1146,8 +1150,9 @@ class PlayerFarm {
                                            type: data.furniture[i].type, 
                                            texture: data.furniture[i].type,
                                            placed: data.furniture[i].placed});
-            this.furniture.push(furniture);
+            createdFurniture.push(furniture);
         }
+        this.furniture = createdFurniture;
     }
 
     addFurniture(scene, type) {

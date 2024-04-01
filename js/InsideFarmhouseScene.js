@@ -106,7 +106,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
             }
         });
 
-        
+        this.children.each(child => child.setVisible(false));
     }
 }
 
