@@ -66,10 +66,9 @@ export default class MarketScene extends Phaser.Scene {
         this.furnitureShop.on('pointerdown', () => {
             let furnitureContainer = document.getElementById('furniture-shop-container');
             
-            let data = Utility.getUserData();
 
             let userFurniture = []
-            for(let furniture of data.furniture) {
+            for(let furniture of this.farm.furniture) {
                 userFurniture.push(furniture.type);
             }
 
@@ -117,6 +116,11 @@ export default class MarketScene extends Phaser.Scene {
                             let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
                             let farmScene = this.scene.get('FarmScene');
                             farmScene.farm.addFurniture(insideFarmhouseScene, furniture.type);
+                            let furnitureShopContainer = document.getElementById('furniture-shop-container');
+                            while (furnitureShopContainer.firstChild) {
+                                furnitureShopContainer.removeChild(furnitureShopContainer.firstChild);
+                            }
+
                             Utility.toggleMenu(this, 'furnitureShopMenu');
                         }
                     }
@@ -125,36 +129,7 @@ export default class MarketScene extends Phaser.Scene {
 
             Utility.toggleMenu(this, 'furnitureShopMenu');
 
-        });
-        
-        
-
-
-
-        // for(let decoration of this.farm.decorations){
-        //     let decorationButton = document.getElementById(decoration.type + '-button');
-        //     if(decorationButton){
-        //         decorationButton.onclick = () => {
-        //             decoration.placed = true;
-        //             decoration.setVisible(true);
-        //             decoration.setActive(true);
-        //             decoration.x = 320;
-        //             decoration.y = 620;
-        //             // Clear the decorations and plot containers
-        //             let decorationContainer = document.getElementById('decoration-container');
-        //             while (decorationContainer.firstChild) {
-        //                 decorationContainer.removeChild(decorationContainer.firstChild);
-        //             }
-        //             let plotContainer = document.getElementById('plot-container');
-        //             while (plotContainer.firstChild) {
-        //                 plotContainer.removeChild(plotContainer.firstChild);
-        //             }
-        //             Utility.toggleMenu(this, "decorationPlotMenu");
-        //         };
-        //     }
-
-        // }
-        // Utility.toggleMenu(this, "decorationPlotMenu");
+        });       
 
         this.farmSign = this.add.sprite(200, 610, 'farmSign');
         this.farmSign.setInteractive();
