@@ -551,6 +551,16 @@ export default class FarmScene extends Phaser.Scene {
             }
             Utility.toggleMenu(this.scene.get('MarketScene'), "furnitureShopMenu");
         });
+
+
+        // Launch InsideFarmhouseScene to load the textures in that scene (don't remove pls ;) needed for creating furniture if the user hasn't entered the house before)
+        this.scene.launch('InsideFarmhouseScene');
+        // Get the InsideFarmhouseScene instance
+        let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
+        // wait for scene to load then close it
+        insideFarmhouseScene.load.on('complete', () => {
+            this.scene.stop('InsideFarmhouseScene');
+        });
     }
 
     updateAnimations() {
@@ -1139,6 +1149,14 @@ class PlayerFarm {
             this.furniture.push(furniture);
         }
     }
+
+    addFurniture(scene, type) {
+        let furniture = new Furniture({scene: scene, x: -1000, y: -1000, type: type, texture: type});
+        furniture.setVisible(false); // make the sprite invisible
+        furniture.setActive(false); // make the sprite inactive
+        furniture.placed = false;
+        this.furniture.push(furniture);
+    }
 }
 
 class Animal extends Phaser.GameObjects.Sprite{
@@ -1545,6 +1563,9 @@ class Furniture extends Phaser.GameObjects.Sprite {
 
         // Add this object to the scene
         this.scene.add.existing(this);
+
+        console.log('Texture key:', config.texture);
+        console.log('Scene:', config.scene);
 
         if(!this.placed) {
             this.setVisible(false); // make the sprite invisible

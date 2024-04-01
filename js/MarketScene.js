@@ -20,10 +20,33 @@ export default class MarketScene extends Phaser.Scene {
         let editButton = document.getElementById('edit-button');
         editButton.style.display = 'none';
 
-        this.allFurniture = ['bookshelf', 'carpet1', 'chair', 'couch', 'fridge', 'grandfather-clock',
-        'kitchen-sink', 'lamp', 'table', 'bathtub', 'toilet', 'bookshelf2', 'coatrack', 'mirror',
-         'cooker', 'plant', 'roundtable', 'sink', 'smallbookshelf', 'smallcouch', 'table2',
-          'vinylplayer', 'fireplace'];
+        this.farm = this.scene.get('FarmScene').farm;
+
+        this.allFurniture = [
+            { type: 'bookshelf', price: 100 },
+            { type: 'carpet1', price: 100 },
+            { type: 'chair', price: 100 },
+            { type: 'couch', price: 100 },
+            { type: 'fridge', price: 100 },
+            { type: 'grandfather-clock', price: 100 },
+            { type: 'kitchen-sink', price: 100 },
+            { type: 'lamp', price: 100 },
+            { type: 'table', price: 100 },
+            { type: 'bathtub', price: 100 },
+            { type: 'toilet', price: 100 },
+            { type: 'bookshelf2', price: 100 },
+            { type: 'coatrack', price: 100 },
+            { type: 'mirror', price: 100 },
+            { type: 'cooker', price: 100 },
+            { type: 'plant', price: 100 },
+            { type: 'roundtable', price: 100 },
+            { type: 'sink', price: 100 },
+            { type: 'smallbookshelf', price: 100 },
+            { type: 'smallcouch', price: 100 },
+            { type: 'table2', price: 100 },
+            { type: 'vinylplayer', price: 100 },
+            { type: 'fireplace', price: 100 }
+        ];
         
         //Set camera zoom to 2x as canvas size of farmhouse interior is 320px wide, rather than 640px
         this.cameras.main.setZoom(2);
@@ -38,6 +61,8 @@ export default class MarketScene extends Phaser.Scene {
         this.furnitureShop.setInteractive();
 
         Utility.addTintOnHover(this.furnitureShop);
+
+
         this.furnitureShop.on('pointerdown', () => {
             let furnitureContainer = document.getElementById('furniture-shop-container');
             
@@ -49,11 +74,7 @@ export default class MarketScene extends Phaser.Scene {
             }
 
             // lockedFurniture contains furniture which the user does not currently own
-            let lockedFurniture = this.allFurniture.filter(furniture => !userFurniture.includes(furniture));
-
-            for(let furniture of lockedFurniture) {
-                console.log(furniture);
-            }
+            let lockedFurniture = this.allFurniture.filter(furniture => !userFurniture.includes(furniture.type));
 
             for(let furniture of lockedFurniture) {
                 let furnitureDiv = document.createElement('div');
@@ -68,7 +89,7 @@ export default class MarketScene extends Phaser.Scene {
                 furnitureImg.style.width = '100%';
                 furnitureImg.style.height = 'calc(100% - 4vw)';
                 furnitureImg.style.objectFit = 'contain';
-                furnitureImg.src = './assets/house/furniture/' + furniture + '.png';
+                furnitureImg.src = './assets/house/furniture/' + furniture.type + '.png';
 
                 let buttonDiv = document.createElement('div');
                 buttonDiv.style.display = 'flex';
@@ -76,8 +97,8 @@ export default class MarketScene extends Phaser.Scene {
                 
                 let furnitureButton = document.createElement('button');
                 furnitureButton.classList.add('price-button');
-                furnitureButton.id = furniture + '-shop-button';
-                furnitureButton.textContent = 'Buy';
+                furnitureButton.id = furniture.type + '-shop-button';
+                furnitureButton.textContent = furniture.price;
 
                 buttonDiv.appendChild(furnitureButton);
                 furnitureDiv.appendChild(furnitureImg);
@@ -85,11 +106,55 @@ export default class MarketScene extends Phaser.Scene {
                 furnitureContainer.appendChild(furnitureDiv);
             }
 
+            for(let furniture of lockedFurniture) {
+                let furnitureButton = document.getElementById(furniture.type + '-shop-button');
+                if(furnitureButton) [
+                    furnitureButton.onclick = () => {
+                        // if this.farm.coins >= furniture.price (using true for testing)
+                        if(true) {
+                            // this.farm.coins -= furniture.price;
+                            console.log('asdf');
+                            let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
+                            let farmScene = this.scene.get('FarmScene');
+                            farmScene.farm.addFurniture(insideFarmhouseScene, furniture.type);
+                            Utility.toggleMenu(this, 'furnitureShopMenu');
+                        }
+                    }
+                ]
+            }
 
             Utility.toggleMenu(this, 'furnitureShopMenu');
 
         });
-        //this.furnitureShop = new Shop({scene: this, x: 400, y: 620, sprite:'furnitureShop'});
+        
+        
+
+
+
+        // for(let decoration of this.farm.decorations){
+        //     let decorationButton = document.getElementById(decoration.type + '-button');
+        //     if(decorationButton){
+        //         decorationButton.onclick = () => {
+        //             decoration.placed = true;
+        //             decoration.setVisible(true);
+        //             decoration.setActive(true);
+        //             decoration.x = 320;
+        //             decoration.y = 620;
+        //             // Clear the decorations and plot containers
+        //             let decorationContainer = document.getElementById('decoration-container');
+        //             while (decorationContainer.firstChild) {
+        //                 decorationContainer.removeChild(decorationContainer.firstChild);
+        //             }
+        //             let plotContainer = document.getElementById('plot-container');
+        //             while (plotContainer.firstChild) {
+        //                 plotContainer.removeChild(plotContainer.firstChild);
+        //             }
+        //             Utility.toggleMenu(this, "decorationPlotMenu");
+        //         };
+        //     }
+
+        // }
+        // Utility.toggleMenu(this, "decorationPlotMenu");
 
         this.farmSign = this.add.sprite(200, 610, 'farmSign');
         this.farmSign.setInteractive();
