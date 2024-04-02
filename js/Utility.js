@@ -49,25 +49,31 @@ export default class Utility {
         let dialogContainer;
         let dialog;
         
-        if(menu === "taskMenu") {
-            dialogContainer = document.querySelector('.menu-container.task-menu');
-            dialog = document.querySelector('.menu.task-menu');
-        }
-        else if (menu === "cropShop") {
-            dialogContainer = document.querySelector('.menu-container.shop-menu');
-            dialog = document.querySelector('.menu.shop-menu');
-        }
-        else if (menu === "furnitureMenu") {
-            dialogContainer = document.querySelector('.menu-container.furniture-menu');
-            dialog = document.querySelector('.menu.furniture-menu');
-        }
-        else if(menu === "decorationPlotMenu") {
-            dialogContainer = document.querySelector('.menu-container.decoration-plot-menu');
-            dialog = document.querySelector('.menu.decoration-plot-menu');
-        }
-        else if(menu === "furnitureShopMenu") {
-            dialogContainer = document.querySelector('.menu-container.furniture-shop-menu');
-            dialog = document.querySelector('.menu.furniture-shop-menu');
+        switch(menu) {
+            case "taskMenu":
+                dialogContainer = document.querySelector('.menu-container.task-menu');
+                dialog = document.querySelector('.menu.task-menu');
+                break;
+            case "cropShop":
+                dialogContainer = document.querySelector('.menu-container.shop-menu');
+                dialog = document.querySelector('.menu.shop-menu');
+                break;
+            case "furnitureMenu":
+                dialogContainer = document.querySelector('.menu-container.furniture-menu');
+                dialog = document.querySelector('.menu.furniture-menu');
+                break;
+            case "decorationPlotMenu":
+                dialogContainer = document.querySelector('.menu-container.decoration-plot-menu');
+                dialog = document.querySelector('.menu.decoration-plot-menu');
+                break;
+            case "furnitureShopMenu":
+                dialogContainer = document.querySelector('.menu-container.furniture-shop-menu');
+                dialog = document.querySelector('.menu.furniture-shop-menu');
+                break;
+            case "decorationShopMenu":
+                dialogContainer = document.querySelector('.menu-container.decoration-shop-menu');
+                dialog = document.querySelector('.menu.decoration-shop-menu');
+                break;
         }
     
 

@@ -21,6 +21,7 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('plot', '../assets/larger_plot.png');
 
         this.load.image('snowman', '../assets/decorations/snowman.png');
+        this.load.image('gnome', '../assets/decorations/gnome.png');
 
         this.load.image('cloud1', '../assets/clouds/cloud1.png');
         this.load.image('cloud2', '../assets/clouds/cloud2.png');
@@ -547,6 +548,16 @@ export default class FarmScene extends Phaser.Scene {
                 furnitureShopContainer.removeChild(furnitureShopContainer.firstChild);
             }
             Utility.toggleMenu(this.scene.get('MarketScene'), "furnitureShopMenu");
+        });
+
+        let decorationShopExitButton = document.getElementById('decoration-shop-exit-button');
+        let decorationShopContainer = document.getElementById('decoration-shop-container');
+
+        decorationShopExitButton.addEventListener('click', () => {
+            while (decorationShopContainer.firstChild) {
+                decorationShopContainer.removeChild(decorationShopContainer.firstChild);
+            }
+            Utility.toggleMenu(this.scene.get('MarketScene'), "decorationShopMenu");
         });
 
         // Launch the FarmhouseScene (which is hidden at first)
@@ -1154,6 +1165,11 @@ class PlayerFarm {
     addFurnitureToInventory(scene, type) {
         let furniture = new Furniture({scene: scene, x: -1000, y: -1000, type: type, texture: type, placed: false});
         this.furniture.push(furniture);
+    }
+
+    addDecorationToInventory(scene, type) {
+        let decoration = new Decoration({scene: scene, x: -1000, y: -1000, type: type, texture: type, placed: false});
+        this.decorations.push(decoration);
     }
 }
 
