@@ -25,6 +25,7 @@ class Tasks(models.Model):   #table for tasks
 class UserDates(models.Model):
     username = models.ForeignKey(Users, on_delete=models.CASCADE, to_field='username', default=False)
     date = models.DateField(default=False)
+    timeSpent = models.PositiveIntegerField(default=0)  #total time spent on tasks on a given day
     class Meta:
         unique_together = [['username', 'date']]
 class Decorations(models.Model):    #table for decorations

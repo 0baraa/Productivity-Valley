@@ -1,8 +1,9 @@
 import Utility from "./Utility.js";
-
+import UserData from './connection/UserData.js';
 export default class ChartScene extends Phaser.Scene {
     constructor() {
         super({ key: 'ChartScene' });
+        this.userData = new UserData();
     }
 
     create() {
@@ -10,18 +11,19 @@ export default class ChartScene extends Phaser.Scene {
 
         const chartCanvas = document.getElementById('Chart');
 
-        // 使用 Chart.js 创建折线图
-        this.myChart = new Chart(chartCanvas, {
+        // using Chart.js to generate a line chart
+        this.myChart = new Chart(chartCanvas.getContext('2d'), {
             type: 'line',
             data: {
-                labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+                labels: [],
                 datasets: [{
-                    label: "Working Hours",
+                    label: "Weekly Time Spent",
                     backgroundColor: 'rgba(255,193,99,0.66)',
-                    borderColor: 'rgba(255,193,99,0.66)',
-                    data: [8, 10, 5, 2, 7],
+                    borderColor: 'rgba(255,193,99,1)',
+                    data: [],
                     fill: false
                 }]
+
             },
             options: {
                 scales: {
@@ -37,12 +39,27 @@ export default class ChartScene extends Phaser.Scene {
             this.closeChart();
         };
         exitButton.addEventListener('click', this.exitButtonListener);
+
+        this.updateChart();
+    }
+
+    updateChart() {
+        this.userData.getuserDates(currentUsername)
+            .then(data => {
+                const labels = data.map(entry => entry.date);
+                const dataPoints = data.map(entry => entry.timeSpent);
+
+
+                this.myChart.data.labels = labels;
+                this.myChart.data.datasets[0].data = dataPoints;
+                this.myChart.update();
+            })
+            .catch(error => console.error('Error fetching data:', error));
     }
 
     closeChart() {
         if (this.myChart) {
             this.myChart.destroy();
-            this.myChart = null;
         }
         const exitButton = document.getElementById('chart-exit-button');
         exitButton.removeEventListener('click', this.exitButtonListener); // 移除监听器

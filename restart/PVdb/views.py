@@ -6,6 +6,44 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import F
 
+from django.utils import timezone
+from datetime import timedelta
+from django.http import JsonResponse
+
+class PomodoroStatsView(APIView):
+    def get(self, request, username):
+        # Get today's date and the date 6 days ago to cover a week
+        today = timezone.now().date()
+        week_ago = today - timedelta(days=6)
+
+        # Filter UserDates records for the given user and date range
+        data = UserDates.objects.filter(
+            username__username=username,
+            date__range=[week_ago, today]
+        ).annotate(
+            date=TruncDay('date')
+        ).values(
+            'date'
+        ).annotate(
+            total_time_spent=Sum('timeSpent')  # Sum the time spent on each day
+        ).order_by(
+            'date'
+        )
+
+        # Convert QuerySet to a list of dictionaries
+        response_data = [
+            {'date': record['date'].strftime('%Y-%m-%d'), 'timeSpent': record['total_time_spent']}
+            for record in data
+        ]
+        # pseudo data
+        # data = [
+        #     {'date': '2024-04-01', 'timeSpent': 120},
+        #     {'date': '2024-04-02', 'timeSpent': 150},
+        #     {'date': '2024-04-03', 'timeSpent': 90},
+        #
+        # ]
+        # response_data = data
+        return JsonResponse(response_data, safe=False)
 
 class UsersView(APIView):
     def get(self, request):

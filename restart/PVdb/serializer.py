@@ -14,7 +14,7 @@ class TasksSerializer(serializers.ModelSerializer):
 class UserDatesSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDates
-        fields = ['username', 'date']
+        fields = ['username', 'date', 'timeSpent']
 class DecorationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Decorations
