@@ -74,6 +74,10 @@ export default class Utility {
                 dialogContainer = document.querySelector('.menu-container.decoration-shop-menu');
                 dialog = document.querySelector('.menu.decoration-shop-menu');
                 break;
+            case "plotShopMenu":
+                dialogContainer = document.querySelector('.menu-container.plots-shop-menu');
+                dialog = document.querySelector('.menu.plots-shop-menu');
+                break;
         }
     
 
@@ -113,10 +117,10 @@ export default class Utility {
             ],
             //plots should have coordinates saved also
             "plots": [
-              {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616, "placed": true}, 
-              {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true}, 
-              {"id": 3, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616, "placed": true},
-              {"id": 4, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616, "placed": true},
+              {"id": 0, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616, "placed": true}, 
+              {"id": 1, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true}, 
+              {"id": 2, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616, "placed": true},
+              {"id": 3, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616, "placed": true},
             ],
             "furniture": [
               {"type": "carpet1", "x": 320, "y": 612, "placed": true},

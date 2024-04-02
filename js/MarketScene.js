@@ -13,6 +13,7 @@ export default class MarketScene extends Phaser.Scene {
         this.load.image('cropShop', '../assets/market/market_stall_seeds.png');
         this.load.image('furnitureShop', '../assets/market/furniture-shop.png')
         this.load.image('decorationShop', '../assets/market/decoration-shop.png');
+        this.load.image('plotShop', '../assets/market/plots-shop.png');
     }
 
 
@@ -202,6 +203,73 @@ export default class MarketScene extends Phaser.Scene {
             Utility.toggleMenu(this, 'decorationShopMenu');
 
         });
+
+        this.plotShop = this.add.sprite(320, 650, 'plotShop');
+        this.plotShop.setInteractive();
+        Utility.addTintOnHover(this.plotShop);
+
+        this.plotShop.on('pointerdown', () => {
+            let plotContainer = document.getElementById('plots-shop-container');
+
+            let numOfLockedPlots = 8 - this.farm.plots.length;
+
+            for(let i = 0; i < numOfLockedPlots; i++) {
+                let plotDiv = document.createElement('div');
+                plotDiv.style.width = '12vw';
+                plotDiv.style.height = '12vw';
+                plotDiv.style.display = 'flex';
+                plotDiv.style.flexDirection = 'column';
+                plotDiv.style.justifyContent = 'center';
+                plotDiv.style.marginBottom = '1vh';
+
+                let plotImg = document.createElement('img');
+                plotImg.style.width = '100%';
+                plotImg.style.height = 'calc(100% - 4vw)';
+                plotImg.style.objectFit = 'contain';
+                plotImg.src = './assets/larger_plot.png';
+
+                let buttonDiv = document.createElement('div');
+                buttonDiv.style.display = 'flex';
+                buttonDiv.style.justifyContent = 'center';
+                
+                let plotButton = document.createElement('button');
+                plotButton.classList.add('price-button');
+                plotButton.id = 'plot' + i + '-shop-button';
+                plotButton.textContent = 250;
+
+                buttonDiv.appendChild(plotButton);
+                plotDiv.appendChild(plotImg);
+                plotDiv.appendChild(buttonDiv);
+                plotContainer.appendChild(plotDiv);
+            }
+
+            for(let i = 0; i < numOfLockedPlots; i++) {
+                let plotButton = document.getElementById('plot' + i + '-shop-button');
+                if(plotButton) {
+                    plotButton.onclick = () => {
+                        // if this.farm.coins >= 250 (using true for testing)
+                        if(true) {
+                            // this.farm.coins -= 250;
+                            let farmScene = this.scene.get('FarmScene');
+                            farmScene.farm.addPlotToInventory(farmScene);
+                            let plotShopContainer = document.getElementById('plots-shop-container');
+                            while (plotShopContainer.firstChild) {
+                                plotShopContainer.removeChild(plotShopContainer.firstChild);
+                            }
+
+                            Utility.toggleMenu(this, 'plotShopMenu');
+                        }
+                    }
+                }
+            }
+
+            
+            Utility.toggleMenu(this, 'plotShopMenu');
+        });
+
+
+
+
 
 
 

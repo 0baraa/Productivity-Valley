@@ -257,6 +257,19 @@
         </dialog>
     </div>
 
+    <div class="menu-container plots-shop-menu" style="display: none;">
+        <dialog class="menu plots-shop-menu"style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Plot Shop</p>
+                <button type="button" class="exit-button" id="plots-shop-exit-button">X</button>
+            </div>
+            <div id="plots-shop-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Plots dynamically added here -->
+            </div>
+        </dialog>
+    </div>
+
     <div id="edit-buttons-container">
         <button class="edit" id="edit-button"><img src="./assets/edit/edit.png" alt="Edit icon"></button>
         <button class="edit" id="tick-button" style="display: none;"><img src="./assets/edit/tick.png" alt="Tick icon"></button>

@@ -560,6 +560,16 @@ export default class FarmScene extends Phaser.Scene {
             Utility.toggleMenu(this.scene.get('MarketScene'), "decorationShopMenu");
         });
 
+        let plotShopExitButton = document.getElementById('plots-shop-exit-button');
+        let plotShopContainer = document.getElementById('plots-shop-container');
+
+        plotShopExitButton.addEventListener('click', () => {
+            while (plotShopContainer.firstChild) {
+                plotShopContainer.removeChild(plotShopContainer.firstChild);
+            }
+            Utility.toggleMenu(this.scene.get('MarketScene'), "plotShopMenu");
+        });
+
         // Launch the FarmhouseScene (which is hidden at first)
         this.scene.launch('InsideFarmhouseScene');
         // Get the InsideFarmhouseScene instance
@@ -1170,6 +1180,11 @@ class PlayerFarm {
     addDecorationToInventory(scene, type) {
         let decoration = new Decoration({scene: scene, x: -1000, y: -1000, type: type, texture: type, placed: false});
         this.decorations.push(decoration);
+    }
+
+    addPlotToInventory(scene) {
+        let plot = new Plot({scene: scene, x: -1000, y: -1000, id: this.plots.length, crop: "nothing", counter: 0, placed: false});
+        this.plots.push(plot);
     }
 }
 
