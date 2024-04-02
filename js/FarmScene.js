@@ -549,19 +549,7 @@ export default class FarmScene extends Phaser.Scene {
             Utility.toggleMenu(this.scene.get('MarketScene'), "furnitureShopMenu");
         });
 
-
-        // Launch InsideFarmhouseScene to load the textures in that scene (don't remove pls ;) needed for creating furniture if the user hasn't entered the house before)
-        // this.scene.launch('InsideFarmhouseScene');
-        // // Get the InsideFarmhouseScene instance
-        // let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
-        // // wait for scene to load then close it
-        // insideFarmhouseScene.load.on('complete', () => {
-        //     this.scene.stop('InsideFarmhouseScene');
-        // });
-
         // Launch the FarmhouseScene (which is hidden at first)
-
-
         this.scene.launch('InsideFarmhouseScene');
         // Get the InsideFarmhouseScene instance
         let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
