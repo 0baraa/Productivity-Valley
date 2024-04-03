@@ -33,6 +33,7 @@ export default class FarmScene extends Phaser.Scene {
         this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", { frameWidth: 20, frameHeight: 28 });
         this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", { frameWidth: 19, frameHeight: 41 });
         this.load.spritesheet("pumpkinGrowth", "../assets/crops/pumpkin-growth-AS.png", {frameWidth: 33, frameHeight: 39 });
+        this.load.spritesheet("tulipGrowth", "../assets/crops/tulip-growth-AS.png", {frameWidth: 10, frameHeight: 22 });
 
         this.load.image('play-button', '../assets/clock/play-button.png');
         this.load.image('pause-button', '../assets/clock/pause-button.png');
@@ -113,6 +114,12 @@ export default class FarmScene extends Phaser.Scene {
         this.anims.create({
             key: "pumpkinAnim",
             frames: this.anims.generateFrameNumbers("pumpkinGrowth", {start: 0, end: 10}),
+            frameRate: 1,
+            repeat: 0
+        })
+        this.anims.create({
+            key: "tulipAnim",
+            frames: this.anims.generateFrameNumbers("tulipGrowth", {start: 0, end: 15}),
             frameRate: 1,
             repeat: 0
         })
@@ -1374,12 +1381,14 @@ class Plot extends Phaser.GameObjects.Container {
         this.occupied = true;
         let xoff = -35;
         let yoff = -40;
+        this.gridSize = 5;
         if (this.crop === "pumpkin") {
             this.gridSize = 3;
             xoff = -30;
             yoff = -30;
-        } else {
-            this.gridSize = 5;
+        } else if (this.crop === "tulip"){
+            xoff = -40;
+            yoff = -42;
         }
         let cellWidth = this.plotSprite.width / this.gridSize;
         let cellHeight = this.plotSprite.height / this.gridSize;
@@ -1403,6 +1412,9 @@ class Plot extends Phaser.GameObjects.Container {
         }
         //Used for growth
         this.maxFrame = this.cropSprites[0].anims.getTotalFrames();
+        if (this.crop == "tulip") {
+            this.maxFrame -= 5;
+        } 
     }
 
     playGrowth() {
@@ -1476,8 +1488,18 @@ class Plot extends Phaser.GameObjects.Container {
     growSelectedCrop(num, rand) {
         //actually increment the frame of the crop
         if (this.cropsLeft.length != 0) { //here for safety's sake
-            this.cropSprites[num].anims.nextFrame(1);
-            if (this.cropSprites[num].anims.getFrameName() == this.maxFrame - 1) {
+            let frame_jump = 1;
+            if (this.crop == "tulip") {
+                if (this.cropSprites[num].anims.getFrameName() == this.maxFrame - 2) {
+                    frame_jump = Math.floor(Math.random() * 6 ) + 1;
+                    console.log(frame_jump);
+                }
+            }
+            for (let i = 0; i < frame_jump; i++) {
+                this.cropSprites[num].anims.nextFrame();
+            }
+
+            if (this.cropSprites[num].anims.getFrameName() >= this.maxFrame - 1) {
                 this.cropsLeft.splice(rand, 1); // remove from list of crops to grow
                 console.log("finished growing crop");
             }
