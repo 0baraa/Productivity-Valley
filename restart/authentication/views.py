@@ -176,7 +176,7 @@ def activate_user(request, uidb64, token):
 
 # @login_required
 def game_view(request):
-    return render(request, 'authentication/game_index.html')
+    return render(request, 'authentication/game_index.html', {'username': request.user.username})
 
 
 

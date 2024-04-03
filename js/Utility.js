@@ -49,21 +49,35 @@ export default class Utility {
         let dialogContainer;
         let dialog;
         
-        if(menu === "taskMenu") {
-            dialogContainer = document.querySelector('.menu-container.task-menu');
-            dialog = document.querySelector('.menu.task-menu');
-        }
-        else if (menu === "cropShop") {
-            dialogContainer = document.querySelector('.menu-container.shop-menu');
-            dialog = document.querySelector('.menu.shop-menu');
-        }
-        else if (menu === "furnitureMenu") {
-            dialogContainer = document.querySelector('.menu-container.furniture-menu');
-            dialog = document.querySelector('.menu.furniture-menu');
-        }
-        else if(menu === "decorationPlotMenu") {
-            dialogContainer = document.querySelector('.menu-container.decoration-plot-menu');
-            dialog = document.querySelector('.menu.decoration-plot-menu');
+        switch(menu) {
+            case "taskMenu":
+                dialogContainer = document.querySelector('.menu-container.task-menu');
+                dialog = document.querySelector('.menu.task-menu');
+                break;
+            case "cropShop":
+                dialogContainer = document.querySelector('.menu-container.shop-menu');
+                dialog = document.querySelector('.menu.shop-menu');
+                break;
+            case "furnitureMenu":
+                dialogContainer = document.querySelector('.menu-container.furniture-menu');
+                dialog = document.querySelector('.menu.furniture-menu');
+                break;
+            case "decorationPlotMenu":
+                dialogContainer = document.querySelector('.menu-container.decoration-plot-menu');
+                dialog = document.querySelector('.menu.decoration-plot-menu');
+                break;
+            case "furnitureShopMenu":
+                dialogContainer = document.querySelector('.menu-container.furniture-shop-menu');
+                dialog = document.querySelector('.menu.furniture-shop-menu');
+                break;
+            case "decorationShopMenu":
+                dialogContainer = document.querySelector('.menu-container.decoration-shop-menu');
+                dialog = document.querySelector('.menu.decoration-shop-menu');
+                break;
+            case "plotShopMenu":
+                dialogContainer = document.querySelector('.menu-container.plots-shop-menu');
+                dialog = document.querySelector('.menu.plots-shop-menu');
+                break;
         }
     
 
@@ -103,28 +117,16 @@ export default class Utility {
             ],
             //plots should have coordinates saved also
             "plots": [
-              {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616, "placed": true}, 
-              {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true}, 
-              {"id": 3, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616, "placed": true},
-              {"id": 4, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616, "placed": true},
+              {"id": 0, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616, "placed": true}, 
+              {"id": 1, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true}, 
+              {"id": 2, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616, "placed": true},
+              {"id": 3, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616, "placed": true},
             ],
             "furniture": [
               {"type": "carpet1", "x": 320, "y": 612, "placed": true},
               {"type": "bookshelf", "x": 281, "y": 580, "placed": true},
-              {"type": "fridge", "x": 193, "y": 580, "placed": true},
-              {"type": "grandfather-clock", "x": 246, "y": 580, "placed": false},
-              {"type": "kitchen-sink", "x": 408, "y": 600, "placed": false},
-              {"type": "chair", "x": 210, "y": 650, "placed": true},
-              {"type": "table", "x": 192, "y": 650, "placed": true},
-              {"type": "lamp", "x": 345, "y": 580, "placed": false},
-              {"type": "toilet", "x": 452, "y": 658, "placed": true},
-              {"type": "bathtub", "x": 370, "y": 660, "placed": true},
-              {"type": "fireplace", "x": 221, "y": 565, "placed": true},
-              {"type": "couch", "x": 221, "y": 565, "placed": false},
-              {"type": "bookshelf2", "x": 221, "y": 565, "placed": false},
               {"type": "coatrack", "x": 350, "y": 580, "placed": true},
               {"type": "plant", "x": 245, "y": 590, "placed": true},
-              {"type": "vinylplayer", "x": 400, "y": 590, "placed": false},
               {"type": "table2", "x": 400, "y": 590, "placed": false}
             ],
             "decorations": [

@@ -4,13 +4,17 @@ from .models import *
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ['firstName', 'lastName', 'username', 'email', 'money']
+        fields = ['firstName', 'lastName', 'username', 'email']
 
 class TasksSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tasks
-        fields = ['taskName', 'taskCompleted', 'taskStatus', 'plotNumber', 'pomodorros']
+        fields = ['taskName', 'projectName', 'username', 'plotNumber', 'pomodorros']
 
+class UserDatesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserDates
+        fields = ['username', 'date', 'timeSpent']
 class DecorationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Decorations

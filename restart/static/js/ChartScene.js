@@ -1,29 +1,29 @@
 import Utility from "./Utility.js";
-
+import UserData from './connection/UserData.js';
 export default class ChartScene extends Phaser.Scene {
     constructor() {
         super({ key: 'ChartScene' });
+        this.userData = new UserData();
     }
 
     create() {
-        // 显示图表界面
         Utility.toggleMenu(this, 'window');
 
-        // 获取画布元素
         const chartCanvas = document.getElementById('Chart');
 
-        // 使用 Chart.js 创建折线图
-        this.myChart = new Chart(chartCanvas, {
+        // using Chart.js to generate a line chart
+        this.myChart = new Chart(chartCanvas.getContext('2d'), {
             type: 'line',
             data: {
-                labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+                labels: [],
                 datasets: [{
-                    label: "Working Hours",
-                    backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(255, 99, 132)',
-                    data: [8, 10, 5, 2, 7],
+                    label: "Weekly Time Spent",
+                    backgroundColor: 'rgba(255,193,99,0.66)',
+                    borderColor: 'rgba(255,193,99,1)',
+                    data: [],
                     fill: false
                 }]
+
             },
             options: {
                 scales: {
@@ -34,21 +34,35 @@ export default class ChartScene extends Phaser.Scene {
             }
         });
 
-        // 获取退出按钮并添加事件监听器
         const exitButton = document.getElementById('chart-exit-button');
         this.exitButtonListener = () => {
-            this.closeChart(); // 调用关闭图表的函数
+            this.closeChart();
         };
         exitButton.addEventListener('click', this.exitButtonListener);
+
+        this.updateChart();
+    }
+
+    updateChart() {
+        this.userData.getuserDates(currentUsername)
+            .then(data => {
+                const labels = data.map(entry => entry.date);
+                const dataPoints = data.map(entry => entry.timeSpent);
+
+
+                this.myChart.data.labels = labels;
+                this.myChart.data.datasets[0].data = dataPoints;
+                this.myChart.update();
+            })
+            .catch(error => console.error('Error fetching data:', error));
     }
 
     closeChart() {
         if (this.myChart) {
-            this.myChart.destroy(); // 销毁图表实例
-            this.myChart = null;
+            this.myChart.destroy();
         }
         const exitButton = document.getElementById('chart-exit-button');
         exitButton.removeEventListener('click', this.exitButtonListener); // 移除监听器
-        Utility.toggleMenu(this, 'window'); // 关闭图表界面
+        Utility.toggleMenu(this, 'window');
     }
 }

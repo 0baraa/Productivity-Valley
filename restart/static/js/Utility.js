@@ -67,6 +67,11 @@ export default class Utility {
             dialogContainer = document.querySelector('.menu-container.decoration-plot-menu');
             dialog = document.querySelector('.menu.decoration-plot-menu');
         }
+        else if(menu === "furnitureShopMenu") {
+            dialogContainer = document.querySelector('.menu-container.furniture-shop-menu');
+            dialog = document.querySelector('.menu.furniture-shop-menu');
+        }
+
         else if(menu === "window"){
             dialogContainer = document.querySelector('.menu-container.chart-menu');
             dialog = document.querySelector('.menu.chart-menu');
@@ -79,16 +84,30 @@ export default class Utility {
             dialogContainer.style.display = 'none';
             dialog.close();
             scene.sys.game.input.enabled = true;
-        } 
+        }
         else {
             // Change the display style of the dialog's container to 'block'
             dialogContainer.style.display = 'block';
-        
+
             // Show the dialog
             dialog.showModal();
 
             scene.sys.game.input.enabled = false;
         }
+        // if (dialog) { // 确保 dialog 不是 undefined 或 null
+        //     if (dialog.open) { // 这里假设 dialog 是一个 <dialog> 元素
+        //         dialogContainer.style.display = 'none';
+        //         dialog.close();
+        //         scene.sys.game.input.enabled = true;
+        //     } else {
+        //         dialogContainer.style.display = 'block';
+        //         dialog.showModal(); // 显示 <dialog> 元素
+        //         scene.sys.game.input.enabled = false;
+        //     }
+        // } else {
+        //     console.error('Dialog element not found for menu:', menu);
+        // }
+
     }
 
     static getUserData() {
@@ -110,27 +129,23 @@ export default class Utility {
             ],
             //plots should have coordinates saved also
             "plots": [
-              {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework"}, 
-              {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup"}, 
-              {"id": 3, "crop": "carrot", "growthStage": 2},
-              {"id": 7, "crop": "nothing", "growthStage": 0},
-              {"id": 8, "crop": "sunflower", "growthStage": 10}
+              {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616, "placed": true},
+              {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true},
+              {"id": 3, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616, "placed": true},
+              {"id": 4, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616, "placed": true},
             ],
             "furniture": [
-              {"type": "carpet1", "x": 320, "y": 612},
-              {"type": "bookshelf", "x": 281, "y": 580},
-              {"type": "fridge", "x": 193, "y": 580},
-              {"type": "grandfather-clock", "x": 246, "y": 580},
-              {"type": "kitchen-sink", "x": 408, "y": 600},
-              {"type": "chair", "x": 210, "y": 650},
-              {"type": "table", "x": 192, "y": 650},
-              {"type": "lamp", "x": 345, "y": 580},
-              {"type": "toilet", "x": 452, "y": 658},
-              {"type": "bathtub", "x": 370, "y": 660},
-              {"type": "fireplace", "x": 221, "y": 565}
+              {"type": "carpet1", "x": 320, "y": 612, "placed": true},
+              {"type": "bookshelf", "x": 281, "y": 580, "placed": true},
+              {"type": "coatrack", "x": 350, "y": 580, "placed": true},
+              {"type": "plant", "x": 245, "y": 590, "placed": true},
+              {"type": "table2", "x": 400, "y": 590, "placed": false}
             ],
             "decorations": [
-                {"type": "snowman", "x":50, "y":700}
+                {"type": "snowman", "x":50, "y":700, "placed": true}
+            ],
+            "farmhouse":[
+                {"level": 1, "x": 70, "y": 570}
             ]
           }
     
