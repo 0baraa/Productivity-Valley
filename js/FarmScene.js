@@ -29,12 +29,10 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('cloud5', '../assets/clouds/cloud5.png');
         this.load.image('cloud6', '../assets/clouds/cloud6.png');
 
-        this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
-        this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
-        this.load.spritesheet("butterfly1AS", "../assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16 })
-        this.load.spritesheet("butterfly2AS", "../assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16 })
-        this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", { frameWidth: 20, frameHeight: 30 });
+        this.load.spritesheet("butterfly1AS", "../assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16 });
+        this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", { frameWidth: 20, frameHeight: 28 });
         this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", { frameWidth: 19, frameHeight: 41 });
+        this.load.spritesheet("pumpkinGrowth", "../assets/crops/pumpkin-growth-AS.png", {frameWidth: 33, frameHeight: 39 });
 
         this.load.image('play-button', '../assets/clock/play-button.png');
         this.load.image('pause-button', '../assets/clock/pause-button.png');
@@ -76,8 +74,9 @@ export default class FarmScene extends Phaser.Scene {
             yoyo: true
         })
 
+        //needs to be replaced with a setinterval function with random delay. (also to be only activated when flowers are growing)
         this.time.addEvent({
-            delay: 5000,
+            delay: 10000,
             callback: () => generateButterfly(this),
             loop: true
         })
@@ -101,13 +100,19 @@ export default class FarmScene extends Phaser.Scene {
         //Create crop animations.
         this.anims.create({
             key: 'carrotAnim',
-            frames: this.anims.generateFrameNumbers("carrotGrowth", { start: 0, end: 10, }),
+            frames: this.anims.generateFrameNumbers("carrotGrowth", { start: 0, end: 10 }),
             frameRate: 1,
             repeat: 0
         })
         this.anims.create({
             key: 'sunflowerAnim',
-            frames: this.anims.generateFrameNumbers("sunflowerGrowth", { start: 0, end: 10, }),
+            frames: this.anims.generateFrameNumbers("sunflowerGrowth", { start: 0, end: 10 }),
+            frameRate: 1,
+            repeat: 0
+        })
+        this.anims.create({
+            key: "pumpkinAnim",
+            frames: this.anims.generateFrameNumbers("pumpkinGrowth", {start: 0, end: 10}),
             frameRate: 1,
             repeat: 0
         })
@@ -1198,7 +1203,9 @@ class Plot extends Phaser.GameObjects.Container {
             this.occupied = false;
         } else {
             this.occupied = true;
+            
         }
+
 
         // Create the plot sprite and add it to the container
         this.plotSprite = this.scene.add.sprite(0, 0, 'plot');
@@ -1364,9 +1371,16 @@ class Plot extends Phaser.GameObjects.Container {
     }
 
     plantCrops() {
-        this.gridSize = 5;
         this.occupied = true;
-
+        let xoff = -35;
+        let yoff = -40;
+        if (this.crop === "pumpkin") {
+            this.gridSize = 3;
+            xoff = -30;
+            yoff = -30;
+        } else {
+            this.gridSize = 5;
+        }
         let cellWidth = this.plotSprite.width / this.gridSize;
         let cellHeight = this.plotSprite.height / this.gridSize;
 
@@ -1376,7 +1390,7 @@ class Plot extends Phaser.GameObjects.Container {
                 let x = col * cellWidth + cellWidth / 2;
                 let y = row * cellHeight + cellHeight / 2;
                 //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
-                let crop = this.scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");
+                let crop = this.scene.add.sprite(x + xoff, y + yoff, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");
                 // immediately stops animation so that it can be controlled.
                 crop.stop();
                 //Set the frame of the crop sprite to the the current growth stage of the plot
