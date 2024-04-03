@@ -54,7 +54,8 @@ class UsersView(APIView):
                   "username":output.username,
                   "email":output.email,
                   "money":output.money,
-                  "houseStatus":output.houseStatus}
+                  "houseStatus":output.houseStatus,
+                  "plots":output.plots}
                   for output in Users.objects.all()]
         return Response(output)
     def post (self, request):
@@ -87,7 +88,30 @@ class MoneyView(APIView):
             return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+class HouseView(APIView):
+     def post(self, request):
+        username = request.data.get('username', None)
+        if username is None:
+            return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Users.objects.filter(username=username).update(houseStatus=F('houseStatus') + 1)
+            return Response({"message": f"House Status updated successfully for user {username}"}, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+class PlotView(APIView):
+     def post(self, request):
+        username = request.data.get('username', None)
+        if username is None:
+            return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Users.objects.filter(username=username).update(plots=F('plots') + 1)
+            return Response({"message": f"Plots updated successfully for user {username}"}, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class TasksView(APIView):
     def get(self, request):
         output = [{"taskName":output.taskName,

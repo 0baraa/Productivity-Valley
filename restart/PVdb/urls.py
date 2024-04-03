@@ -23,6 +23,8 @@ urlpatterns = [
 # path('admin/', admin.site.urls),
 path('users/', UsersView.as_view(), name='Users'),
 path('users/change-money/', MoneyView.as_view(), name='change-money'),
+path('users/change-house/', HouseView.as_view(), name='change-house'),
+path('users/change-plots/', PlotView.as_view(), name='change-plots'),
 path('decorations', DecorationsView.as_view(), name='Decorations'),
 path('crops', CropsView.as_view(), name='Crops'),
 path('user-decorations/', UserDecorationsView.as_view(), name='user_decorations'),

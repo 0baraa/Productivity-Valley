@@ -98,7 +98,7 @@ class UserData {     //works
             });
     }
     
-    changeUserMoney(username, money) {
+    changeUserMoney(username, money) {      //works
         const url = `http://localhost:8000/users/change-money/`;
     
         const requestData = {
@@ -118,6 +118,54 @@ class UserData {     //works
                 throw new Error('Network response was not ok');
             }
             console.log('Money updated successfully');
+        })
+        .catch(error => {
+            console.error('Error updating money:', error);
+        });
+    }
+    incrementHouse(username) {      //works
+        const url = `http://localhost:8000/users/change-house/`;
+    
+        const requestData = {
+            username: username,
+        };
+        console.log(requestData)
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log('House status updated successfully');
+        })
+        .catch(error => {
+            console.error('Error updating money:', error);
+        });
+    }
+    incrementPlots(username) {      //works
+        const url = `http://localhost:8000/users/change-plots/`;
+    
+        const requestData = {
+            username: username,
+        };
+        console.log(requestData)
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log('Plots updated successfully');
         })
         .catch(error => {
             console.error('Error updating money:', error);
@@ -184,7 +232,8 @@ const newUser2 = {
 };
 const userData = new UserData();
 //userData.addUserDate(newUserDate)
-userData.changeUserMoney('johndoe', 50)
+//userData.changeUserMoney('johndoe', 50)
+userData.incrementPlots('johndoe')
 //userData.addUserCrop(apiUrlalt1, newUserCrop)
 //userData.fetchUserCrops(newUserCrop.username)
 //userData.createUser(apiUrl, newUser2)

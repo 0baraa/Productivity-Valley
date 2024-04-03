@@ -9,6 +9,7 @@ class Users(models.Model):    #table for users
     email = models.EmailField(unique=True)
     money = models.PositiveIntegerField(default=0)
     houseStatus = models.PositiveIntegerField(default=0)
+    plots = models.PositiveIntegerField(default=0)
 
 class Tasks(models.Model):   #table for tasks
     taskName = models.CharField(max_length=30, primary_key=True)
