@@ -22,12 +22,12 @@ from .views import UsersView,PomodoroStatsView
 urlpatterns = [
 # path('admin/', admin.site.urls),
 path('users/', UsersView.as_view(), name='Users'),
-path('users/change-money/', UsersView.as_view(), name='change-money'),
+path('users/change-money/', MoneyView.as_view(), name='change-money'),
 path('decorations', DecorationsView.as_view(), name='Decorations'),
 path('crops', CropsView.as_view(), name='Crops'),
 path('user-decorations/', UserDecorationsView.as_view(), name='user_decorations'),
 path('user-crops/', UserCropsView.as_view(), name='user_crops'),
 path('tasks/', TasksView.as_view(), name='tasks'),
 path('user-dates/', UserDatesView.as_view(), name='user_dates'),
-path('pomodoro_stats/<str:username>/', PomodoroStatsView.as_view(), name='pomodoro_stats'),
+#path('pomodoro_stats/<str:username>/', PomodoroStatsView.as_view(), name='pomodoro_stats'),
 ]

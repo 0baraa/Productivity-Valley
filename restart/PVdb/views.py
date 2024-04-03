@@ -5,10 +5,12 @@ from .serializer import *
 from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import F
-
+from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from datetime import timedelta
 from django.http import JsonResponse
+
+@csrf_exempt 
 
 class PomodoroStatsView(APIView):
     def get(self, request, username):
@@ -72,7 +74,8 @@ class UsersView(APIView):
             return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    def changeMoney(self, request):
+class MoneyView(APIView):
+     def post(self, request):
         username = request.data.get('username', None)
         money = request.data.get('money', None)
         if username is None or money is None:
@@ -84,6 +87,7 @@ class UsersView(APIView):
             return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class TasksView(APIView):
     def get(self, request):
         output = [{"taskName":output.taskName,

@@ -1,5 +1,5 @@
 // import axios from 'axios';
-// const axios = require('axios');
+const axios = require('axios');
 
 
 const apiUrl = 'http://localhost:8000/users/';
@@ -97,14 +97,15 @@ class UserData {     //works
                 console.error('Error adding decoration for user:', error);
             });
     }
-    changeUserMoney(username, amount) {
+    
+    changeUserMoney(username, money) {
         const url = `http://localhost:8000/users/change-money/`;
     
         const requestData = {
             username: username,
-            money: amount
+            money: money
         };
-    
+        console.log(requestData)
         fetch(url, {
             method: 'POST',
             headers: {
@@ -148,7 +149,7 @@ class UserData {     //works
 
 }
 
-export default UserData;
+//export default UserData;
 
 const newUserDec = {
     username: 'johndoe',
@@ -159,28 +160,34 @@ const newUserCrop = {
     username: 'johndoe',
     crop: 'Corn',
 };
-const today = new Date();
-const year = today.getFullYear();
-const month = today.getMonth() + 1;
-const day = today.getDate();
-const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-console.log(formattedDate)
-const newUserDate = {
-    username: 'johndoe',
-    date: formattedDate
-};
+// const today = new Date();
+// const year = today.getFullYear();
+// const month = today.getMonth() + 1;
+// const day = today.getDate();
+// const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+// console.log(formattedDate)
+// const newUserDate = {
+//     username: 'johndoe',
+//     date: formattedDate
+// };
 const newUser = {
     firstName: 'John',
     lastName: 'Doe',
     username: 'johndoe',
     email: 'johndoe@example.com',
 };
+const newUser2 = {
+    firstName: 'Joe',
+    lastName: 'Jackson',
+    username: 'joejacko',
+    email: 'joejacko@example.com',
+};
 const userData = new UserData();
-userData.addUserDate(newUserDate)
-//userData.changeUserMoney('johndoe', 50)
+//userData.addUserDate(newUserDate)
+userData.changeUserMoney('johndoe', 50)
 //userData.addUserCrop(apiUrlalt1, newUserCrop)
 //userData.fetchUserCrops(newUserCrop.username)
-//userData.createUser(apiUrl, newUser)
+//userData.createUser(apiUrl, newUser2)
 // userData.deleteUser(apiUrl, 'johndoe')
 //     .then(() => {
 //         console.log('User deleted successfully');
