@@ -120,7 +120,8 @@ class TasksView(APIView):
                   "taskCompleted":output.taskCompleted,
                   "taskStatus":output.taskStatus,
                   "plotNumber":output.plotNumber,
-                  "pomodorros":output.pomodorros}
+                  "pomodorros":output.pomodorros,
+                  "cropType":output.cropType}
                   for output in Tasks.objects.all()]
         return Response(output)
     def post (self, request):
@@ -140,6 +141,33 @@ class TasksView(APIView):
             return Response({"message": f"Task with name {taskName} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Users.DoesNotExist:
             return Response({"error": f"Task with name {taskName} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+class TaskCompletedView(APIView):
+     def post(self, request):
+        username = request.data.get('username', None)
+        taskName = request.data.get('taskName', None)
+        if username is None or taskName is None:
+            return Response({"error": "Username or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Tasks.objects.filter(username=username, taskName=taskName).update(taskCompleted=True)
+            return Response({"message": f"Task completed successfully for user {username}"}, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+class UpdateTaskView(APIView):
+     def post(self, request):
+        username = request.data.get('username', None)
+        taskName=request.data.get('taskName', None)
+        taskStatus = request.data.get('taskStatus', None)
+        if username is None or taskName is None or taskStatus is None:
+            return Response({"error": "Username or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Tasks.objects.filter(username=username, taskName=taskName).update(taskStatus=taskStatus)
+            return Response({"message": f"Task status updated successfully for user {username}"}, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class UserDatesView(APIView):

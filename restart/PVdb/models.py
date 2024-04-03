@@ -19,6 +19,7 @@ class Tasks(models.Model):   #table for tasks
     taskStatus = models.PositiveIntegerField(default=0)
     plotNumber = models.PositiveIntegerField(default=0)
     pomodorros = models.PositiveIntegerField(default=0)
+    cropType = models.CharField(max_length=30, default= None)
     class Meta:
         # Define composite primary key using unique_together
         unique_together = [['taskName', 'username']]

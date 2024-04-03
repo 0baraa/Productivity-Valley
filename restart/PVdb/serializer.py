@@ -9,7 +9,7 @@ class UsersSerializer(serializers.ModelSerializer):
 class TasksSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tasks
-        fields = ['taskName', 'projectName', 'username', 'plotNumber', 'pomodorros']
+        fields = ['taskName', 'projectName', 'username', 'plotNumber', 'pomodorros', 'cropType']
 
 class UserDatesSerializer(serializers.ModelSerializer):
     class Meta:
