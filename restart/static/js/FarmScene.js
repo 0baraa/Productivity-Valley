@@ -1,6 +1,5 @@
 import Utility from "./Utility.js";
 
-
 export default class FarmScene extends Phaser.Scene {
     constructor() {
         super({ key: 'FarmScene' });
@@ -8,50 +7,40 @@ export default class FarmScene extends Phaser.Scene {
 
 
     preload() {
-        // 辅助函数，自动添加 STATIC_URL 前缀
-        const loadStatic = (key, file) => this.load.image(key, STATIC_URL + file);
+        this.load.bitmapFont('pixelFont', '../fonts/pixeloperatorbitmap.png', '../fonts/pixeloperatorbitmap.xml');
 
-        // 对于特殊资源类型，如 bitmapFont 或 spritesheet，可以创建专门的辅助函数或直接使用 STATIC_URL
-        const loadBitmapFont = (key, textureUrl, xmlUrl) => this.load.bitmapFont(key, STATIC_URL + textureUrl, STATIC_URL + xmlUrl);
-        const loadSpritesheet = (key, file, frameConfig) => this.load.spritesheet(key, STATIC_URL + file, frameConfig);
+        this.load.image('farmBackground', '../assets/farm-background.png');
+        this.load.image('mountains', '../assets/mountains.png');
+        this.load.image('fence', '../assets/fence.png');
+        this.load.image('level1farmhouse', '../assets/house/level1farmhouse.png');
+        this.load.image('level2farmhouse', '../assets/house/level2farmhouse.png');
+        this.load.spritesheet('level2farmhousespritesheet', '../assets/house/level2farmhouseanimation.png', { frameWidth: 80, frameHeight: 128 });
+        
+        this.load.image('marketSign', '../assets/market-sign.png');
+        this.load.image('sun', '../assets/sun.png');
+        this.load.image('plot', '../assets/larger_plot.png');
 
-        // 使用辅助函数加载资源
-        loadBitmapFont('pixelFont', 'fonts/pixeloperatorbitmap.png', 'fonts/pixeloperatorbitmap.xml');
-        loadStatic('farmBackground', 'assets/farm-background.png');
-        loadStatic('mountains', 'assets/mountains.png');
-        loadStatic('fence', 'assets/fence.png');
-        loadStatic('level1farmhouse', 'assets/house/level1farmhouse.png');
-        loadStatic('level2farmhouse', 'assets/house/level2farmhouse.png');
-        loadStatic('level2farmhousespritesheet', 'assets/house/level2farmhouseanimation.png');
+        this.load.image('snowman', '../assets/decorations/snowman.png');
+        this.load.image('gnome', '../assets/decorations/gnome.png');
 
+        this.load.image('cloud1', '../assets/clouds/cloud1.png');
+        this.load.image('cloud2', '../assets/clouds/cloud2.png');
+        this.load.image('cloud3', '../assets/clouds/cloud3.png');
+        this.load.image('cloud4', '../assets/clouds/cloud4.png');
+        this.load.image('cloud5', '../assets/clouds/cloud5.png');
+        this.load.image('cloud6', '../assets/clouds/cloud6.png');
 
-        // loadSpritesheet('farmhouseSpritesheet', 'assets/farmhouse-animation.png', { frameWidth: 80, frameHeight: 128 });
-        // loadStatic('shackFarmhouse', 'assets/house/shack-farmhouse.png');
-        loadStatic('marketSign', 'assets/market-sign.png');
-        loadStatic('sun', 'assets/sun.png');
-        loadStatic('plot', 'assets/larger_plot.png');
-        loadStatic('snowman', 'assets/decorations/snowman.png');
-        loadStatic('cloud1', 'assets/clouds/cloud1.png');
-        loadStatic('cloud2', 'assets/clouds/cloud2.png');
-        loadStatic('cloud3', 'assets/clouds/cloud3.png');
-        loadStatic('cloud4', 'assets/clouds/cloud4.png');
-        loadStatic('cloud5', 'assets/clouds/cloud5.png');
-        loadStatic('cloud6', 'assets/clouds/cloud6.png');
+        this.load.spritesheet("butterfly1AS", "../assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16 });
+        this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", { frameWidth: 20, frameHeight: 28 });
+        this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", { frameWidth: 19, frameHeight: 41 });
+        this.load.spritesheet("pumpkinGrowth", "../assets/crops/pumpkin-growth-AS.png", {frameWidth: 33, frameHeight: 39 });
+        this.load.spritesheet("tulipGrowth", "../assets/crops/tulip-growth-AS.png", {frameWidth: 10, frameHeight: 22 });
 
-        loadStatic('play-button', 'assets/clock/play-button.png');
-        loadStatic('pause-button', 'assets/clock/pause-button.png');
-        loadStatic('skip-button', 'assets/clock/skip-button.png');
-
-        loadSpritesheet("carrotGrowth", "assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
-        loadSpritesheet("sunflowerGrowth", "assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
-        loadSpritesheet("butterfly1AS", "assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16});
-        loadSpritesheet("butterfly2AS", "assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16});
-        loadSpritesheet("carrotGrowth", "assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight:30});
-        loadSpritesheet("sunflowerGrowth", "assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight:41});
-
+        this.load.image('play-button', '../assets/clock/play-button.png');
+        this.load.image('pause-button', '../assets/clock/pause-button.png');
+        this.load.image('skip-button', '../assets/clock/skip-button.png');
 
     }
-
 
     create() {
         this.add.image(320, 550, 'farmBackground').setDepth(-1);
@@ -64,20 +53,20 @@ export default class FarmScene extends Phaser.Scene {
 
         this.clouds = [];
         this.cloudImages = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
-
+        
         //Generate initial cloud
         generateCloud(this);
-
-
+        
+        
         //Generate a new cloud every 5 seconds
         this.time.addEvent({
             delay: 8000,
             callback: () => generateCloud(this),
             loop: true
         });
-
+        
         this.add.image(320, 550, 'fence');
-
+        
 
         this.butterflies = [];
         this.anims.create({
@@ -87,8 +76,9 @@ export default class FarmScene extends Phaser.Scene {
             yoyo: true
         })
 
+        //needs to be replaced with a setinterval function with random delay. (also to be only activated when flowers are growing)
         this.time.addEvent({
-            delay: 5000,
+            delay: 10000,
             callback: () => generateButterfly(this),
             loop: true
         })
@@ -112,21 +102,30 @@ export default class FarmScene extends Phaser.Scene {
         //Create crop animations.
         this.anims.create({
             key: 'carrotAnim',
-            frames: this.anims.generateFrameNumbers("carrotGrowth", { start: 0, end: 10, }),
+            frames: this.anims.generateFrameNumbers("carrotGrowth", { start: 0, end: 10 }),
             frameRate: 1,
             repeat: 0
         })
         this.anims.create({
             key: 'sunflowerAnim',
-            frames: this.anims.generateFrameNumbers("sunflowerGrowth", { start: 0, end: 10, }),
+            frames: this.anims.generateFrameNumbers("sunflowerGrowth", { start: 0, end: 10 }),
             frameRate: 1,
             repeat: 0
         })
+        this.anims.create({
+            key: "pumpkinAnim",
+            frames: this.anims.generateFrameNumbers("pumpkinGrowth", {start: 0, end: 10}),
+            frameRate: 1,
+            repeat: 0
+        })
+        this.anims.create({
+            key: "tulipAnim",
+            frames: this.anims.generateFrameNumbers("tulipGrowth", {start: 0, end: 15}),
+            frameRate: 1,
+            repeat: 0
+        })
+        
 
-        this.farm = new PlayerFarm();
-        this.farm.createPlots(this);
-        this.farm.createDecorations(this);
-        this.farm.createFarmhouse(this);
 
         //set market sign to be one more than the crops.
         this.marketSign = this.add.image(600, 560, 'marketSign');
@@ -166,7 +165,7 @@ export default class FarmScene extends Phaser.Scene {
             // Save initial positions of objects so they can be reset if the user cancels the edit
 
             // If we are in InsideFarmhouseScene
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            if(!this.input.enabled) {
                 this.originalFurniture = this.farm.furniture.map(furniture => ({...furniture}));
             }
             // If we are in FarmScene
@@ -189,7 +188,7 @@ export default class FarmScene extends Phaser.Scene {
             editButton.style.display = 'inline';
 
             // Reset the positions of the objects
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            if(!this.input.enabled) {
                 for (let i = 0; i < this.farm.furniture.length; i++) {
                     this.farm.furniture[i].x = this.originalFurniture[i].x;
                     this.farm.furniture[i].y = this.originalFurniture[i].y;
@@ -234,14 +233,14 @@ export default class FarmScene extends Phaser.Scene {
 
         trashButton.addEventListener('click', () => {
             Utility.toggleDeleteMode();
-
+        
         });
 
         plusButton.addEventListener('click', () => {
             if(Utility.isDeleteMode()){
                 Utility.toggleDeleteMode();
             }
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            if(!this.input.enabled) {
                 let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
 
                 let furnitureContainer = document.getElementById('furniture-container');
@@ -284,7 +283,7 @@ export default class FarmScene extends Phaser.Scene {
                         furnitureButton.onclick = () => {
                             furniture.placed = true;
                             furniture.setVisible(true);
-                            furniture.setActive(true);
+                            furniture.setActive(true);  
                             furniture.x = 320;
                             furniture.y = 620;
                             this.scene.get('InsideFarmhouseScene').children.bringToTop(furniture);
@@ -343,7 +342,7 @@ export default class FarmScene extends Phaser.Scene {
                         plotButton.onclick = () => {
                             plot.placed = true;
                             plot.setVisible(true);
-                            plot.setActive(true);
+                            plot.setActive(true);  
                             plot.x = 320;
                             plot.y = 620;
                             // Clear the decorations and plot containers
@@ -381,7 +380,7 @@ export default class FarmScene extends Phaser.Scene {
                         let buttonDiv = document.createElement('div');
                         buttonDiv.style.display = 'flex';
                         buttonDiv.style.justifyContent = 'center';
-
+                        
                         let decorationButton = document.createElement('button');
                         decorationButton.classList.add('furniture-button');
                         decorationButton.id = decoration.type + '-button';
@@ -430,8 +429,8 @@ export default class FarmScene extends Phaser.Scene {
             trashButton.style.display = 'none';
             crossButton.style.display = 'none';
             editButton.style.display = 'inline';
-
-            if(this.scene.isActive('InsideFarmhouseScene')) {
+            
+            if(!this.input.enabled) {
                 for(let furniture of this.farm.furniture){
                     furniture.wasDeleted = false;
                 }
@@ -485,7 +484,7 @@ export default class FarmScene extends Phaser.Scene {
                     if(gameObject.x + 42 + gameObject.width / 2 > 640) {
                         gameObject.x = 592;
                     }
-
+                    
                     if(gameObject.x - 42 - gameObject.width / 2 < 0) {
                         gameObject.x = 48;
                     }
@@ -517,7 +516,7 @@ export default class FarmScene extends Phaser.Scene {
                     if(gameObject.y - gameObject.height / 2 < 530) {
                         gameObject.y = 530 + gameObject.height / 2;
                     }
-
+                    
                     gameObject.setDepth(gameObject.y);
                 }
 
@@ -555,7 +554,7 @@ export default class FarmScene extends Phaser.Scene {
 
         let furnitureShopExitButton = document.getElementById('furniture-shop-exit-button');
         let furnitureShopContainer = document.getElementById('furniture-shop-container');
-
+        
         furnitureShopExitButton.addEventListener('click', () => {
             while (furnitureShopContainer.firstChild) {
                 furnitureShopContainer.removeChild(furnitureShopContainer.firstChild);
@@ -563,14 +562,33 @@ export default class FarmScene extends Phaser.Scene {
             Utility.toggleMenu(this.scene.get('MarketScene'), "furnitureShopMenu");
         });
 
+        let decorationShopExitButton = document.getElementById('decoration-shop-exit-button');
+        let decorationShopContainer = document.getElementById('decoration-shop-container');
 
-        // Launch InsideFarmhouseScene to load the textures in that scene (don't remove pls ;) needed for creating furniture if the user hasn't entered the house before)
+        decorationShopExitButton.addEventListener('click', () => {
+            while (decorationShopContainer.firstChild) {
+                decorationShopContainer.removeChild(decorationShopContainer.firstChild);
+            }
+            Utility.toggleMenu(this.scene.get('MarketScene'), "decorationShopMenu");
+        });
+
+        let plotShopExitButton = document.getElementById('plots-shop-exit-button');
+        let plotShopContainer = document.getElementById('plots-shop-container');
+
+        plotShopExitButton.addEventListener('click', () => {
+            while (plotShopContainer.firstChild) {
+                plotShopContainer.removeChild(plotShopContainer.firstChild);
+            }
+            Utility.toggleMenu(this.scene.get('MarketScene'), "plotShopMenu");
+        });
+
+        // Launch the FarmhouseScene (which is hidden at first)
         this.scene.launch('InsideFarmhouseScene');
         // Get the InsideFarmhouseScene instance
         let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
         // wait for scene to load then close it
         insideFarmhouseScene.load.on('complete', () => {
-            this.scene.stop('InsideFarmhouseScene');
+            this.farm = new PlayerFarm(this);
         });
     }
 
@@ -585,7 +603,7 @@ export default class FarmScene extends Phaser.Scene {
             }
         }
         this.skip++;
-
+        
     }
 
 
@@ -635,7 +653,7 @@ function generateButterfly(scene) {
     for(let i = 0; i < scene.butterflies.length; i++) {
         scene.butterflies[i].setDepth(10000);
     }
-
+    
 
     for (let i = 0; i < scene.butterflies.length; i++) {
         if ((scene.butterflies[i].x < -20) || scene.butterflies[i].x > (screen.width + 40) ) {
@@ -971,7 +989,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.skipButton.on('pointerdown', () => {
             console.log('skip button clicked');
             this.scene.events.emit('timerSkipped');
-
+            
             console.log('work flag', this.workFlag)
             this.skipTimer();
         });
@@ -984,19 +1002,19 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
         if (this.workFlag) {
             if (!this.autoStartPomodoro) {
-                this.playButton.setVisible(true);
+                this.playButton.setVisible(true); 
                 this.pauseButton.setVisible(false);
                 this.skipButton.setVisible(false);
                 return;
             } else {
-                this.skipTimer();
+                this.skipTimer(); 
             }
         } else {
-            if (!this.autoStartBreak) {
-                this.playButton.setVisible(true);
+            if (!this.autoStartBreak) { 
+                this.playButton.setVisible(true); 
                 this.pauseButton.setVisible(false);
                 this.skipButton.setVisible(false);
-                return;
+                return; 
             } else {
                 this.skipTimer();
             }
@@ -1046,7 +1064,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
     onPointerOver() {
         this.scene.events.emit('showTime');
-
+        
         this.playButton.setVisible(true);
         if (this.timer1){
             if (this.pauseFlag || this.timer1.remainingTime == 0 || this.timer1.paused) {
@@ -1071,8 +1089,9 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
-    constructor(){
+    constructor(scene){
         // load playerstate from database
+        this.scene = scene;
         this.coins = 0;
         this.plots = [];
         this.cropsOwned = [];
@@ -1080,11 +1099,19 @@ class PlayerFarm {
         this.decorations = [];
         this.animals = [];
         this.farmhouse = null;
-    }
 
-    createPlots(scene) {
+
+        let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
+
         let data = Utility.getUserData();
 
+        this.createPlots(this.scene, data);
+        this.createDecorations(this.scene, data);
+        this.createFarmhouse(this.scene, data);
+        this.createFurniture(insideFarmhouseScene, data);
+    }
+
+    createPlots(scene, data) {
         let x, zoom;
         let y = 0;
         let along = false;
@@ -1130,16 +1157,14 @@ class PlayerFarm {
         this.showCoins(scene, data.coins);
     }
 
-    createDecorations(scene) {
-        let data = Utility.getUserData();
+    createDecorations(scene, data) {
         for(let i = 0; i < data.decorations.length; i++){
             let decoration = new Decoration({scene: scene, x: data.decorations[i].x, y: data.decorations[i].y, type: data.decorations[i].type, texture: data.decorations[i].type, placed: data.decorations[i].placed});
             this.decorations.push(decoration);
         }
     }
 
-    createFarmhouse(scene) {
-        let data = Utility.getUserData();
+    createFarmhouse(scene, data) {
         this.farmhouse = new Farmhouse({scene: scene, x: data.farmhouse[0].x, y: data.farmhouse[0].y, level: data.farmhouse[0].level, texture: 'level' + data.farmhouse[0].level + 'farmhouse'});
     }
 
@@ -1147,26 +1172,31 @@ class PlayerFarm {
 
     }
 
-    createFurniture(scene) {
-        let data = Utility.getUserData();
-
+    createFurniture(scene, data) {
         for(let i = 0; i < data.furniture.length; i++){
-            let furniture = new Furniture({scene: scene,
-                                           x: data.furniture[i].x,
-                                           y: data.furniture[i].y,
-                                           type: data.furniture[i].type,
+            let furniture = new Furniture({scene: scene, 
+                                           x: data.furniture[i].x, 
+                                           y: data.furniture[i].y, 
+                                           type: data.furniture[i].type, 
                                            texture: data.furniture[i].type,
                                            placed: data.furniture[i].placed});
             this.furniture.push(furniture);
         }
     }
 
-    addFurniture(scene, type) {
-        let furniture = new Furniture({scene: scene, x: -1000, y: -1000, type: type, texture: type});
-        furniture.setVisible(false); // make the sprite invisible
-        furniture.setActive(false); // make the sprite inactive
-        furniture.placed = false;
+    addFurnitureToInventory(scene, type) {
+        let furniture = new Furniture({scene: scene, x: -1000, y: -1000, type: type, texture: type, placed: false});
         this.furniture.push(furniture);
+    }
+
+    addDecorationToInventory(scene, type) {
+        let decoration = new Decoration({scene: scene, x: -1000, y: -1000, type: type, texture: type, placed: false});
+        this.decorations.push(decoration);
+    }
+
+    addPlotToInventory(scene) {
+        let plot = new Plot({scene: scene, x: -1000, y: -1000, id: this.plots.length, crop: "nothing", counter: 0, placed: false});
+        this.plots.push(plot);
     }
 }
 
@@ -1220,7 +1250,7 @@ class Butterfly extends Animal {
 
 class Plot extends Phaser.GameObjects.Container {
     constructor(config) {
-        //loads plot state
+        //loads plot state 
         super(config.scene, config.x, config.y);
         this.scene = config.scene;
         this.id = config.id;
@@ -1237,7 +1267,9 @@ class Plot extends Phaser.GameObjects.Container {
             this.occupied = false;
         } else {
             this.occupied = true;
+            
         }
+
 
         // Create the plot sprite and add it to the container
         this.plotSprite = this.scene.add.sprite(0, 0, 'plot');
@@ -1284,7 +1316,7 @@ class Plot extends Phaser.GameObjects.Container {
                     if(plot !== gameObject && plot.placed === true) {
                         let gameObjBounds = gameObject.plotSprite.getBounds();
                         let plotBounds = plot.plotSprite.getBounds();
-
+            
                         if (Phaser.Geom.Intersects.RectangleToRectangle(gameObjBounds, plotBounds)) {
                             gameObject.x = gameObject.lastValidPosition.x;
                             gameObject.y = gameObject.lastValidPosition.y;
@@ -1326,7 +1358,7 @@ class Plot extends Phaser.GameObjects.Container {
                     let subtasksRows = document.getElementsByClassName("subtask-row");
 
                     for (let i = 0; i < subtasksRows.length; i++) {
-                        if(subtasksCheck.checked) {subtasksRows[i].style.display = "block";}
+                        if(subtasksCheck.checked) {subtasksRows[i].style.display = "block";} 
                         else {subtasksRows[i].style.display = "none";}
                     }
                 }
@@ -1369,10 +1401,10 @@ class Plot extends Phaser.GameObjects.Container {
                     //add exit listener
                     taskExitButton.addEventListener('click', close);
 
-
+                    
                 }
             }
-
+            
         });
         this.scene.add.existing(this);
 
@@ -1403,9 +1435,18 @@ class Plot extends Phaser.GameObjects.Container {
     }
 
     plantCrops() {
-        this.gridSize = 5;
         this.occupied = true;
-
+        let xoff = -35;
+        let yoff = -40;
+        this.gridSize = 5;
+        if (this.crop === "pumpkin") {
+            this.gridSize = 3;
+            xoff = -30;
+            yoff = -30;
+        } else if (this.crop === "tulip"){
+            xoff = -40;
+            yoff = -42;
+        }
         let cellWidth = this.plotSprite.width / this.gridSize;
         let cellHeight = this.plotSprite.height / this.gridSize;
 
@@ -1415,7 +1456,7 @@ class Plot extends Phaser.GameObjects.Container {
                 let x = col * cellWidth + cellWidth / 2;
                 let y = row * cellHeight + cellHeight / 2;
                 //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
-                let crop = this.scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");
+                let crop = this.scene.add.sprite(x + xoff, y + yoff, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");
                 // immediately stops animation so that it can be controlled.
                 crop.stop();
                 //Set the frame of the crop sprite to the the current growth stage of the plot
@@ -1428,6 +1469,9 @@ class Plot extends Phaser.GameObjects.Container {
         }
         //Used for growth
         this.maxFrame = this.cropSprites[0].anims.getTotalFrames();
+        if (this.crop == "tulip") {
+            this.maxFrame -= 5;
+        } 
     }
 
     playGrowth() {
@@ -1501,8 +1545,18 @@ class Plot extends Phaser.GameObjects.Container {
     growSelectedCrop(num, rand) {
         //actually increment the frame of the crop
         if (this.cropsLeft.length != 0) { //here for safety's sake
-            this.cropSprites[num].anims.nextFrame(1);
-            if (this.cropSprites[num].anims.getFrameName() == this.maxFrame - 1) {
+            let frame_jump = 1;
+            if (this.crop == "tulip") {
+                if (this.cropSprites[num].anims.getFrameName() == this.maxFrame - 2) {
+                    frame_jump = Math.floor(Math.random() * 6 ) + 1;
+                    console.log(frame_jump);
+                }
+            }
+            for (let i = 0; i < frame_jump; i++) {
+                this.cropSprites[num].anims.nextFrame();
+            }
+
+            if (this.cropSprites[num].anims.getFrameName() >= this.maxFrame - 1) {
                 this.cropsLeft.splice(rand, 1); // remove from list of crops to grow
                 console.log("finished growing crop");
             }
@@ -1571,6 +1625,8 @@ class Furniture extends Phaser.GameObjects.Sprite {
 
         // Add a hover effect to the furniture
         Utility.addTintOnHover(this);
+
+        this.setDepth(10);
 
         // Add this object to the scene
         this.scene.add.existing(this);
@@ -1646,7 +1702,7 @@ class Furniture extends Phaser.GameObjects.Sprite {
                 }
             }
         }
-        else{
+        else{ 
             this.wasDeleted = true;
             this.setVisible(false); // make the sprite invisible
             this.setActive(false); // make the sprite inactive
@@ -1735,12 +1791,8 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
     }
 
     handleClick() {
-        // Switch to inside farmhouse scene when farmhouse is clicked (Keeps FarmScene running in background)
-        // Disable input for FarmScene
-        if(!Utility.isEditMode()) {
-            this.scene.input.enabled = false;
-            this.scene.scene.launch('InsideFarmhouseScene');
-        }
+        let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
+        insideFarmhouseScene.toggleHideScene(this.scene);
     }
 
     // Upgrade the farmhouse to the next level
