@@ -3,6 +3,8 @@
 export default class Utility {
     static editMode = false;
     static deleteMode = false;
+    static working = false;
+    static isPlotReady = false;
 
     static toggleEditMode() {
         this.editMode = !this.editMode;
@@ -192,5 +194,19 @@ export default class Utility {
         }
         this.data.coins -= price;
         console.log(this.data.coins);
+    }
+
+    static getWorkingState() {
+        return this.working;
+    }
+    static setWorkingState(state) {
+        this.working = state;
+    }
+
+    static getPlotReady() {
+        return this.isPlotReady;
+    }
+    static setPlotReady(state) {
+        this.isPlotReady = state;
     }
 }
