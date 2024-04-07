@@ -10,22 +10,6 @@
 </head>
 <body>
     <script type="module" src="./js/game.js"></script>
-    <script>
-        function addSubtask() {
-            //
-            let taskTable = document.getElementById("task-menu-table");
-            
-            let row = taskTable.insertRow(taskTable.rows.length-2);
-            let cell = row.insertCell();
-            let input = document.createElement("input");
-            value.setAttribute("type", "text");
-            let bullet = document.createTextNode(" - ");
-            cell.appendChild(bullet);
-            cell.appendChild(input);
-
-
-        }
-    </script>
     <div id="game-container"></div>
     <div class="menu-container task-menu" style="display: none;">
         <dialog class="menu task-menu" style="display: inline-flex; flex-direction: column;">
@@ -54,12 +38,6 @@
                         </tr>
                         <tr>
                             <td>
-                                <label for="minutes">Minutes per session:</label>
-                                <input type="number" id="minutes" name="minutes" style="width: 70px" min="10" max="120" step="5" value="25" required>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
                                 <label for="repetitions">Sessions:</label>
                                 <input type="number" id="repetitions" name="repetitions" style="width: 70px" min="1" max="20" step="1" value="1" required>
                             </td>
@@ -77,7 +55,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" id="subtasks-query" name="subtasks-query">
+                                <input type="checkbox" id="subtasks-query" name="subtasksQuery">
                                 <label for="subtasks-query">Add Subtasks</label>
                             </td>
                         </tr>
@@ -89,7 +67,7 @@
                         </tr>
                         <tr id="save-preset-row">
                             <td>
-                                <input type="checkbox" id="save-preset" name="save-preset">
+                                <input type="checkbox" id="save-preset" name="savePreset">
                                 <label for="save-preset">Save Preset</label>
                             </td>
                         </tr>
@@ -281,14 +259,14 @@
     </div>
     
     <!--Settings-->
-    <div class="settings-icon-container">
+    <div id="settings-icon-container">
         <img src="/assets/settings.png" alt="Settings Icon">
     </div>
 
     <!--Settings Popup-->
-    <div class="settings-container settings-menu" style="display: none;">
+    <div class="menu-container settings-menu" style="display: none;">
         <dialog class="menu settings-menu" style="display: inline-flex; flex-direction: column;">
-            <div class="settings-top-container">
+            <div class="menu-top-container">
                 <button class="info-button" id="settings-info-button">?</button>
                 <p>Settings</p>
                 <button class="exit-button" id="settings-exit-button">X</button>
@@ -299,25 +277,25 @@
                         <tr>
                             <td>
                                 <label for="workTime">Pomodoro:</label>
-                                <input type="number" id="workTime" name="workTime" min="10" max="120" step="5" value="25" required>
+                                <input type="number" id="workTime" name="workTime" min="10" max="120" step="1" value="25" style="width: 70px" required>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="shortBreakTime">Short Break:</label>
-                                <input type="number" id="shortBreakTime" name="shortBreak" min="1" max="120" step="5" value="5" required>
+                                <input type="number" id="shortBreakTime" name="shortBreak" min="1" max="120" step="1" value="5" style="width: 70px" required>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="longBreakTime">Long Break:</label>
-                                <input type="number" id="longBreakTime" name="longBreak" min="1" max="120" step="5" value="15" required>
+                                <input type="number" id="longBreakTime" name="longBreak" min="1" max="120" step="1" value="15" style="width: 70px" required>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="longBreakInterval">Long Break Interval:</label>
-                                <input type="number" id="longBreakInterval" name="longBreakInterval" min="2" max="20" step="1" value="4" required>
+                                <input type="number" id="longBreakInterval" name="longBreakInterval" min="2" max="20" step="1" value="4" style="width: 70px" 000000required>
                             </td>
                         </tr>
                         <tr>

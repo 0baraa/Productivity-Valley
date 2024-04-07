@@ -592,7 +592,33 @@ export default class FarmScene extends Phaser.Scene {
             this.farm = new PlayerFarm(this);
         });
 
+        let settingsButton = document.getElementById("settings-icon-container");
+        settingsButton.addEventListener('click', () => {
+            Utility.toggleMenu(this, "settingsMenu");
+            let settingsForm = document.getElementById('settings-form');
+            let settingsExitButton = document.getElementById('settings-exit-button');
+            let settingsInfoButton = document.getElementById('settings-info-button');
 
+            const showInfo = (event) => {};
+            const settingsClose = (event) => {
+                settingsForm.removeEventListener('submit', settingsClose);
+                settingsExitButton.removeEventListener('click', settingsClose);
+                settingsInfoButton.removeEventListener('click', showInfo);
+                //showInfo needs to be added to Utility.js
+                Utility.toggleMenu(this, "settingsMenu");
+                if (event.type == "submit") {
+                    event.preventDefault();
+                    //Utility.sendSettingsData();
+                    //update pomodoro timer settings;
+                    
+
+                }
+            }
+            settingsExitButton.addEventListener('click', settingsClose);
+            settingsForm.addEventListener('submit', settingsClose);
+
+        })
+        //white square around plot that will move to selected plot
         this.selector = this.add.sprite(0,0, "plotSelect")
         this.selector.setVisible(false);
     }
@@ -983,14 +1009,14 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.playButton.on('pointerdown', () => {
             console.log('play button clicked');
             console.log(this.workFlag);
-            if (this.timer1){
+            if (this.timer1 && Utility.getPlotReady){
                 if (this.timer1.remainingTime == 0){
                     this.skipTimer();
                 } else {
                     this.scene.events.emit('timerResumed');
                     this.pauseFlag = false;
                 }
-            } else {
+            } else if (Utility.getPlotReady()){
                 this.skipTimer();
             }
         });
@@ -1391,6 +1417,9 @@ class Plot extends Phaser.GameObjects.Container {
             if(!Utility.isEditMode() && !Utility.getWorkingState()) {
                 // if occupied, attempt harvest, if unoccupied, open start task menu.
                 if (this.occupied) {
+                    if (this.scene.selector.x == this.x && this.scene.selector.y == this.y)
+                    this.select();
+
                     this.harvest();
                     this.occupied = false;
                 }
@@ -1437,11 +1466,13 @@ class Plot extends Phaser.GameObjects.Container {
                         event.preventDefault();
                         self.select();
                         self.setupCrops();
+                        Utility.setPlotReady(true);
                         Utility.setWorkingState(true);
 
                         //connect up to pomodoro timer;
                         self.scene.events.emit('timerSet')
-                        Utility.sendCreatedTaskData();
+
+                        Utility.sendCreatedTaskData(self.id);
                     }
                 }
                     //add subtask listener

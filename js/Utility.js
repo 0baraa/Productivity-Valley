@@ -80,6 +80,9 @@ export default class Utility {
                 dialogContainer = document.querySelector('.menu-container.plots-shop-menu');
                 dialog = document.querySelector('.menu.plots-shop-menu');
                 break;
+            case "settingsMenu":
+                dialogContainer = document.querySelector('.menu-container.settings-menu');
+                dialog = document.querySelector('.menu.settings-menu'); 
         }
     
 
@@ -96,6 +99,20 @@ export default class Utility {
             // Show the dialog
             dialog.showModal();
 
+            scene.sys.game.input.enabled = false;
+        }
+    }
+    static toggleConfirmationScreen (prompt) {
+        let dialogContainer = document.querySelector('.menu-container.settings-menu');
+        let dialog = document.querySelector('.menu.settings-menu');
+        if (dialog.open) {
+            dialogContainer.style.display = 'none';
+            dialog.close();
+            scene.sys.game.input.enabled = true;
+        }
+        else {
+            dialogContainer.style.display = 'block';
+            dialog.showModal();
             scene.sys.game.input.enabled = false;
         }
     }
@@ -142,15 +159,14 @@ export default class Utility {
           return this.data;
     }
 
-    static sendCreatedTaskData() {
+    static sendCreatedTaskData(plotID) {
         let form = document.getElementById("task-form");
         let taskName = form.taskName.value;
-        let time = form.minutes.value;
-        let repetitions = form.repetitions.value;
+        let sessions = form.repetitions.value;
         let crop = form.crop.value;
-        let subtaskCheck = document.getElementById("subtasks-query").checked;
-        let savePreset = document.getElementById("save-preset").checked;
-        let task = {name: taskName, time: time, repetitions: repetitions, crop: crop};
+        let subtaskCheck = form.subtasksQuery.checked;
+        let savePreset = form.savePreset.checked;
+        let task = {name: taskName, sessions: sessions, crop: crop, plotID: plotID};
         if (subtaskCheck) {
             //add subtasks to save;
             let subtasks = document.getElementsByClassName("subtask");
@@ -166,6 +182,10 @@ export default class Utility {
             //save to player's presets.
         }
         console.log(task);
+
+    }
+
+    static updateTaskProgress(plotID, step) {
 
     }
 
