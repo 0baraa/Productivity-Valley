@@ -134,12 +134,12 @@ export default class Utility {
                 {crop:"pumpkin", count: -1},
                 {crop:"flower", count: -1}
             ],
-            //plots should have coordinates saved also
+            
             "plots": [
-              {"id": 0, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616, "placed": true}, 
-              {"id": 1, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true}, 
-              {"id": 2, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616, "placed": true},
-              {"id": 3, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616, "placed": true},
+              {"id": 0, "crop": "sunflower", "pomodoros": 3, "growthStage": 3, "growthStep": 12, "task": "Maths Homework", "x": 176, "y": 616, "placed": true}, 
+              {"id": 1, "crop": "sunflower", "pomodoros": 3, "growthStage": 9, "growthStep": 12, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true}, 
+              {"id": 2, "crop": "carrot", "pomodoros": 3, "growthStage": 2, "growthStep": 12, "x": 368, "y": 616, "placed": true},
+              {"id": 3, "crop": "nothing", "growthStage": 0, "growthStep": 0, "x": 464, "y": 616, "placed": true},
             ],
             "furniture": [
               {"type": "carpet1", "x": 320, "y": 612, "placed": true},
