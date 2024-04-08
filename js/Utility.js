@@ -223,7 +223,7 @@ export default class Utility {
         this.working = state;
     }
 
-    static getPlotReady() {
+    static plotReady() {
         return this.isPlotReady;
     }
     static setPlotReady(state) {

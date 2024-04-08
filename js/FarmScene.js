@@ -147,6 +147,34 @@ export default class FarmScene extends Phaser.Scene {
         const pomodoroY = screenHeight * 0.185;
         const pomodoro = new Pomodoro(this, 160, pomodoroY, 75);
 
+        let settingsButton = document.getElementById("settings-icon-container");
+        settingsButton.addEventListener('click', () => {
+            Utility.toggleMenu(this, "settingsMenu");
+            let settingsForm = document.getElementById('settings-form');
+            let settingsExitButton = document.getElementById('settings-exit-button');
+            let settingsInfoButton = document.getElementById('settings-info-button');
+
+            const showInfo = (event) => {};
+            const settingsClose = (event) => {
+                settingsForm.removeEventListener('submit', settingsClose);
+                settingsExitButton.removeEventListener('click', settingsClose);
+                settingsInfoButton.removeEventListener('click', showInfo);
+                //showInfo needs to be added to Utility.js
+                Utility.toggleMenu(this, "settingsMenu");
+                if (event.type == "submit") {
+                    event.preventDefault();
+                    //Utility.sendSettingsData();
+                    //update pomodoro timer settings;
+                    pomodoro.updateTimeSettings();
+
+                }
+            }
+            settingsExitButton.addEventListener('click', settingsClose);
+            settingsForm.addEventListener('submit', settingsClose);
+
+        })
+
+
         let editButton = document.getElementById('edit-button');
         let tickButton = document.getElementById('tick-button');
         let plusButton = document.getElementById('plus-button');
@@ -592,32 +620,7 @@ export default class FarmScene extends Phaser.Scene {
             this.farm = new PlayerFarm(this);
         });
 
-        let settingsButton = document.getElementById("settings-icon-container");
-        settingsButton.addEventListener('click', () => {
-            Utility.toggleMenu(this, "settingsMenu");
-            let settingsForm = document.getElementById('settings-form');
-            let settingsExitButton = document.getElementById('settings-exit-button');
-            let settingsInfoButton = document.getElementById('settings-info-button');
-
-            const showInfo = (event) => {};
-            const settingsClose = (event) => {
-                settingsForm.removeEventListener('submit', settingsClose);
-                settingsExitButton.removeEventListener('click', settingsClose);
-                settingsInfoButton.removeEventListener('click', showInfo);
-                //showInfo needs to be added to Utility.js
-                Utility.toggleMenu(this, "settingsMenu");
-                if (event.type == "submit") {
-                    event.preventDefault();
-                    //Utility.sendSettingsData();
-                    //update pomodoro timer settings;
-                    
-
-                }
-            }
-            settingsExitButton.addEventListener('click', settingsClose);
-            settingsForm.addEventListener('submit', settingsClose);
-
-        })
+        
         //white square around plot that will move to selected plot
         this.selector = this.add.sprite(0,0, "plotSelect")
         this.selector.setVisible(false);
@@ -924,7 +927,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
 // Events for the timer
 class Pomodoro extends Phaser.GameObjects.Container {
-    constructor(scene, x, y, radius, workTime = 1, shortBreakTime = 0.5, longBreakTime = 2, noOfPomodoros = 2, autoStartBreak = false, autoStartPomodoro = true, longBreakInterval = 2) {
+    constructor(scene, x, y, radius, noOfPomodoros = 2) {
         super(scene, x, y);
         scene.add.existing(this);
 
@@ -933,23 +936,15 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.y = y;
         this.radius = radius;
 
-        this.workTime = workTime; // In Minutes
-        this.shortBreakTime = shortBreakTime; // In Minutes
-        this.longBreakTime = longBreakTime; // In Minutes
-        this.longBreakInterval = longBreakInterval;
-        this.autoStartBreak = autoStartBreak;
-        this.autoStartPomodoro = autoStartPomodoro;
-        this.noOfPomodoros = noOfPomodoros;
-
+        
         this.workFlag = false; // true = work time, false = break time
         this.pauseFlag = false;
-
+        
         this.initBreakInterval = longBreakInterval;
-
-        this.workTime = this.workTime * 60;
-        this.shortBreakTime = this.shortBreakTime * 60;
-        this.longBreakTime = this.longBreakTime * 60;
-
+        //times are stored in seconds.
+        this.updateTimeSettings();
+        this.noOfPomodoros = noOfPomodoros;
+        
         this.createButtons();
         this.createHitArea();
 
@@ -963,6 +958,15 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.add(this.graphics);
     }
 
+    updateTimeSettings() {
+        this.workTime = document.getElementById("workTime").value * 60;
+        this.shortBreakTime = document.getElementById("shortBreakTime").value * 60;
+        this.longBreakTime = document.getElementById("longBreakTime").value * 60;
+        this.longBreakInterval = document.getElementById("longBreakInterval").value;
+        this.autoStartBreak = document.getElementById("autoStartBreak").checked;
+        this.autoStartPomodoro = document.getElementById("autoStartPomodoro").checked;
+    }
+    
     setWorkTime(workTime, noOfPomodoros) {
         this.workTime = workTime;
         this.noOfPomodoros = noOfPomodoros;
@@ -1009,14 +1013,14 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.playButton.on('pointerdown', () => {
             console.log('play button clicked');
             console.log(this.workFlag);
-            if (this.timer1 && Utility.getPlotReady){
+            if (this.timer1 && Utility.plotReady){
                 if (this.timer1.remainingTime == 0){
                     this.skipTimer();
                 } else {
                     this.scene.events.emit('timerResumed');
                     this.pauseFlag = false;
                 }
-            } else if (Utility.getPlotReady()){
+            } else if (Utility.plotReady()){
                 this.skipTimer();
             }
         });
