@@ -256,6 +256,13 @@ select {
     height: 40px;
 }
 
+#home-icon-container img {
+    cursor: pointer;
+    margin-right: 10px;
+    width: 40px;
+    height: 40px;
+}
+
 .coins-container{
     position: absolute;
     top: 10px;

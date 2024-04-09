@@ -283,6 +283,9 @@
 
     <!--Top left-->
     <div class="top-left-container">
+        <div id="home-icon-container" onclick="switchToHome()">
+            <img src="/assets/home.png" alt="Home Icon">
+        </div>
         <div id="settings-icon-container">
             <img src="/assets/settings.png" alt="Settings Icon">
         </div>
@@ -315,6 +318,10 @@
                 soundOnIcon.style.display = "none";
                 soundOffIcon.style.display = "inline";
             }
+        }
+
+        function switchToHome() {
+            window.location.href = "landing.html";
         }
     </script>
 
