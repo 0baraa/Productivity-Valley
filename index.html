@@ -17,36 +17,33 @@
         <dialog class="menu task-menu" style="display: inline-flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button class="info-button" id="task-info-button">?</button>
-                <p>Create a task</p>
+                <p id="task-title">Create a task</p>
                 <button class="exit-button" id="task-exit-button">X</button>
             </div>
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
                 <form id="task-form" style="display: flex; justify-content: center;">
                     <table id="task-menu-table">
-                        <tr>
+                        <tr class = "uneditable">
                             <td>
                                 <label for="preset">Preset:</label>
                                 <select id="preset" name="preset">
-                                    <option value="new">New</option>
-                                    <option value=""></option>
+                                    <option value="new"></option>
                                 </select>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="taskName">Task Name:</label>
-                                <input type="text" id="taskName" name="taskName" maxlength="25" value="Task 1"
-                                    required><br>
+                                <input type="text" id="taskName" class="editable" name="taskName" maxlength="25" value="Task" required><br>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="repetitions">Sessions:</label>
-                                <input type="number" id="repetitions" name="repetitions" style="width: 70px" min="1"
-                                    max="20" step="1" value="1" required>
+                                <input type="number" id="repetitions" class="editable" name="repetitions" style="width: 70px" min="1" max="20" step="1" value="1" required>
                             </td>
                         </tr>
-                        <tr>
+                        <tr class = "uneditable">
                             <td>
                                 <label for="crop">Crop:</label>
                                 <select id="crop" name="crop">
@@ -59,17 +56,17 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" id="subtasks-query" name="subtasksQuery">
+                                <input type="checkbox" id="subtasks-query" class="editable" name="subtasksQuery">
                                 <label for="subtasks-query">Add Subtasks</label>
                             </td>
                         </tr>
                         <tr class="subtask-row" style="display: none;">
                             <td>
-                                <label for="subtask">- </label>
-                                <input type="text" class="subtask" name="subtask"></input>
+                                <label for="subtask0">- </label>
+                                <input type="text" id="subtask0" class="subtask editable" name="subtask" maxlength="64" ></input>
                             </td>
                         </tr>
-                        <tr id="save-preset-row">
+                        <tr id="save-preset-row" class = "uneditable">
                             <td>
                                 <input type="checkbox" id="save-preset" name="savePreset">
                                 <label for="save-preset">Save Preset</label>
@@ -80,7 +77,8 @@
                         <tr>
                             <td>
                                 <div style="display: flex; justify-content: center;">
-                                    <button type="submit">Create</button>
+                                    <button type="button" id = "harvest-task" style="display: none; background-color: red;">Harvest</button>
+                                    <button type="submit" id = "create-task">Create</button>
                                 </div>
                             </td>
                         </tr>
@@ -469,6 +467,120 @@
     </table>
     </div>
     </dialog>
+    </div>
+
+    <!--Coins-->
+    <div class="coins-container">
+        <p id="current-coins-value" style="font-size: 30px;">1000</p>
+        <img src="assets/coin-large.png" alt="coins">
+    </div>
+
+    <!--Top left-->
+    <div class="top-left-container">
+        <div id="home-icon-container" onclick="popupHomeMenu()">
+            <img src="/assets/home.png" alt="Home Icon">
+        </div>
+        <div id="settings-icon-container">
+            <img src="/assets/settings.png" alt="Settings Icon">
+        </div>
+        <div id="soundToggle" onclick="toggleSound()">
+            <img src="assets/audio/sound-on.png" alt="Sound On" id="soundOnIcon">
+            <img src="assets/audio/sound-off.png" alt="Sound Off" id="soundOffIcon" style="display: none">
+        </div>
+    </div>
+
+    <!--attribution to flaticon-->
+    <!--<a href="https://www.flaticon.com/free-icons/silence" title="silence icons">Silence icons created by Angelo Troiano - Flaticon</a>-->
+
+    <!--Audio for clock-->
+    <audio id="sound">
+        <source src="assets/audio/alarm-clock.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        var sound = document.getElementById("sound");
+        var soundOnIcon = document.getElementById("soundOnIcon");
+        var soundOffIcon = document.getElementById("soundOffIcon");
+
+        function toggleSound() {
+            if (sound.muted) {
+                sound.muted = false;
+                soundOnIcon.style.display = "inline";
+                soundOffIcon.style.display = "none";
+            } else {
+                sound.muted = true;
+                soundOnIcon.style.display = "none";
+                soundOffIcon.style.display = "inline";
+            }
+        }
+
+        function switchToHome() {
+            window.location.href = "landing.html";
+        }
+
+        function popupHomeMenu() {
+            document.getElementById("home-menu").style.display = "block";
+        }
+
+        function closeHomeMenu() {
+            document.getElementById("home-menu").style.display = "none";
+        }
+
+        function deleteAccount() {
+            if (confirm("Are you sure you want to delete your account?")) {
+                switchToHome();
+            }
+        }
+    </script>
+
+    <!--Home Menu Popup-->
+    <div class="menu-container home-menu" style="display: none; margin-top: 100px; margin-bottom: 100px;"
+        id="home-menu">
+        <dialog class="menu settings-menu" style="display: inline-flex; flex-direction: column; height: 450px;">
+            <div class="menu-top-container" style="align-self: flex-end;">
+                <button class="exit-button" id="home-exit-button" onclick="closeHomeMenu()">X</button>
+            </div>
+            <div style="justify-content: center; display: flex;">
+                <table id="home-menu-table">
+                    <tr>
+                        <td>
+                            <!--Show tutorial cards-->
+                            <div style="display: flex; justify-content: center;"><button class="Quick Guide">Quick
+                                    Guide</button></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display: flex; justify-content: center;"><button class="Exit Game"
+                                    onclick="switchToHome()">Save and Exit Game</button>
+                        </td>
+            </div>
+            </tr>
+            <tr>
+                <!--Should delete account from the database-->
+                <td>
+                    <div style="display: flex; justify-content: center;"><button class="Delete Account"
+                            onclick="deleteAccount()">Delete Account</button>
+                </td>
+    </div>
+    </tr>
+    </table>
+    </div>
+    </dialog>
+    </div>
+
+    <!--Confirmation Popup Screen-->
+    <div class="menu-container confirmation" style="display: none;">
+        <dialog class="menu confirmation" style="display: flex; flex-direction: column; height: 35vh;">
+            <div id="confirmation-container" style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
+                <p id="confirmation-message" style="float:none"></p>
+                <p id="confirmation-note" style="font-size: 2vw; float:none"></p>
+                <div id="confirmation-buttons-container" style="clear:both">
+                    <button type="button" id = "accept-confirmation">Yes</button>
+                    <button type="button" id="deny-confirmation">No</button>
+                </div>
+            </div>
+        </dialog>
     </div>
 </body>
 

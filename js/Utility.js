@@ -50,11 +50,15 @@ export default class Utility {
 
         let dialogContainer;
         let dialog;
-        
         switch(menu) {
             case "taskMenu":
                 dialogContainer = document.querySelector('.menu-container.task-menu');
                 dialog = document.querySelector('.menu.task-menu');
+                break;
+            case "taskSettings":
+                dialogContainer = document.querySelector('.menu-container.task-menu');
+                dialog = document.querySelector('.menu.task-menu');
+                editingPlot = true;
                 break;
             case "cropShop":
                 dialogContainer = document.querySelector('.menu-container.shop-menu');
@@ -84,8 +88,6 @@ export default class Utility {
                 dialogContainer = document.querySelector('.menu-container.settings-menu');
                 dialog = document.querySelector('.menu.settings-menu'); 
         }
-    
-
         
         if (dialog.open) {
             dialogContainer.style.display = 'none';
@@ -102,19 +104,41 @@ export default class Utility {
             scene.sys.game.input.enabled = false;
         }
     }
-    static toggleConfirmationScreen (prompt) {
-        let dialogContainer = document.querySelector('.menu-container.settings-menu');
-        let dialog = document.querySelector('.menu.settings-menu');
+    static throwConfirmationScreen (scene, prompt, promptNote) {
+        let dialogContainer = document.querySelector('.menu-container.confirmation');
+        let dialog = document.querySelector('.menu.confirmation');
+        let acceptButton = document.getElementById('accept-confirmation');
+        let denyButton = document.getElementById('deny-confirmation');
+        let messagePara = document.getElementById('confirmation-message');
+        let notePara = document.getElementById('confirmation-note');
+        const closeWindow = (event) => {
+            acceptButton.removeEventListener('click', closeWindow);
+            denyButton.removeEventListener('click', closeWindow);
+            if (event.srcElement.id == "accept-confirmation") {
+                if (prompt = "Are you sure you want to harvest this plot?") {
+                    scene.events.emit('harvestCrops');
+                }
+            }
+            dialogContainer.style.display = 'none';
+            dialog.close();
+            scene.sys.game.input.enabled = true;
+        }
         if (dialog.open) {
             dialogContainer.style.display = 'none';
             dialog.close();
             scene.sys.game.input.enabled = true;
         }
         else {
+            messagePara.innerHTML = prompt;
+            notePara.innerHTML = promptNote;
             dialogContainer.style.display = 'block';
             dialog.showModal();
             scene.sys.game.input.enabled = false;
+            acceptButton.addEventListener('click', closeWindow);
+            denyButton.addEventListener('click', closeWindow);
+
         }
+
     }
 
     static getUserData() {
@@ -132,14 +156,19 @@ export default class Utility {
                 {crop:"sunflower", count: 1},
                 {crop:"carrot", count: 2},
                 {crop:"pumpkin", count: -1},
-                {crop:"flower", count: -1}
+                {crop:"tulip", count: -1}
             ],
-            //plots should have coordinates saved also
+            
             "plots": [
-              {"id": 0, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616, "placed": true}, 
-              {"id": 1, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true}, 
-              {"id": 2, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616, "placed": true},
-              {"id": 3, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616, "placed": true},
+              {"plotId": 0, "crop": "sunflower", "growthStage": 10, "growthStep": 12, "x": 176, "y": 616, "placed": true}, 
+              {"plotId": 1, "crop": "tulip", "growthStage": 10, "growthStep": 12, "x": 272, "y": 616, "placed": true}, 
+              {"plotId": 2, "crop": "carrot",  "growthStage": 2, "growthStep": 12, "x": 368, "y": 616, "placed": true},
+              {"plotId": 3, "crop": "nothing", "growthStage": 0, "growthStep": 0, "x": 464, "y": 616, "placed": true},
+            ],
+            "tasks": [
+                {"plotId": 0, "taskName": "Maths Homework", "pomodoros": 3, "completed": true, "subtasks": ["week 7", "week 8"]},
+                {"plotId": 1, "taskName": "Operating Systems CW", "pomodoros": 3, "completed": true, "subtasks": ["download files", "start work", "catch up on notes bruh"], "subtasksCompleted": [true,false,false]},
+                {"plotId": 2, "taskName": "go to bed", "pomodoros": 1, "completed": false, "subtasks": ["tidy desk", "brush teeth", "get changed", "go piss girl"], "subtasksCompleted": [true,false,false,false]},
             ],
             "furniture": [
               {"type": "carpet1", "x": 320, "y": 612, "placed": true},
@@ -151,9 +180,8 @@ export default class Utility {
             "decorations": [
                 {"type": "snowman", "x":50, "y":700, "placed": true}
             ],
-            "farmhouse":[
+            "farmhouse":
                 {"level": 1, "x": 70, "y": 570}
-            ]
           }
     
           return this.data;
