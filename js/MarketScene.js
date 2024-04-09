@@ -61,7 +61,7 @@ export default class MarketScene extends Phaser.Scene {
         this.add.image(320, 583, 'marketBackground');
         this.add.image(320, 559, 'mountains-market');
         //instantiate all the shops
-        this.cropShop = new Shop({scene: this, x:360, y:580, sprite:'cropShop'});
+        this.cropShop = new Shop({scene: this, farm: this.farm, x:360, y:580, sprite:'cropShop'});
 
         this.furnitureShop = this.add.sprite(438, 610, 'furnitureShop');
         this.furnitureShop.setInteractive();
@@ -295,6 +295,7 @@ class Shop extends Phaser.GameObjects.Sprite {
         this.setInteractive();
         Utility.addTintOnHover(this);
         const self = this;
+        this.farm = config.farm;
         this.on('pointerdown', () => {
             Utility.toggleMenu(config.scene, config.sprite);
             //let table = document.querySelector("menu-container.shop-menu");
@@ -342,14 +343,14 @@ class Shop extends Phaser.GameObjects.Sprite {
     
     updateAffordability() {
         const self = this;
-        let data = Utility.getUserData();
+        let coins = this.farm.coins;
         let buyListener = function thingy() {}
         for (let i = 0; i < this.displayedItems.length; i++) {
             for (let j = 0; j < this.displayedItems[i].buttons.length; j++) {
                 buyListener = function thingy(event) {
                     self.buyCropEvent(event,self.displayedItems[i].prices[j])
                 }
-                if (this.displayedItems[i].prices[j] <= data.coins) {
+                if (this.displayedItems[i].prices[j] <= coins) {
                     this.displayedItems[i].buttons[j].onclick = buyListener;
                     this.displayedItems[i].buttons[j].style.cursor = "pointer";
                     this.displayedItems[i].buttons[j].style.backgroundColor = "#d39f20";
@@ -374,6 +375,7 @@ class Shop extends Phaser.GameObjects.Sprite {
 
     buyCropEvent(event,price) {
         console.log("bought " + event.target.className + " x" + event.target.id + " for " + price + " coins");
+        this.farmScene.farm.updateCoins(price);
         Utility.buySeeds(event.target.className,event.target.id,price);
         this.removeItemListeners();
         this.updateAffordability();

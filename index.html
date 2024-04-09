@@ -21,28 +21,27 @@
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
                 <form id="task-form" style="display: flex; justify-content: center;">
                     <table id="task-menu-table">
-                        <tr>
+                        <tr class = "uneditable">
                             <td>
                                 <label for="preset">Preset:</label>
                                 <select id="preset" name="preset">
-                                    <option value="new">New</option>
-                                    <option value=""></option>
+                                    <option value="new"></option>
                                 </select>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="taskName">Task Name:</label>
-                                <input type="text" id="taskName" name="taskName" maxlength="25" value="Task 1"required><br>
+                                <input type="text" id="taskName" class="editable" name="taskName" maxlength="25" value="Task 1" required><br>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="repetitions">Sessions:</label>
-                                <input type="number" id="repetitions" name="repetitions" style="width: 70px" min="1" max="20" step="1" value="1" required>
+                                <input type="number" id="repetitions" class="editable" name="repetitions" style="width: 70px" min="1" max="20" step="1" value="1" required>
                             </td>
                         </tr>
-                        <tr>
+                        <tr class = "uneditable">
                             <td>
                                 <label for="crop">Crop:</label>
                                 <select id="crop" name="crop">
@@ -55,17 +54,17 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" id="subtasks-query" name="subtasksQuery">
+                                <input type="checkbox" id="subtasks-query" class="editable" name="subtasksQuery">
                                 <label for="subtasks-query">Add Subtasks</label>
                             </td>
                         </tr>
                         <tr class="subtask-row" style="display: none;">
                             <td>
                                 <label for="subtask">- </label>
-                                <input type="text" class="subtask" name="subtask"></input>
+                                <input type="text" class="subtask editable" name="subtask"></input>
                             </td>
                         </tr>
-                        <tr id="save-preset-row">
+                        <tr id="save-preset-row" class = "uneditable">
                             <td>
                                 <input type="checkbox" id="save-preset" name="savePreset">
                                 <label for="save-preset">Save Preset</label>
@@ -76,6 +75,7 @@
                         <tr>
                             <td>
                                 <div style="display: flex; justify-content: center;">
+                                    <button id = "harvest-task" style="display: none; background-color: red;">Harvest</button>
                                     <button type="submit">Create</button>
                                 </div>
                             </td>
@@ -86,7 +86,7 @@
         </dialog>
     </div>
 
-    
+
 
     <div class="menu-container shop-menu" style="display: none;">
         <dialog class="menu shop-menu"style="display: flex; flex-direction: column;">
@@ -277,7 +277,15 @@
                         <tr>
                             <td>
                                 <label for="workTime">Pomodoro:</label>
-                                <input type="number" id="workTime" name="workTime" min="10" max="120" step="1" value="25" style="width: 70px" required>
+                                <input type="number" id="workTime" name="workTime" min="1" max="120" step="1" value="25" style="width: 70px" required>
+                            
+                            
+                            <!--MUST BE CHANGED TO MIN 10, used for testing faster-->
+                            
+                            
+                            
+                            
+                            
                             </td>
                         </tr>
                         <tr>
@@ -345,6 +353,20 @@
                         </tr>
                     </table>
                 </form>
+            </div>
+        </dialog>
+    </div>
+
+    <!--Confirmation Popup Screen-->
+    <div class="menu-container confirmation" style="display: none;">
+        <dialog class="menu confirmation" style="display: flex; flex-direction: column; height: 35vh;">
+            <div id="confirmation-container" style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
+                <p id="confirmation-message" style="float:none"></p>
+                <p id="confirmation-note" style="font-size: 2vw; float:none"></p>
+                <div id="confirmation-buttons-container" style="clear:both">
+                    <button type="button" id = "accept-confirmation">Yes</button>
+                    <button type="button" id="deny-confirmation">No</button>
+                </div>
             </div>
         </dialog>
     </div>
