@@ -669,15 +669,15 @@ export default class FarmScene extends Phaser.Scene {
     }
 
     playPlot() {
-        this.farm.findselectedPlot().playGrowth(this.pomodoro.workTime)
+        this.farm.plots[this.selector.plotSelected].playGrowth(this.pomodoro.workTime)
     }
 
     pausePlot() {
-        this.farm.findselectedPlot().pauseGrowth();
+        this.farm.plots[this.selector.plotSelected].pauseGrowth();
     }
 
     harvestPlot() {
-        this.farm.findselectedPlot().harvest();
+        this.farm.plots[this.selector.plotSelected].harvest();
     }
 
     editTaskMenu() {
@@ -712,55 +712,27 @@ export default class FarmScene extends Phaser.Scene {
             }
             if (filled && subtasks.length < 10) {
                 let table = document.getElementById("task-menu-table");
-                let newSubtask = document.createElement('input');
-                newSubtask.value = "";
                 let row = table.insertRow(table.rows.length - 2);
                 let cell = row.insertCell(0);
                 row.class = "subtask-row";
                 cell.innerHTML = '<label for="subtask"> - </label><input type ="text" class="subtask" name="subtask"></input>';
             }
         }
+        
         let harvestButton = document.getElementById("harvest-task");
-        let saveButton = document.getElementById('create-task')
-        const close = (event) => {
-            //starts crop growth, removes listeners, or just removes listeners
-            form.removeEventListener('submit', close);
-            taskExitButton.removeEventListener('click', close)
-            subtasksCheck.removeEventListener('click', showHideSubtasks);
-            Utility.toggleMenu(this, "taskMenu");
-            if (event.type == "submit") {
-                let plot = this.farm.findselectedPlot();
-                event.preventDefault();
-                plot.setupCrops();
-                Utility.setPlotReady(true);
-                
-                //connect up to pomodoro timer;
-                this.pomodoro.noOfPomodoros = document.getElementById('repetitions').value;
-                console.log(this.pomodoro.noOfPomodoros);
-                
-                Utility.sendCreatedTaskData();
-            }
-            if (editing) {
-                let rowsToHide = document.getElementsByClassName("uneditable");
-                for (let i = 0; i < rowsToHide.length; i ++) {
-                    rowsToHide[i].style.display = "table-row";
-                }
-                
-                harvestButton.style.display = "none";
-                harvestButton.style.backgroundColor = "red";
-                saveButton.innerHTML = "Create";
-                //TODO: unload values in the menu to it's default
-            }
-        }
-
+        let saveButton = document.getElementById('create-task');
+        let editable = document.getElementsByClassName('editable');
+        let rowsToHide = document.getElementsByClassName("uneditable");
+        let taskTitle = document.getElementById('task-title');
+        
         if (editing) {
-            let rowsToHide = document.getElementsByClassName("uneditable");
             for (let i = 0; i < rowsToHide.length; i ++) {
                 rowsToHide[i].style.display = "none";
             }
             saveButton.innerHTML = "Save";
             harvestButton.style.display = "block";
-            if (this.farm.plots[this.selector.plotSelected].growthStage == this.farm.plots[this.selector.plotSelected].maxFrame) {
+            taskTitle.innerHTML = "Edit Task"
+            if (this.farm.tasks[this.selector.plotSelected].completed) {
                 //if plot is finished;
                 harvestButton.style.backgroundColor = "#72d242";
             }
@@ -769,15 +741,96 @@ export default class FarmScene extends Phaser.Scene {
 
 
 
+        }
 
+        const resetTaskMenu = () => {
+            editable[0].value = "Task";
+            editable[1].value = "1";
+            editable[2].checked = false;
+            harvestButton.style.display = "none";
+            harvestButton.style.backgroundColor = "red";
+            saveButton.innerHTML = "Create";
+            taskTitle.innerHTML = "Create a Task"
+
+            let subtasks = document.getElementsByClassName("subtask");
+            for (let i = 0; i < subtasks.length; i++) {
+                subtasks[i].value = "";
+            }
+            let table = document.getElementById("task-menu-table");
+            console.log(table.rows.length);
+            while (table.rows.length > 8) {
+                table.deleteRow(table.rows.length - 3)
+            }
+            table.rows[5].style.display = "none";
 
         }
+
+        const close = (event) => {
+            //starts crop growth, removes listeners, or just removes listeners
+            form.removeEventListener('submit', close);
+            taskExitButton.removeEventListener('click', close)
+            subtasksCheck.removeEventListener('click', showHideSubtasks);
+            Utility.toggleMenu(this, "taskMenu");
+            if (event.type == "submit") {
+                event.preventDefault();
+                if (editing) {
+                    //Utility.updateTaskDetails();
+                }
+                else {
+                    this.farm.plots[this.selector.plotSelected].setupCrops();
+                    Utility.setPlotReady(true);
+                    
+                    let subtasksData = [];
+                    9
+                    //connect up to pomodoro timer;
+                    let taskConfig = {plotId: this.selector.plotSelected, 
+                                      name: form.taskName.value,
+                                      noOfPomodoros: form.repetitions.value,
+                                      }
+                    this.farm.addTask()
+                    
+                    Utility.sendCreatedTaskData();
+
+                }
+            
+            }
+            resetTaskMenu();
+            if (editing) {
+                for (let i = 0; i < rowsToHide.length; i ++) {
+                    rowsToHide[i].style.display = "table-row";
+                }
+ 
+                
+
+                let finished = this.farm.tasks[this.selector.plotSelected].completed;
+                console.log(event.srcElement.id, event.type, finished);
+                if (event.srcElement.id == "harvest-task"){
+                    if (finished) {
+                        //if plot is finished just harvest
+                        this.events.emit("harvestCrops");
+                    }
+                    else {
+                        let prompt = "Are you sure you want to harvest this plot?"
+                        let note = "Warning: this plot is unfinished, and you will only collect half as many coins for your time."
+                        Utility.throwConfirmationScreen(this, prompt, note);
+                    }
+                }
+
+                
+            }
+
+            
+        }
+
+
         //add subtask listener
         subtasksCheck.addEventListener('click', showHideSubtasks);
         //add subtaskfilled listener
         form.addEventListener('keydown', addSubtask);
         //add submit listener
         form.addEventListener('submit', close);
+
+        harvestButton.addEventListener('click', close);
         //add exit listener
         taskExitButton.addEventListener('click', close);
     }
@@ -1301,6 +1354,7 @@ class PlayerFarm {
         let data = Utility.getUserData();
 
         this.createPlots(data);
+        this.createTasks(data);
         this.createDecorations(data);
         this.createFarmhouse(data);
         this.createFurniture(insideFarmhouseScene, data);
@@ -1361,11 +1415,22 @@ class PlayerFarm {
     }
 
     findselectedPlot() {
-        for (let i = 0; i < this.plots.length; i++) {
-            if (this.plots[i].x == this.scene.selector.x && this.plots[i].y == this.scene.selector.y) {
-                return this.plots[i];
-            }
+        this.scene.selector.selectedPlot;
+    }
+
+    createTasks(data) {
+        this.tasks = []
+        for (let i =0; i < data.tasks.length; i++) {
+            this.tasks.push(new Task(data.tasks[i]));
         }
+    }
+    
+    addTask(taskConfig) {
+        this.tasks.push(new Task(taskConfig));
+    }
+
+    editTask(taskConfig) {
+        let id = this.scene.selector.selectedPlot;
     }
 
     createDecorations(data) {
@@ -1411,6 +1476,26 @@ class PlayerFarm {
     addPlotToInventory(scene) {
         let plot = new Plot({scene: scene, x: -1000, y: -1000, id: this.plots.length, crop: "nothing", counter: 0, placed: false});
         this.plots.push(plot);
+    }
+}
+
+class Task {
+    constructor(config) {
+        this.plotId = config.plotId;
+        this.name = config.taskName;
+        this.noOfPomodoros = config.pomodoros;
+        this.subtasks = config.subtasks || null;
+        this.subtasksCompleted = config.subtasksCompleted  || null;
+        this.completed = config.completed || false;
+    }
+
+    updateTask(config) {
+        this.plotId = config.plotId || this.plotId;
+        this.name = config.taskName || this.name;
+        this.noOfPomodoros = config.pomodoros || this.noOfPomodoros;
+        this.subtasks = config.subtasks || this.subtasks;
+        this.subtasksCompleted = config.subtasksCompleted || this.subtasksCompleted;
+        this.completed = config.completed || this.completed;
     }
 }
 

@@ -15,7 +15,7 @@
         <dialog class="menu task-menu" style="display: inline-flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button class="info-button" id="task-info-button">?</button>
-                <p>Create a task</p>
+                <p id="task-title">Create a task</p>
                 <button class="exit-button" id="task-exit-button">X</button>
             </div>
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
@@ -32,7 +32,7 @@
                         <tr>
                             <td>
                                 <label for="taskName">Task Name:</label>
-                                <input type="text" id="taskName" class="editable" name="taskName" maxlength="25" value="Task 1" required><br>
+                                <input type="text" id="taskName" class="editable" name="taskName" maxlength="25" value="Task" required><br>
                             </td>
                         </tr>
                         <tr>
@@ -75,7 +75,7 @@
                         <tr>
                             <td>
                                 <div style="display: flex; justify-content: center;">
-                                    <button id = "harvest-task" style="display: none; background-color: red;">Harvest</button>
+                                    <button type="button" id = "harvest-task" style="display: none; background-color: red;">Harvest</button>
                                     <button type="submit" id = "create-task">Create</button>
                                 </div>
                             </td>
