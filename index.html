@@ -324,17 +324,24 @@
             window.location.href = "landing.html";
         }
 
-        function popupHomeMenu(){
+        function popupHomeMenu() {
             document.getElementById("home-menu").style.display = "block";
         }
 
-        function closeHomeMenu(){
+        function closeHomeMenu() {
             document.getElementById("home-menu").style.display = "none";
+        }
+
+        function deleteAccount() {
+            if (confirm("Are you sure you want to delete your account?")) {
+                switchToHome();
+            }
         }
     </script>
 
     <!--Home Menu Popup-->
-    <div class="menu-container home-menu" style="display: none; margin-top: 100px; margin-bottom: 100px;" id="home-menu">
+    <div class="menu-container home-menu" style="display: none; margin-top: 100px; margin-bottom: 100px;"
+        id="home-menu">
         <dialog class="menu settings-menu" style="display: inline-flex; flex-direction: column; height: 450px;">
             <div class="menu-top-container" style="align-self: flex-end;">
                 <button class="exit-button" id="home-exit-button" onclick="closeHomeMenu()">X</button>
@@ -344,19 +351,28 @@
                     <tr>
                         <td>
                             <!--Show tutorial cards-->
-                            <button class="Quick Guide">Quick Guide</button>
+                            <div style="display: flex; justify-content: center;"><button class="Quick Guide">Quick
+                                    Guide</button></div>
                         </td>
                     </tr>
                     <tr>
-                        <td><button class="Exit Game" onclick="switchToHome()">Save and Exit Game</button></td>
-                    </tr>
-                    <tr>
-                        <!--Should delete account from the database-->
-                        <td><button class="Delete Account" oncanplay="switchToHome()">Delete Account</button></td>
-                    </tr>
-                </table>
+                        <td>
+                            <div style="display: flex; justify-content: center;"><button class="Exit Game"
+                                    onclick="switchToHome()">Save and Exit Game</button>
+                        </td>
             </div>
-        </dialog>
+            </tr>
+            <tr>
+                <!--Should delete account from the database-->
+                <td>
+                    <div style="display: flex; justify-content: center;"><button class="Delete Account"
+                            onclick="deleteAccount()">Delete Account</button>
+                </td>
+    </div>
+    </tr>
+    </table>
+    </div>
+    </dialog>
     </div>
 
     <!--Settings Popup-->
