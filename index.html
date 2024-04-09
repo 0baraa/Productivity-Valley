@@ -283,7 +283,7 @@
 
     <!--Top left-->
     <div class="top-left-container">
-        <div id="home-icon-container" onclick="switchToHome()">
+        <div id="home-icon-container" onclick="popupHomeMenu()">
             <img src="/assets/home.png" alt="Home Icon">
         </div>
         <div id="settings-icon-container">
@@ -323,7 +323,41 @@
         function switchToHome() {
             window.location.href = "landing.html";
         }
+
+        function popupHomeMenu(){
+            document.getElementById("home-menu").style.display = "block";
+        }
+
+        function closeHomeMenu(){
+            document.getElementById("home-menu").style.display = "none";
+        }
     </script>
+
+    <!--Home Menu Popup-->
+    <div class="menu-container home-menu" style="display: none; margin-top: 100px; margin-bottom: 100px;" id="home-menu">
+        <dialog class="menu settings-menu" style="display: inline-flex; flex-direction: column; height: 450px;">
+            <div class="menu-top-container" style="align-self: flex-end;">
+                <button class="exit-button" id="home-exit-button" onclick="closeHomeMenu()">X</button>
+            </div>
+            <div style="justify-content: center; display: flex;">
+                <table id="home-menu-table">
+                    <tr>
+                        <td>
+                            <!--Show tutorial cards-->
+                            <button class="Quick Guide">Quick Guide</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button class="Exit Game" onclick="switchToHome()">Save and Exit Game</button></td>
+                    </tr>
+                    <tr>
+                        <!--Should delete account from the database-->
+                        <td><button class="Delete Account" oncanplay="switchToHome()">Delete Account</button></td>
+                    </tr>
+                </table>
+            </div>
+        </dialog>
+    </div>
 
     <!--Settings Popup-->
     <div class="menu-container settings-menu" style="display: none;">
