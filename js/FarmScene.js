@@ -668,8 +668,6 @@ export default class FarmScene extends Phaser.Scene {
         
     }
 
-    editPlot() {}
-
     playPlot() {
         this.farm.findselectedPlot().playGrowth(this.pomodoro.workTime)
     }
@@ -722,6 +720,8 @@ export default class FarmScene extends Phaser.Scene {
                 cell.innerHTML = '<label for="subtask"> - </label><input type ="text" class="subtask" name="subtask"></input>';
             }
         }
+        let harvestButton = document.getElementById("harvest-task");
+        let saveButton = document.getElementById('create-task')
         const close = (event) => {
             //starts crop growth, removes listeners, or just removes listeners
             form.removeEventListener('submit', close);
@@ -745,10 +745,10 @@ export default class FarmScene extends Phaser.Scene {
                 for (let i = 0; i < rowsToHide.length; i ++) {
                     rowsToHide[i].style.display = "table-row";
                 }
-                let harvestButton = document.getElementById("harvest-task");
+                
                 harvestButton.style.display = "none";
                 harvestButton.style.backgroundColor = "red";
-
+                saveButton.innerHTML = "Create";
                 //TODO: unload values in the menu to it's default
             }
         }
@@ -758,8 +758,7 @@ export default class FarmScene extends Phaser.Scene {
             for (let i = 0; i < rowsToHide.length; i ++) {
                 rowsToHide[i].style.display = "none";
             }
-
-            let harvestButton = document.getElementById("harvest-task");
+            saveButton.innerHTML = "Save";
             harvestButton.style.display = "block";
             if (this.farm.plots[this.selector.plotSelected].growthStage == this.farm.plots[this.selector.plotSelected].maxFrame) {
                 //if plot is finished;
