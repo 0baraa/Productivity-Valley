@@ -1460,8 +1460,7 @@ class PlayerFarm {
                                 x: data.plots[i].x, y: data.plots[i].y, 
                                 id: data.plots[i].plotId, crop: data.plots[i].crop, 
                                 counter: data.plots[i].growthStage,
-                                step: data.plots[i].growthStep, 
-                                pomodoros: data.plots[i].pomodoros,
+                                step: data.plots[i].growthStep,
                                 placed: data.plots[i].placed});
             this.plots.push(plot);
         }
@@ -1617,35 +1616,25 @@ class Plot extends Phaser.GameObjects.Container {
         this.crop = config.crop || "nothing";
         this.growthStage = config.counter || 0;
         this.growthStep = config.step || 0;
-        this.totalPomodoros = config.pomodoros || 1;
         this.placed = config.placed;
         this.cropSprites = [];
         this.lastValidPosition = {x: 0, y: 0};
         this.wasDeleted = false;
         this.remainingTime = config.remainingTime || 0;
 
+        // Create the plot sprite and add it to the container
+        this.plotSprite = this.scene.add.sprite(0, 0, 'plot');
+        this.add(this.plotSprite);
 
         if (this.crop === "nothing") {
             this.occupied = false;
         } else {
             this.occupied = true;
-            
-        }
-
-
-        // Create the plot sprite and add it to the container
-        this.plotSprite = this.scene.add.sprite(0, 0, 'plot');
-        //Utility.addTintOnHover(this.plotSprite);
-        this.add(this.plotSprite);
-
-        // if there's crops saved, load those crops
-        if (!(this.crop == "nothing" || this.crop == null)) {
             this.plantCrops();
-            if (this.crop == "tulip" && this.growthStage == this.maxFrame) {
-                for (let i = 0; i < this.cropSprites.length; i++) {
-                    let frame = 10 + Math.floor(Math.random() * 6)
-                    this.cropSprites[i].setFrame(frame);
-                }
+            console.log(this.growthStep);
+            this.makeCropsLeft();
+            for (let i = 0; i < this.growthStep; i++) {
+                this.growSelectedCrop(this.findCrop());
             }
         }
 
@@ -1755,7 +1744,6 @@ class Plot extends Phaser.GameObjects.Container {
 
     setupCrops() {
         this.crop = document.getElementById('crop').value;
-        this.totalPomodoros = document.getElementById('repetitions').value;
         this.plantCrops();
         //this.playGrowth();
     }
@@ -1796,7 +1784,16 @@ class Plot extends Phaser.GameObjects.Container {
                 //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
                 let crop = this.scene.add.sprite(x + xoff, y + yoff, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");
                 crop.stop();
-                crop.setFrame(this.growthStage);
+                //crop.anims.setCurrentFrame(this.growthStage);
+                for (let i = 0; i < this.growthStage; i++) {
+                    crop.anims.nextFrame();
+                }
+                if (this.crop== "tulip" && crop.anims.getFrameName() >= 10) {
+                    let frame = Phaser.Math.Between(0, 5);
+                    for (let j = 0; j < frame; j++){
+                        crop.anims.nextFrame();
+                    }
+                }
                 this.cropSprites.push(crop);
                 this.add(crop);
             }
@@ -1808,15 +1805,20 @@ class Plot extends Phaser.GameObjects.Container {
         } 
     }
 
-    playGrowth() {
-
-        console.log("started growing");
-
+    makeCropsLeft() {
         //List of numbered references to possible cropSprites.
         this.cropsLeft = [];
         for (let i = 0; i < this.cropSprites.length; i++) {
             this.cropsLeft.push(i);
         }
+    }
+
+    playGrowth() {
+
+        console.log("started growing");
+
+        this.makeCropsLeft();
+
         let workTime = this.scene.pomodoro.workTime;
         let steps = (this.cropSprites.length - this.growthStage) * this.maxFrame - this.growthStep;
         
@@ -1846,7 +1848,7 @@ class Plot extends Phaser.GameObjects.Container {
             //alert(`Crops finished growing in: ${this.id}`);
             return;
         }
-        this.findCrop() //find and grow one of the crops
+        this.growSelectedCrop(this.findCrop()) //find and grow one of the crops
         this.stepGrowth();
     }
 
@@ -1856,14 +1858,13 @@ class Plot extends Phaser.GameObjects.Container {
         //check if any crops are left too far behind by the growthStage
         for (let j = 1; j <= this.cropsLeft.length; j++) {
             if (this.cropSprites[this.cropsLeft[j - 1]].anims.getFrameName() <= this.growthStage - 2) {
-                this.growSelectedCrop(this.cropsLeft[j - 1], j - 1);
-                return;
+                return (this.cropsLeft[j-1], j-1);
             }
         }
 
         //random number
-        let rand = (Math.random() * this.cropsLeft.length) | 0;
-        let upordown = (Math.random() * 2) | 0; // makes it seem more random when cycling through.
+        let rand = Phaser.Math.Between(0, this.cropsLeft.length-1);
+        let upordown = Phaser.Math.Between(0, 1); // makes it seem more random when cycling through.
 
         //crop selection logic
         for (let i = 0; i < this.cropsLeft.length; i++) {
@@ -1882,7 +1883,7 @@ class Plot extends Phaser.GameObjects.Container {
                     rand = this.cropsLeft.length - 1;
                 }
             }
-            else { this.growSelectedCrop(this.cropsLeft[rand], rand); break; } //viable crop found
+            else { return (this.cropsLeft[rand], rand);} //viable crop found
         }
     }
     growSelectedCrop(num, index) {
@@ -1892,16 +1893,19 @@ class Plot extends Phaser.GameObjects.Container {
             if (this.crop == "tulip") {
                 if (this.cropSprites[num].anims.getFrameName() == this.maxFrame - 1) {
                     frame_jump = Math.floor(Math.random() * 6 ) + 1;
-                    console.log(frame_jump);
                 }
             }
-            for (let i = 0; i < frame_jump; i++) {
-                this.cropSprites[num].anims.nextFrame();
-            }
+
 
             if (this.cropSprites[num].anims.getFrameName() >= this.maxFrame) {
                 this.cropsLeft.splice(index, 1); // remove from list of crops to grow
                 console.log("finished growing crop");
+            }
+            else {
+                for (let i = 0; i < frame_jump; i++) {
+                    this.cropSprites[num].anims.nextFrame();
+                    //console.log("grownCrop");
+                }
             }
         }
     }
@@ -1914,6 +1918,13 @@ class Plot extends Phaser.GameObjects.Container {
         if (this.tick) {
             clearInterval(this.tick);
             console.log("Paused growing");
+        }
+    }
+
+    finishCrops() {
+        while (this.growthStage != this.maxFrame) {
+            this.growSelectedCrop(this.findCrop())
+            this.stepGrowth();
         }
     }
 

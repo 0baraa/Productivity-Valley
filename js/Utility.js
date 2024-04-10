@@ -164,8 +164,8 @@ export default class Utility {
             
             "plots": [
               {"plotId": 0, "crop": "sunflower", "growthStage": 10, "growthStep": 12, "x": 176, "y": 616, "placed": true}, 
-              {"plotId": 1, "crop": "tulip", "growthStage": 10, "growthStep": 12, "x": 272, "y": 616, "placed": true}, 
-              {"plotId": 2, "crop": "carrot",  "growthStage": 2, "growthStep": 12, "x": 368, "y": 616, "placed": true},
+              {"plotId": 1, "crop": "tulip", "growthStage": 9, "growthStep": 12, "x": 272, "y": 616, "placed": true}, 
+              {"plotId": 2, "crop": "carrot",  "growthStage": 1, "growthStep": 2, "x": 368, "y": 616, "placed": true},
               {"plotId": 3, "crop": "nothing", "growthStage": 0, "growthStep": 0, "x": 464, "y": 616, "placed": true},
             ],
             "tasks": [
