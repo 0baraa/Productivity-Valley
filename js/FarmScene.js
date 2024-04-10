@@ -698,6 +698,9 @@ export default class FarmScene extends Phaser.Scene {
             for (let j = 0; j < this.clouds.length; j++) {
                 this.clouds[j].moveX();
             }
+            if (this.pomodoro.workFlag){
+                this.sunFlares.angle ++;
+            }
         }
         this.skip++;
         
@@ -1820,12 +1823,12 @@ class Plot extends Phaser.GameObjects.Container {
         this.makeCropsLeft();
 
         let workTime = this.scene.pomodoro.workTime;
-        let steps = (this.cropSprites.length - this.growthStage) * this.maxFrame - this.growthStep;
+        let steps = this.cropSprites.length * (this.maxFrame-this.growthStage) - this.growthStep;
         
         let time = 1000 * workTime * (this.scene.pomodoro.noOfPomodoros + 1);
         let interval = Math.floor(time/steps);
 
-        console.log(interval, time, steps, this.scene.pomodoro.noOfPomodoros + 1);
+        console.log(interval ,steps, this.scene.pomodoro.noOfPomodoros + 1);
         
         //repeating function to grow crops individually
         this.tick = setInterval(() => {this.progressCrops(); }, interval);
