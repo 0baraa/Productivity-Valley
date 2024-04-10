@@ -58,7 +58,6 @@ export default class Utility {
             case "taskSettings":
                 dialogContainer = document.querySelector('.menu-container.task-menu');
                 dialog = document.querySelector('.menu.task-menu');
-                editingPlot = true;
                 break;
             case "cropShop":
                 dialogContainer = document.querySelector('.menu-container.shop-menu');

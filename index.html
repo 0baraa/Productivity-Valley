@@ -436,7 +436,7 @@
     <!--Home Menu Popup-->
     <div class="menu-container home-menu" style="display: none; margin-top: 100px; margin-bottom: 100px;"
         id="home-menu">
-        <dialog class="menu settings-menu" style="display: inline-flex; flex-direction: column; height: 450px;">
+        <dialog class="menu" style="display: inline-flex; flex-direction: column; height: 450px;">
             <div class="menu-top-container" style="align-self: flex-end;">
                 <button class="exit-button" id="home-exit-button" onclick="closeHomeMenu()">X</button>
             </div>
@@ -453,120 +453,20 @@
                         <td>
                             <div style="display: flex; justify-content: center;"><button class="Exit Game"
                                     onclick="switchToHome()">Save and Exit Game</button>
-                        </td>
-            </div>
-            </tr>
-            <tr>
-                <!--Should delete account from the database-->
-                <td>
-                    <div style="display: flex; justify-content: center;"><button class="Delete Account"
-                            onclick="deleteAccount()">Delete Account</button>
-                </td>
-    </div>
-    </tr>
-    </table>
-    </div>
-    </dialog>
-    </div>
-
-    <!--Coins-->
-    <div class="coins-container">
-        <p id="current-coins-value" style="font-size: 30px;">1000</p>
-        <img src="assets/coin-large.png" alt="coins">
-    </div>
-
-    <!--Top left-->
-    <div class="top-left-container">
-        <div id="home-icon-container" onclick="popupHomeMenu()">
-            <img src="/assets/home.png" alt="Home Icon">
-        </div>
-        <div id="settings-icon-container">
-            <img src="/assets/settings.png" alt="Settings Icon">
-        </div>
-        <div id="soundToggle" onclick="toggleSound()">
-            <img src="assets/audio/sound-on.png" alt="Sound On" id="soundOnIcon">
-            <img src="assets/audio/sound-off.png" alt="Sound Off" id="soundOffIcon" style="display: none">
-        </div>
-    </div>
-
-    <!--attribution to flaticon-->
-    <!--<a href="https://www.flaticon.com/free-icons/silence" title="silence icons">Silence icons created by Angelo Troiano - Flaticon</a>-->
-
-    <!--Audio for clock-->
-    <audio id="sound">
-        <source src="assets/audio/alarm-clock.mp3" type="audio/mpeg">
-    </audio>
-
-    <script>
-        var sound = document.getElementById("sound");
-        var soundOnIcon = document.getElementById("soundOnIcon");
-        var soundOffIcon = document.getElementById("soundOffIcon");
-
-        function toggleSound() {
-            if (sound.muted) {
-                sound.muted = false;
-                soundOnIcon.style.display = "inline";
-                soundOffIcon.style.display = "none";
-            } else {
-                sound.muted = true;
-                soundOnIcon.style.display = "none";
-                soundOffIcon.style.display = "inline";
-            }
-        }
-
-        function switchToHome() {
-            window.location.href = "landing.html";
-        }
-
-        function popupHomeMenu() {
-            document.getElementById("home-menu").style.display = "block";
-        }
-
-        function closeHomeMenu() {
-            document.getElementById("home-menu").style.display = "none";
-        }
-
-        function deleteAccount() {
-            if (confirm("Are you sure you want to delete your account?")) {
-                switchToHome();
-            }
-        }
-    </script>
-
-    <!--Home Menu Popup-->
-    <div class="menu-container home-menu" style="display: none; margin-top: 100px; margin-bottom: 100px;"
-        id="home-menu">
-        <dialog class="menu settings-menu" style="display: inline-flex; flex-direction: column; height: 450px;">
-            <div class="menu-top-container" style="align-self: flex-end;">
-                <button class="exit-button" id="home-exit-button" onclick="closeHomeMenu()">X</button>
-            </div>
-            <div style="justify-content: center; display: flex;">
-                <table id="home-menu-table">
-                    <tr>
-                        <td>
-                            <!--Show tutorial cards-->
-                            <div style="display: flex; justify-content: center;"><button class="Quick Guide">Quick
-                                    Guide</button></div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
+                        <!--Should delete account from the database-->
                         <td>
-                            <div style="display: flex; justify-content: center;"><button class="Exit Game"
-                                    onclick="switchToHome()">Save and Exit Game</button>
+                            <div style="display: flex; justify-content: center;"><button class="Delete Account"
+                                    onclick="deleteAccount()">Delete Account</button>
+                            </div>
                         </td>
+                    </tr>
+                </table>
             </div>
-            </tr>
-            <tr>
-                <!--Should delete account from the database-->
-                <td>
-                    <div style="display: flex; justify-content: center;"><button class="Delete Account"
-                            onclick="deleteAccount()">Delete Account</button>
-                </td>
-    </div>
-    </tr>
-    </table>
-    </div>
-    </dialog>
+        </dialog>
     </div>
 
     <!--Confirmation Popup Screen-->
