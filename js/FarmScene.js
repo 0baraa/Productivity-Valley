@@ -149,6 +149,39 @@ export default class FarmScene extends Phaser.Scene {
         this.sunFlares = this.add.sprite(320, pomodoroY+221, 'sun-flares').setDepth(-1);
         this.pomodoro = new Pomodoro(this, 160, pomodoroY, 75);
         
+        let homeButton = document.getElementById("home-icon-container");
+        homeButton.addEventListener('click', () => {
+            Utility.toggleMenu(this, "homeMenu");
+            let homeExitButton = document.getElementById('home-exit-button');
+            let homeGuideButton = document.getElementById('quick-guide');
+            let saveExitButton = document.getElementById('exit-game')
+            let deleteAccountButton = document.getElementById('delete-account');
+            const homeClose = () => {
+                homeExitButton.removeEventListener('click', homeClose);
+                homeGuideButton.removeEventListener('click', showGuide);
+                saveExitButton.removeEventListener('click', saveAndExit);
+                deleteAccountButton.removeEventListener('click', deleteAccount);
+                Utility.toggleMenu(this, "homeMenu");
+            }
+            const showGuide = () => {
+                homeClose();
+                Utility.showInfo(this, "homeGuide");
+            }
+            const saveAndExit = () => {
+                homeClose();
+                //this.farm.saveFarmState();
+                Utility.chuckUserOut();
+            }
+            const deleteAccount = () => {
+                homeClose();
+                Utility.throwConfirmationScreen(this, "deleteAccount", "Are you sure you want to delete your account?", "This will permanently delete all your data on our servers. (you can make a new account if you wish)");
+            }
+            homeExitButton.addEventListener('click', homeClose);
+            homeGuideButton.addEventListener('click', showGuide);
+            saveExitButton.addEventListener('click', saveAndExit);
+            deleteAccountButton.addEventListener('click', deleteAccount);
+        });
+
         let settingsButton = document.getElementById("settings-icon-container");
         settingsButton.addEventListener('click', () => {
             Utility.toggleMenu(this, "settingsMenu");
@@ -175,13 +208,12 @@ export default class FarmScene extends Phaser.Scene {
             }
             settingsExitButton.addEventListener('click', settingsClose);
             settingsForm.addEventListener('submit', settingsClose);
-            
-        })
+        });
         
         //white square around plot that will move to selected plot
         this.selector = new Selector({scene: this, x: -300, y: -100, sprite: "plotSelect"});
         this.selector.setVisible(false);
-        
+
         let editButton = document.getElementById('edit-button');
         let tickButton = document.getElementById('tick-button');
         let plusButton = document.getElementById('plus-button');
@@ -837,7 +869,7 @@ export default class FarmScene extends Phaser.Scene {
                     else {
                         let prompt = "Are you sure you want to harvest this plot?"
                         let note = "Warning: this plot is unfinished, and you will only collect half as many coins for your time."
-                        Utility.throwConfirmationScreen(this, prompt, note);
+                        Utility.throwConfirmationScreen(this, "harvestCrops", prompt, note);
                     }
                 }
             }

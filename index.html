@@ -377,7 +377,7 @@
 
     <!--Top left-->
     <div class="top-left-container">
-        <div id="home-icon-container" onclick="popupHomeMenu()">
+        <div id="home-icon-container">
             <img src="/assets/home.png" alt="Home Icon">
         </div>
         <div id="settings-icon-container">
@@ -413,54 +413,36 @@
                 soundOffIcon.style.display = "inline";
             }
         }
-
-        function switchToHome() {
-            window.location.href = "landing.html";
-        }
-
-        function popupHomeMenu() {
-            document.getElementById("home-menu").style.display = "block";
-        }
-
-        function closeHomeMenu() {
-            document.getElementById("home-menu").style.display = "none";
-        }
-
-        function deleteAccount() {
-            if (confirm("Are you sure you want to delete your account?")) {
-                switchToHome();
-            }
-        }
     </script>
 
     <!--Home Menu Popup-->
-    <div class="menu-container home-menu" style="display: none; margin-top: 100px; margin-bottom: 100px;"
-        id="home-menu">
-        <dialog class="menu" style="display: inline-flex; flex-direction: column; height: 450px;">
+    <div class="menu-container home-menu" style="display: none; margin-top: 100px; margin-bottom: 100px;">
+        <dialog class="menu home-menu" style="display: inline-flex; flex-direction: column; height: 450px;">
             <div class="menu-top-container" style="align-self: flex-end;">
-                <button class="exit-button" id="home-exit-button" onclick="closeHomeMenu()">X</button>
+                <button class="exit-button" id="home-exit-button">X</button>
             </div>
             <div style="justify-content: center; display: flex;">
                 <table id="home-menu-table">
                     <tr>
                         <td>
                             <!--Show tutorial cards-->
-                            <div style="display: flex; justify-content: center;"><button class="Quick Guide">Quick
-                                    Guide</button></div>
+                            <div style="display: flex; justify-content: center;">
+                                <button id="quick-guide">Quick Guide</button>
+                            </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div style="display: flex; justify-content: center;"><button class="Exit Game"
-                                    onclick="switchToHome()">Save and Exit Game</button>
+                            <div style="display: flex; justify-content: center;">
+                                <button id="exit-game">Save and Exit Game</button>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <!--Should delete account from the database-->
                         <td>
-                            <div style="display: flex; justify-content: center;"><button class="Delete Account"
-                                    onclick="deleteAccount()">Delete Account</button>
+                            <div style="display: flex; justify-content: center;">
+                                <button id="delete-account">Delete Account</button>
                             </div>
                         </td>
                     </tr>

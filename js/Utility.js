@@ -85,7 +85,12 @@ export default class Utility {
                 break;
             case "settingsMenu":
                 dialogContainer = document.querySelector('.menu-container.settings-menu');
-                dialog = document.querySelector('.menu.settings-menu'); 
+                dialog = document.querySelector('.menu.settings-menu');
+                break;
+            case "homeMenu":
+                dialogContainer = document.querySelector('.menu-container.home-menu');
+                dialog = document.querySelector('.menu.home-menu');
+                break;
         }
         
         if (dialog.open) {
@@ -103,7 +108,7 @@ export default class Utility {
             scene.sys.game.input.enabled = false;
         }
     }
-    static throwConfirmationScreen (scene, prompt, promptNote) {
+    static throwConfirmationScreen (scene, action, prompt, promptNote) {
         let dialogContainer = document.querySelector('.menu-container.confirmation');
         let dialog = document.querySelector('.menu.confirmation');
         let acceptButton = document.getElementById('accept-confirmation');
@@ -113,31 +118,30 @@ export default class Utility {
         const closeWindow = (event) => {
             acceptButton.removeEventListener('click', closeWindow);
             denyButton.removeEventListener('click', closeWindow);
+            dialogContainer.style.display = 'none';
+            dialog.close();
+            scene.sys.game.input.enabled = true;
             if (event.srcElement.id == "accept-confirmation") {
-                if (prompt = "Are you sure you want to harvest this plot?") {
-                    scene.events.emit('harvestCrops');
+                if (action == "harvestCrops") {
+                    scene.events.emit(action);
+                }
+                else if (action = "deleteAccount") {
+                    //this.deleteAccount();
+                    this.chuckUserOut();
                 }
             }
-            dialogContainer.style.display = 'none';
-            dialog.close();
-            scene.sys.game.input.enabled = true;
         }
-        if (dialog.open) {
-            dialogContainer.style.display = 'none';
-            dialog.close();
-            scene.sys.game.input.enabled = true;
-        }
-        else {
-            messagePara.innerHTML = prompt;
-            notePara.innerHTML = promptNote;
-            dialogContainer.style.display = 'block';
-            dialog.showModal();
-            scene.sys.game.input.enabled = false;
-            acceptButton.addEventListener('click', closeWindow);
-            denyButton.addEventListener('click', closeWindow);
+        messagePara.innerHTML = prompt;
+        notePara.innerHTML = promptNote;
+        dialogContainer.style.display = 'block';
+        dialog.showModal();
+        scene.sys.game.input.enabled = false;
+        acceptButton.addEventListener('click', closeWindow);
+        denyButton.addEventListener('click', closeWindow);
+    }
 
-        }
-
+    static chuckUserOut() {
+        window.location.href = "../landing.html";
     }
 
     static getUserData() {
