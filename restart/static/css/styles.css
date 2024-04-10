@@ -184,7 +184,7 @@ select {
 
 #edit-buttons-container {
     position: fixed;
-    top: 0.2vh; 
+    bottom: 0; 
     left: 0; 
     border: none; 
     padding: 0; 
@@ -229,17 +229,50 @@ select {
     margin-top: 1vh;
 }
 
-.settings-icon-container{
+.top-left-container{
     position: fixed;
-    bottom: 0;
+    top: 0.2vh;
     left: 0;
     border: none;
     padding: 0;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 3px;
+    width: 5vw; 
+    height: 5vw; 
+    display: flex;
 }
 
-.settings-icon-container img{
-    scale: 0.8;
+#settings-icon-container img{
     cursor: pointer;
+    width: 40px;
+    margin-right: 10px;
+    height: 40px;
+}
+
+#soundToggle img {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+}
+
+#home-icon-container img {
+    cursor: pointer;
+    margin-right: 10px;
+    width: 40px;
+    height: 40px;
+}
+
+.coins-container{
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.coins-container p{
+    margin-right: 10px;
 }
 
 
