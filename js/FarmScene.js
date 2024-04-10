@@ -758,7 +758,7 @@ export default class FarmScene extends Phaser.Scene {
                 let row = table.insertRow(table.rows.length - 2);
                 row.setAttribute("class","subtask-row");
                 let cell = row.insertCell(0);
-                cell.innerHTML = '<label for="subtask'+(subtasks.length)+'"> - </label><input type ="text" class="subtask" name="subtask" maxlength="64" id= "subtask'+(subtasks.length)+'"></input>';
+                cell.innerHTML = '<label for="subtask'+(subtasks.length)+'"> - </label><input type ="text" class="subtask editable" name="subtask" maxlength="64" id= "subtask'+(subtasks.length)+'"></input>';
             }
         }
         
@@ -780,7 +780,7 @@ export default class FarmScene extends Phaser.Scene {
                 harvestButton.style.backgroundColor = "#72d242";
             }
             editable[0].value = task.name;
-            editable[1].value = task.noOfPomodoros;
+            editable[1].value = task.pomodoros;
             editable[2].checked = (task.subtasks.length > 0) ? true : false;
             if (editable[2].checked) {
                 showHideSubtasks();
@@ -826,14 +826,15 @@ export default class FarmScene extends Phaser.Scene {
                 event.preventDefault();
                 let subtasksData = [];
                 let finalSubtasks = document.getElementsByClassName("subtask editable");
+                console.log(finalSubtasks);
                 for (let j = 0; j < finalSubtasks.length; j++) {
                     if (!(finalSubtasks[j].value == "" || finalSubtasks[j].value == null)) { 
                         subtasksData.push(finalSubtasks[j].value);
                     }
                 }
                 //connect up to pomodoro timer;
-                let taskConfig = {name: document.getElementById("taskName").value,
-                                  noOfPomodoros: document.getElementById("repetitions").value,
+                let taskConfig = {taskName: document.getElementById("taskName").value,
+                                  pomodoros: document.getElementById("repetitions").value,
                                   subtasks: subtasksData }
                 if (editing) {
                     this.farm.editTask(taskConfig);
@@ -846,9 +847,10 @@ export default class FarmScene extends Phaser.Scene {
                     taskConfig.crop = document.getElementById("crop").value;
                     taskConfig.growthStage = 0;
                     taskConfig.growthStep = 0;
-                    Utility.sendCreatedTaskData();
+                    Utility.sendCreatedTaskData(taskConfig);
                 }
-                console.log(this.farm.tasks);
+                console.log(this.farm.tasks, taskConfig);
+                console.log(document.getElementById("taskName").value)
             }
             else if (event.type == "click") {
                 if (!this.farm.plots[this.selector.plotSelected].occupied){
@@ -986,7 +988,7 @@ class SectorCircle extends Phaser.GameObjects.Graphics {
 }
 
 class AnalogTimer extends Phaser.GameObjects.Graphics {
-    constructor(scene, x, y, radius, totalTimeInSeconds, repeatDurationInSeconds, pomodoro, pauseFlag, color) {
+    constructor(scene, x, y, radius, totalTimeInSeconds, elapsedTime, repeatDurationInSeconds, pomodoro, pauseFlag, color) {
         super(scene);
         scene.add.existing(this);
 
@@ -996,8 +998,8 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.radius = radius;
         this.totalTimeInSeconds = totalTimeInSeconds;
         this.repeatDurationInSeconds = repeatDurationInSeconds;
-        this.remainingTime = totalTimeInSeconds;
-        this.elapsedTime = 0;
+        this.remainingTime = totalTimeInSeconds - elapsedTime;
+        this.elapsedTime = elapsedTime | 0;
 
         this.pomodoro = pomodoro;
         this.pauseFlag = pauseFlag;
@@ -1105,6 +1107,15 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.timeString.setText(`${formattedHours}:${formattedMinutes}:${formattedSeconds}`);
     }
 
+    updateCircle() {
+        // Calculate angle for timer hand
+        let angle = (this.elapsedTime / this.totalTimeInSeconds) * Phaser.Math.PI2 - Phaser.Math.PI2 / 4;
+
+        // Change the fill circle area
+        this.fillCircle = new SectorCircle(this.scene, this.x, this.y, this.radius - 30, -90, Phaser.Math.RadToDeg(angle), this.color);
+        return angle;
+    }
+
     updateTimer() {
         // Check if the timer has been destroyed
         if (!this.active) {
@@ -1121,11 +1132,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
         this.updateTimeString();
 
-        // Calculate angle for timer hand
-        const angle = (this.elapsedTime / this.totalTimeInSeconds) * Phaser.Math.PI2 - Phaser.Math.PI2 / 4;
-
-        // Change the fill circle area
-        this.fillCircle = new SectorCircle(this.scene, this.x, this.y, this.radius - 30, -90, Phaser.Math.RadToDeg(angle), this.color);
+        let angle = this.updateCircle();
 
         // Draw timer hand
         const handLength = this.radius * 0.6;
@@ -1320,18 +1327,50 @@ class Pomodoro extends Phaser.GameObjects.Container {
         }
     }
 
+    loadTimer(elapsedTime) {
+        if (this.timer1) {
+            this.timer1.fillCircle.clear();
+            this.timer1.destroy();
+            this.timer1.timeString.destroy();
+        }
+        this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, elapsedTime, 0, this, this.pauseFlag, 0xffa500);
+        this.scene.events.emit("timerPaused");
+        this.pauseFlag = true;
+        this.timer1.updateCircle();
+    }
+
+    loadTask() {
+        let task = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()];
+        let plot = this.scene.farm.plots[this.scene.selector.plotSelected];
+        if (!task.completed) {
+            if (this.timer1) {
+            }
+            this.noOfPomodoros = task.pomodoros - task.pomodorosCompleted;
+            let percentageComplete = (plot.growthStage * plot.cropSprites.length + plot.growthStep) / (plot.maxFrame * plot.cropSprites.length);
+            let pomodoros = task.pomodoros * percentageComplete;
+            let totalTimeElapsed = this.workTime * task.pomodoros * percentageComplete;
+            let timerElapsed = totalTimeElapsed - this.workTime * task.pomodorosCompleted;
+            if (this.noOfPomodoros ) {
+                console.log(timerElapsed, totalTimeElapsed, percentageComplete);
+                this.loadTimer(timerElapsed);
+            }
+        }
+    }
+
     skipTimer() {
         if (this.timer1){
             this.timer1.destroy();
         }
-
+        if (this.workFlag) {
+            this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].pomodorosCompleted ++;
+        }
         this.workFlag = !this.workFlag;
         if (this.workFlag) {
             if (this.noOfPomodoros != 0) {
                 Utility.setWorkingState(true);
                 this.noOfPomodoros--;
                 console.log("pomodoro started");
-                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, this, this.pauseFlag, 0xffa500);
+                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, 0, this, this.pauseFlag, 0xffa500);
                 this.scene.events.emit('pomodoroStarted');
             } else {
                 this.playButton.destroy();
@@ -1344,9 +1383,9 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.longBreakInterval--;
             if (this.longBreakInterval == 0) {
                 this.longBreakInterval = this.initBreakInterval;
-                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.longBreakTime, 0, this, this.pauseFlag, 0x228B22);
+                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.longBreakTime, 0, 0, this, this.pauseFlag, 0x228B22);
             } else {
-                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, 0, this, this.pauseFlag, 0x7CFC00);
+                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, 0, 0, this, this.pauseFlag, 0x7CFC00);
             }
         }
     }
@@ -1542,10 +1581,14 @@ class Task {
     constructor(config) {
         this.plotId = config.plotId;
         this.name = config.taskName;
-        this.noOfPomodoros = config.pomodoros;
+        this.pomodoros = config.pomodoros;
+        this.pomodorosCompleted = config.pomodorosCompleted || 0;
         this.subtasks = config.subtasks || [];
         this.subtasksCompleted = config.subtasksCompleted  || [];
         this.completed = config.completed || false;
+        if (this.noOfPomodors <= this.pomodorosCompleted) {
+            this.completed = true;
+        }
         if (this.subtasksCompleted.length == 0) {
             for (let i = 0; i < this.subtasks.length; i++) {
                 this.subtasksCompleted.push(false);
@@ -1555,7 +1598,11 @@ class Task {
 
     updateTask(config) {
         this.name = config.taskName || this.name;
-        this.noOfPomodoros = config.pomodoros || this.noOfPomodoros;
+        if (config.pomodoros <= this.pomodorosCompleted) {
+            this.completed = true;
+            super.scene.events.emit("taskCompleted");
+        }
+        this.pomodoros = config.pomodoros || this.pomodoros;
         this.subtasks = config.subtasks || this.subtasks;
         this.subtasksCompleted = config.subtasksCompleted || this.subtasksCompleted;
         this.completed = config.completed || this.completed;
@@ -1701,34 +1748,25 @@ class Plot extends Phaser.GameObjects.Container {
                 this.placed = false;
                 return;
             }
-            if(!Utility.isEditMode()) {
+            if(!Utility.isEditMode() && !Utility.getWorkingState()) {
                 // if occupied prompt for harvest, if unoccupied, open start task menu.
                 if (this.occupied) {
                     if (this.scene.selector.plotSelected == this.id) {
-                        //this.harvest();
-                        let message = "Do you want to harvest this plot?"
-                        let note = null;
-                        if (this.growthStage != this.maxFrame) {
-                            note = "This is an unfinished plot, you will get half the coins for your time."
-                        }
-                        
                         this.scene.events.emit("editingTask");
                     }
                     else {
                         this.select();
-                        Utility.setPlotReady(true); 
+                        this.scene.pomodoro.loadTask();
+                        Utility.setPlotReady(true);
                     }
-
                 }
                 else {
                     //show menu
                     this.select();
-                    
                     this.scene.events.emit("creatingTask");
                     // listened to by the scene class
                 }
             }
-            
         });
         this.scene.add.existing(this);
 
@@ -1787,7 +1825,6 @@ class Plot extends Phaser.GameObjects.Container {
                 //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
                 let crop = this.scene.add.sprite(x + xoff, y + yoff, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");
                 crop.stop();
-                //crop.anims.setCurrentFrame(this.growthStage);
                 for (let i = 0; i < this.growthStage; i++) {
                     crop.anims.nextFrame();
                 }
@@ -1866,7 +1903,15 @@ class Plot extends Phaser.GameObjects.Container {
         }
 
         //random number
-        let rand = Phaser.Math.Between(0, this.cropsLeft.length-1);
+        let rand = 0;
+        do {
+            rand = Phaser.Math.Between(0, (this.cropsLeft.length-1));
+            if (rand < 0) {
+                console.log(rand, "random number between 0 and 25/36 is somehow -1");
+
+            }
+        } while (rand >= this.cropsLeft.length && rand < 0);
+        
         let upordown = Phaser.Math.Between(0, 1); // makes it seem more random when cycling through.
 
         //crop selection logic
@@ -1882,7 +1927,7 @@ class Plot extends Phaser.GameObjects.Container {
                 if (rand == this.cropsLeft.length) {
                     rand = 0;
                 }
-                else if (rand == 0) {
+                else if (rand < 0) {
                     rand = this.cropsLeft.length - 1;
                 }
             }

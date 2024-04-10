@@ -163,15 +163,15 @@ export default class Utility {
             ],
             
             "plots": [
-              {"plotId": 0, "crop": "sunflower", "growthStage": 10, "growthStep": 12, "x": 176, "y": 616, "placed": true}, 
-              {"plotId": 1, "crop": "tulip", "growthStage": 9, "growthStep": 12, "x": 272, "y": 616, "placed": true}, 
-              {"plotId": 2, "crop": "carrot",  "growthStage": 1, "growthStep": 2, "x": 368, "y": 616, "placed": true},
+              {"plotId": 0, "crop": "sunflower", "growthStage": 9, "growthStep": 24, "x": 176, "y": 616, "placed": true}, 
+              {"plotId": 1, "crop": "tulip", "growthStage": 9, "growthStep": 35, "x": 272, "y": 616, "placed": true}, 
+              {"plotId": 2, "crop": "carrot",  "growthStage": 1, "growthStep": 24, "x": 368, "y": 616, "placed": true},
               {"plotId": 3, "crop": "nothing", "growthStage": 0, "growthStep": 0, "x": 464, "y": 616, "placed": true},
             ],
             "tasks": [
-                {"plotId": 0, "taskName": "Maths Homework", "pomodoros": 3, "completed": true, "subtasks": ["week 7", "week 8"]},
-                {"plotId": 1, "taskName": "Operating Systems CW", "pomodoros": 3, "completed": true, "subtasks": ["download files", "start work", "catch up on notes bruh"], "subtasksCompleted": [true,false,false]},
-                {"plotId": 2, "taskName": "go to bed", "pomodoros": 1, "completed": false, "subtasks": ["tidy desk", "brush teeth", "get changed", "go piss girl"], "subtasksCompleted": [true,false,false,false]},
+                {"plotId": 0, "taskName": "Maths Homework", "pomodoros": 3, "pomodorosCompleted": 3, "completed": true, "subtasks": ["week 7", "week 8"]},
+                {"plotId": 1, "taskName": "Operating Systems CW", "pomodoros": 3, "pomodorosCompleted": 2, "completed": false, "subtasks": ["download files", "start work", "catch up on notes bruh"], "subtasksCompleted": [true,false,false]},
+                {"plotId": 2, "taskName": "go to bed", "pomodoros": 1, "pomodorosCompleted": 0, "completed": false, "subtasks": ["tidy desk", "brush teeth", "get changed", "go piss girl"], "subtasksCompleted": [true,false,false,false]},
             ],
             "furniture": [
               {"type": "carpet1", "x": 320, "y": 612, "placed": true},
