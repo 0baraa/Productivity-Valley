@@ -18,6 +18,7 @@ export default class FarmScene extends Phaser.Scene {
         
         this.load.image('marketSign', '../assets/market-sign.png');
         this.load.image('sun', '../assets/sun.png');
+        this.load.image('sun-flares', '../assets/sun-flares.png')
         this.load.image('plot', '../assets/larger_plot.png');
         this.load.image('plotSelect', '../assets/plot_select.png');
 
@@ -44,14 +45,14 @@ export default class FarmScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.image(320, 550, 'farmBackground').setDepth(-1);
+        this.add.image(320, 550, 'farmBackground').setDepth(-2);
 
-        this.add.image(320, 520, 'mountains');
+        this.add.image(320, 520, 'mountains').setDepth(-1);
 
         this.sun = this.add.sprite(320, 455, 'sun').setDepth(-1);
         this.sun.setInteractive();
         Utility.addTintOnHover(this.sun);
-
+        
         this.clouds = [];
         this.cloudImages = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
         
@@ -68,7 +69,7 @@ export default class FarmScene extends Phaser.Scene {
         
         this.add.image(320, 550, 'fence');
         
-
+        
         this.butterflies = [];
         this.anims.create({
             key: "butterfly1Anim",
@@ -83,7 +84,7 @@ export default class FarmScene extends Phaser.Scene {
             callback: () => generateButterfly(this),
             loop: true
         });
-
+        
         //animation driver 20 fps
         this.skip = 0; // skip frames for 10fps or 5fps or 4fps or 8.333 fps
         this.time.addEvent({
@@ -92,7 +93,7 @@ export default class FarmScene extends Phaser.Scene {
             loop: true
         });
 
-
+        
         this.anims.create({
             key: 'level2farmhouseAnimation',
             frames: this.anims.generateFrameNumbers('level2farmhousespritesheet', { start: 0, end: 4 }),
@@ -126,8 +127,8 @@ export default class FarmScene extends Phaser.Scene {
             repeat: 0
         });
         
-
-
+        
+        
         //set market sign to be one more than the crops.
         this.marketSign = this.add.image(600, 560, 'marketSign');
         this.marketSign.setInteractive();
@@ -139,14 +140,15 @@ export default class FarmScene extends Phaser.Scene {
                 this.scene.launch('MarketScene');
             }
         });
-
+        
         // Calculate the dimensions of the screen for better positioning
         const screenWidth = this.sys.game.config.width;
         const screenHeight = this.sys.game.config.height;
-
+        
         const pomodoroY = screenHeight * 0.185;
+        this.sunFlares = this.add.sprite(320, pomodoroY+221, 'sun-flares').setDepth(-1);
         this.pomodoro = new Pomodoro(this, 160, pomodoroY, 75);
-
+        
         let settingsButton = document.getElementById("settings-icon-container");
         settingsButton.addEventListener('click', () => {
             Utility.toggleMenu(this, "settingsMenu");
@@ -639,6 +641,7 @@ export default class FarmScene extends Phaser.Scene {
         this.events.on('pomodoroResumed', this.playPlot, this);
         this.events.on('pomodoroPaused', this.pausePlot, this);
         this.events.on('pomodoroSkipped', this.pausePlot, this);
+        this.events.on('taskCompleted', this.completePlot, this);
 
         this.events.on('harvestCrops', this.harvestPlot, this);
         this.events.on('creatingTask', this.createTaskMenu, this);
@@ -676,8 +679,14 @@ export default class FarmScene extends Phaser.Scene {
         this.farm.plots[this.selector.plotSelected].pauseGrowth();
     }
 
+    completePlot() {
+        this.farm.plots[this.selector.plotSelected].finishCrops();
+        this.farm.tasks[this.farm.findSelectedTaskIndex()].completed = true;
+    }
+
     harvestPlot() {
         this.farm.plots[this.selector.plotSelected].harvest();
+        this.farm.tasks.splice(this.farm.findSelectedTaskIndex());
     }
 
     editTaskMenu() {
@@ -715,7 +724,6 @@ export default class FarmScene extends Phaser.Scene {
                 row.setAttribute("class","subtask-row");
                 let cell = row.insertCell(0);
                 cell.innerHTML = '<label for="subtask'+(subtasks.length)+'"> - </label><input type ="text" class="subtask" name="subtask" maxlength="64" id= "subtask'+(subtasks.length)+'"></input>';
-                console.log(table);
             }
         }
         
@@ -726,24 +734,15 @@ export default class FarmScene extends Phaser.Scene {
        
         let taskTitle = document.getElementById('task-title');
         if (editing) {
-            for (let i = 0; i < rowsToHide; i++) {
-                rowsToHide.style.display = "none";
+            for (let i = 0; i < rowsToHide.length; i++) {
+                rowsToHide[i].style.display = "none";
             }
             saveButton.innerHTML = "Save";
             harvestButton.style.display = "block";
             taskTitle.innerHTML = "Edit Task"
-            if (this.farm.tasks[this.selector.plotSelected].completed) {
-                //if plot is finished;
+            let task = this.farm.tasks[this.farm.findSelectedTaskIndex()];
+            if (task.completed) {
                 harvestButton.style.backgroundColor = "#72d242";
-            }
-
-            //TODO: load values from plots into the menu;
-            let task = null;
-            for (let l = 0; l < this.farm.tasks.length; l++) {
-                if (this.farm.tasks[l].plotId == this.selector.plotSelected) {
-                    task = this.farm.tasks[l];
-                    break;
-                }
             }
             editable[0].value = task.name;
             editable[1].value = task.noOfPomodoros;
@@ -798,26 +797,28 @@ export default class FarmScene extends Phaser.Scene {
                     }
                 }
                 //connect up to pomodoro timer;
-                let taskConfig = {plotId: this.selector.plotSelected, 
-                                  name: document.getElementById("taskName").value,
+                let taskConfig = {name: document.getElementById("taskName").value,
                                   noOfPomodoros: document.getElementById("repetitions").value,
-                                  subtasks: subtasksData,
-                                  }
+                                  subtasks: subtasksData }
                 if (editing) {
                     this.farm.editTask(taskConfig);
                 }
                 else {
                     this.farm.plots[this.selector.plotSelected].setupCrops();
                     Utility.setPlotReady(true);
-                    
+                    taskConfig.plotId = this.selector.plotSelected, 
                     this.farm.addTask(taskConfig);
                     taskConfig.crop = document.getElementById("crop").value;
                     taskConfig.growthStage = 0;
                     taskConfig.growthStep = 0;
                     Utility.sendCreatedTaskData();
                 }
-                console.log(this.farm.tasks)
-            
+                console.log(this.farm.tasks);
+            }
+            else if (event.type == "click") {
+                if (!this.farm.plots[this.selector.plotSelected].occupied){
+                    Utility.setPlotReady(false);
+                }
             }
             //resets the task menu to its default
             resetTaskMenu();
@@ -1434,8 +1435,12 @@ class PlayerFarm {
         }
     }
 
-    findselectedPlot() {
-        this.scene.selector.selectedPlot;
+    findSelectedTaskIndex() {
+        for (let i = 0; i < this.tasks.length; i++) {
+            if (this.tasks[i].plotId == this.scene.selector.plotSelected) {
+                return i;
+            }
+        }
     }
 
     createTasks(data) {
@@ -1450,7 +1455,7 @@ class PlayerFarm {
     }
 
     editTask(taskConfig) {
-        let id = this.scene.selector.selectedPlot;
+        this.tasks[this.findSelectedTaskIndex()].updateTask(taskConfig);
     }
 
     createDecorations(data) {

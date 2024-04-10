@@ -375,7 +375,7 @@ class Shop extends Phaser.GameObjects.Sprite {
 
     buyCropEvent(event,price) {
         console.log("bought " + event.target.className + " x" + event.target.id + " for " + price + " coins");
-        this.farmScene.farm.updateCoins(price);
+        this.farm.updateCoins(price);
         Utility.buySeeds(event.target.className,event.target.id,price);
         this.removeItemListeners();
         this.updateAffordability();
