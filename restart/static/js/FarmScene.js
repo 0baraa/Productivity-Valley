@@ -2257,7 +2257,7 @@ class Furniture extends Phaser.GameObjects.Sprite {
 
         else if(this.type === "lamp") {
             if(!this.scene.lampTurnedOn) {
-                    this.setTexture('lamp-on');
+                this.setTexture('lamp-on');
                 this.scene.lampTurnedOn = true;
             }
             else {
