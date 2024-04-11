@@ -427,7 +427,7 @@ export default class FarmScene extends Phaser.Scene {
                         plotImg.style.width = '100%';
                         plotImg.style.height = 'calc(100% - 4vw)';
                         plotImg.style.objectFit = 'contain';
-                        plotImg.src = '../assets/larger_plot.png';
+                        plotImg.src = '/static/assets/larger_plot.png';
 
                         let buttonDiv = document.createElement('div');
                         buttonDiv.style.display = 'flex';
@@ -484,7 +484,7 @@ export default class FarmScene extends Phaser.Scene {
                         decorationImg.style.width = '100%';
                         decorationImg.style.height = 'calc(100% - 4vw)';
                         decorationImg.style.objectFit = 'contain';
-                        decorationImg.src = './assets/decorations/' + decoration.type + '.png';
+                        decorationImg.src = '/static/assets/decorations/' + decoration.type + '.png';
 
                         let buttonDiv = document.createElement('div');
                         buttonDiv.style.display = 'flex';
