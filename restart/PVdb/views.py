@@ -1,14 +1,17 @@
+from django.db.models.functions import TruncDay
 from django.shortcuts import render
 from rest_framework.views import APIView
 from .models import *
 from .serializer import *
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import F
+from django.db.models import F, Sum
 
 from django.utils import timezone
 from datetime import timedelta
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+
 
 class PomodoroStatsView(APIView):
     def get(self, request, username):
@@ -121,22 +124,48 @@ class UserDatesView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = UserDatesSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # 尝试获取现有记录
+        user_date = UserDates.objects.filter(username=request.data.get('username'), date=request.data.get('date')).first()
+        if user_date:
+            # 如果存在，更新记录
+            user_date.timeSpent += int(request.data.get('timeSpent', 0))
+            user_date.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)  # 或其他适当的响应
+        else:
+            # 如果不存在，创建新记录
+            serializer = UserDatesSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def post(self, request):
+    #     serializer = UserDatesSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class DecorationsView(APIView):
+
+    def post(self, request):
+        serializer = DecorationsSerializer(data=request.data)
+        if not serializer.is_valid():  # 检查序列化器是否有效
+            print(serializer.errors)  # 打印错误信息
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # 返回错误信息和400状态码
+
+        # 如果数据有效，保存装饰项并返回成功响应
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
     def get(self, request):
         output = [{"name":output.name,
                   "price":output.price}
                   for output in Decorations.objects.all()]
         return Response(output)
-    def post (self, request):
-        serializer = DecorationsSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
+    # def post (self, request):
+    #     serializer = DecorationsSerializer(data=request.data)
+    #     if serializer.is_valid(raise_exception=True):
+    #         serializer.save()
+    #         return Response(serializer.data)
     def delete(self, request):
         name = request.data.get('name', None)
         if name is None:

@@ -1,5 +1,6 @@
 // import axios from 'axios';
 // const axios = require('axios');
+axios.defaults.withCredentials = true;
 
 
 const apiUrl = 'http://localhost:8000/users/';
@@ -174,6 +175,7 @@ const newUser = {
     lastName: 'Doe',
     username: 'johndoe',
     email: 'johndoe@example.com',
+    timeSpent: 120 ,
 };
 const userData = new UserData();
 userData.addUserDate(newUserDate)

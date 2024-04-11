@@ -6,18 +6,17 @@ export default class MarketScene extends Phaser.Scene {
     }
 
     preload() {
-        // 辅助函数，自动添加 STATIC_URL 前缀
         const loadStatic = (key, file) => this.load.image(key, STATIC_URL + file);
 
-        // 使用辅助函数加载资源
         loadStatic('marketBackground', 'assets/market-background.png');
         loadStatic('mountains-market', 'assets/mountains-market.png');
         loadStatic('farmSign', 'assets/farm-sign.png');
         loadStatic('cropShop', 'assets/market/market_stall_seeds.png');
-        loadStatic('furnitureShop', 'assets/market/furnituresale.png');
+        loadStatic('furnitureShop', 'assets/market/furniture-shop.png');
+        loadStatic('decorationShop', 'assets/market/decoration-shop.png');
+        loadStatic('plots-shop', 'assets/market/plots-shop.png');
 
     }
-
 
     create () {
         // Hide edit button
@@ -52,24 +51,23 @@ export default class MarketScene extends Phaser.Scene {
             { type: 'fireplace', price: 100 }
         ];
 
+        this.allDecorations = [
+            { type: 'snowman', price: 100 },
+            { type: 'gnome', price: 100 },
+        ];
+
         //Set camera zoom to 2x as canvas size of farmhouse interior is 320px wide, rather than 640px
         this.cameras.main.setZoom(2);
 
         this.add.image(320, 583, 'marketBackground');
         this.add.image(320, 559, 'mountains-market');
         //instantiate all the shops
-        this.cropShop = new Shop({scene: this, x:320, y:580, sprite:'cropShop'});
-
-        // this.furnitureShop = new Shop({scene: this, x: 400, y: 620, sprite:'furnitureShop'});
-        // this.farmSign = this.add.sprite(200, 610, 'farmSign');
-        // this.farmSign.setInteractive();
-        //
-        // Utility.addTintOnHover(this.farmSign);
+        this.cropShop = new Shop({scene: this, farm: this.farm, x:360, y:580, sprite:'cropShop'});
 
         this.furnitureShop = this.add.sprite(438, 610, 'furnitureShop');
         this.furnitureShop.setInteractive();
-
         Utility.addTintOnHover(this.furnitureShop);
+
 
         this.furnitureShop.on('pointerdown', () => {
             let furnitureContainer = document.getElementById('furniture-shop-container');
@@ -96,7 +94,6 @@ export default class MarketScene extends Phaser.Scene {
                 furnitureImg.style.width = '100%';
                 furnitureImg.style.height = 'calc(100% - 4vw)';
                 furnitureImg.style.objectFit = 'contain';
-                // furnitureImg.src = './assets/house/furniture/' + furniture.type + '.png';
                 furnitureImg.src = '/static/assets/house/furniture/' + furniture.type + '.png';
 
                 let buttonDiv = document.createElement('div');
@@ -121,10 +118,9 @@ export default class MarketScene extends Phaser.Scene {
                         // if this.farm.coins >= furniture.price (using true for testing)
                         if(true) {
                             // this.farm.coins -= furniture.price;
-                            console.log('asdf');
                             let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
                             let farmScene = this.scene.get('FarmScene');
-                            farmScene.farm.addFurniture(insideFarmhouseScene, furniture.type);
+                            farmScene.farm.addFurnitureToInventory(insideFarmhouseScene, furniture.type);
                             let furnitureShopContainer = document.getElementById('furniture-shop-container');
                             while (furnitureShopContainer.firstChild) {
                                 furnitureShopContainer.removeChild(furnitureShopContainer.firstChild);
@@ -139,6 +135,144 @@ export default class MarketScene extends Phaser.Scene {
             Utility.toggleMenu(this, 'furnitureShopMenu');
 
         });
+
+        this.decorationsShop = this.add.sprite(280, 600, 'decorationShop');
+        this.decorationsShop.setInteractive();
+        Utility.addTintOnHover(this.decorationsShop);
+
+        this.decorationsShop.on('pointerdown', () => {
+            let decorationContainer = document.getElementById('decoration-shop-container');
+
+            let userDecorations = []
+            for(let decoration of this.farm.decorations) {
+                userDecorations.push(decoration.type);
+            }
+
+            // lockedDecorations contains decorations which the user does not currently own
+            let lockedDecorations = this.allDecorations.filter(decoration => !userDecorations.includes(decoration.type));
+
+            for(let decoration of lockedDecorations) {
+                let decorationDiv = document.createElement('div');
+                decorationDiv.style.width = '12vw';
+                decorationDiv.style.height = '12vw';
+                decorationDiv.style.display = 'flex';
+                decorationDiv.style.flexDirection = 'column';
+                decorationDiv.style.justifyContent = 'center';
+                decorationDiv.style.marginBottom = '1vh';
+
+                let decorationImg = document.createElement('img');
+                decorationImg.style.width = '100%';
+                decorationImg.style.height = 'calc(100% - 4vw)';
+                decorationImg.style.objectFit = 'contain';
+                decorationImg.src = '/static/assets/decorations/' + decoration.type + '.png';
+
+                let buttonDiv = document.createElement('div');
+                buttonDiv.style.display = 'flex';
+                buttonDiv.style.justifyContent = 'center';
+
+                let decorationButton = document.createElement('button');
+                decorationButton.classList.add('price-button');
+                decorationButton.id = decoration.type + '-shop-button';
+                decorationButton.textContent = decoration.price;
+
+                buttonDiv.appendChild(decorationButton);
+                decorationDiv.appendChild(decorationImg);
+                decorationDiv.appendChild(buttonDiv);
+                decorationContainer.appendChild(decorationDiv);
+            }
+
+            for(let decoration of lockedDecorations) {
+                let decorationButton = document.getElementById(decoration.type + '-shop-button');
+                if(decorationButton) {
+                    decorationButton.onclick = () => {
+                        // if this.farm.coins >= decoration.price (using true for testing)
+                        if(true) {
+                            // this.farm.coins -= decoration.price;
+                            let farmScene = this.scene.get('FarmScene');
+                            farmScene.farm.addDecorationToInventory(farmScene, decoration.type);
+                            let decorationShopContainer = document.getElementById('decoration-shop-container');
+                            while (decorationShopContainer.firstChild) {
+                                decorationShopContainer.removeChild(decorationShopContainer.firstChild);
+                            }
+
+                            Utility.toggleMenu(this, 'decorationShopMenu');
+                        }
+                    }
+                }
+            }
+
+            Utility.toggleMenu(this, 'decorationShopMenu');
+
+        });
+
+        this.plotShop = this.add.sprite(320, 650, 'plotShop');
+        this.plotShop.setInteractive();
+        Utility.addTintOnHover(this.plotShop);
+
+        this.plotShop.on('pointerdown', () => {
+            let plotContainer = document.getElementById('plots-shop-container');
+
+            let numOfLockedPlots = 8 - this.farm.plots.length;
+
+            for(let i = 0; i < numOfLockedPlots; i++) {
+                let plotDiv = document.createElement('div');
+                plotDiv.style.width = '12vw';
+                plotDiv.style.height = '12vw';
+                plotDiv.style.display = 'flex';
+                plotDiv.style.flexDirection = 'column';
+                plotDiv.style.justifyContent = 'center';
+                plotDiv.style.marginBottom = '1vh';
+
+                let plotImg = document.createElement('img');
+                plotImg.style.width = '100%';
+                plotImg.style.height = 'calc(100% - 4vw)';
+                plotImg.style.objectFit = 'contain';
+                plotImg.src = '/static/assets/larger_plot.png';
+
+                let buttonDiv = document.createElement('div');
+                buttonDiv.style.display = 'flex';
+                buttonDiv.style.justifyContent = 'center';
+
+                let plotButton = document.createElement('button');
+                plotButton.classList.add('price-button');
+                plotButton.id = 'plot' + i + '-shop-button';
+                plotButton.textContent = 250;
+
+                buttonDiv.appendChild(plotButton);
+                plotDiv.appendChild(plotImg);
+                plotDiv.appendChild(buttonDiv);
+                plotContainer.appendChild(plotDiv);
+            }
+
+            for(let i = 0; i < numOfLockedPlots; i++) {
+                let plotButton = document.getElementById('plot' + i + '-shop-button');
+                if(plotButton) {
+                    plotButton.onclick = () => {
+                        // if this.farm.coins >= 250 (using true for testing)
+                        if(true) {
+                            // this.farm.coins -= 250;
+                            let farmScene = this.scene.get('FarmScene');
+                            farmScene.farm.addPlotToInventory(farmScene);
+                            let plotShopContainer = document.getElementById('plots-shop-container');
+                            while (plotShopContainer.firstChild) {
+                                plotShopContainer.removeChild(plotShopContainer.firstChild);
+                            }
+
+                            Utility.toggleMenu(this, 'plotShopMenu');
+                        }
+                    }
+                }
+            }
+
+
+            Utility.toggleMenu(this, 'plotShopMenu');
+        });
+
+
+
+
+
+
 
         this.farmSign = this.add.sprite(200, 610, 'farmSign');
         this.farmSign.setInteractive();
@@ -162,6 +296,7 @@ class Shop extends Phaser.GameObjects.Sprite {
         this.setInteractive();
         Utility.addTintOnHover(this);
         const self = this;
+        this.farm = config.farm;
         this.on('pointerdown', () => {
             Utility.toggleMenu(config.scene, config.sprite);
             //let table = document.querySelector("menu-container.shop-menu");
@@ -209,14 +344,14 @@ class Shop extends Phaser.GameObjects.Sprite {
 
     updateAffordability() {
         const self = this;
-        let data = Utility.getUserData();
+        let coins = this.farm.coins;
         let buyListener = function thingy() {}
         for (let i = 0; i < this.displayedItems.length; i++) {
             for (let j = 0; j < this.displayedItems[i].buttons.length; j++) {
                 buyListener = function thingy(event) {
                     self.buyCropEvent(event,self.displayedItems[i].prices[j])
                 }
-                if (this.displayedItems[i].prices[j] <= data.coins) {
+                if (this.displayedItems[i].prices[j] <= coins) {
                     this.displayedItems[i].buttons[j].onclick = buyListener;
                     this.displayedItems[i].buttons[j].style.cursor = "pointer";
                     this.displayedItems[i].buttons[j].style.backgroundColor = "#d39f20";
@@ -241,6 +376,7 @@ class Shop extends Phaser.GameObjects.Sprite {
 
     buyCropEvent(event,price) {
         console.log("bought " + event.target.className + " x" + event.target.id + " for " + price + " coins");
+        this.farm.updateCoins(price);
         Utility.buySeeds(event.target.className,event.target.id,price);
         this.removeItemListeners();
         this.updateAffordability();

@@ -9,32 +9,18 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="icon" href="{% static 'assets/sun.ico' %}" type="image/x-icon">
     <script type="text/javascript">
-        // 定义一个变量来存储静态文件的基础路径
         var STATIC_URL = "{% static '' %}";
     </script>
-    <script type="module" src="{% static 'js/libs/phaser.js' %}"></script>
+    <script src="{% static 'js/libs/phaser.js' %}"></script>
+
+{#    <script type="module" src="{% static 'js/libs/phaser.js' %}"></script>#}
 </head>
 <body>
-    <div id="game-container"></div> <!-- Phaser 游戏或图表将在这里渲染 -->
+    <div id="game-container"></div>
     </div>
         <script type="module" src="{% static 'js/game.js' %}"></script>
-        <script>
-                function addSubtask() {
-                    //
-                    let taskTable = document.getElementById("task-menu-table");
-                    
-                    let row = taskTable.insertRow(taskTable.rows.length-2);
-                    let cell = row.insertCell();
-                    let input = document.createElement("input");
-                    value.setAttribute("type", "text");
-                    {#可能需要改为input.set...#}
-                    let bullet = document.createTextNode(" - ");
-                    cell.appendChild(bullet);
-                    cell.appendChild(input);
-                     }
-        </script>
-<div id="game-container"></div>
-{#表格的背景,在body的尾巴加了script协助chart引库#}
+
+{#<div id="game-container"></div>#}
     <div class="menu-container chart-menu" style="display: none;">
         <dialog class="menu chart-menu" style="display: inline-flex; flex-direction: column;">
             <div class="menu-top-container">
@@ -54,63 +40,58 @@
         <dialog class="menu task-menu" style="display: inline-flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button class="info-button" id="task-info-button">?</button>
-                <p>Create a task</p>
+                <p id="task-title">Create a task</p>
                 <button class="exit-button" id="task-exit-button">X</button>
             </div>
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
                 <form id="task-form" style="display: flex; justify-content: center;">
                     <table id="task-menu-table">
-                        <tr>
+                        <tr class = "uneditable">
                             <td>
                                 <label for="preset">Preset:</label>
                                 <select id="preset" name="preset">
-                                    <option value="new">New</option>
-                                    <option value=""></option>
+                                    <option value="new"></option>
                                 </select>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <input type="text" id="taskName" name="taskName" maxlength="25" value="Task 1"required><br>
                                 <label for="taskName">Task Name:</label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="minutes">Minutes/session:</label>
-                                <input type="number" id="minutes" name="minutes" min="10" max="120" step="5" value="25" required>
+                                <input type="text" id="taskName" class="editable" name="taskName" maxlength="25" value="Task" required><br>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="repetitions">Sessions:</label>
-                                <input type="number" id="repetitions" name="repetitions" min="1" max="20" step="1" value="1" required>
+                                <input type="number" id="repetitions" class="editable" name="repetitions" style="width: 70px" min="1" max="20" step="1" value="1" required>
                             </td>
                         </tr>
-                        <tr>
+                        <tr class = "uneditable">
                             <td>
                                 <label for="crop">Crop:</label>
                                 <select id="crop" name="crop">
                                     <option value="sunflower">Sunflower</option>
                                     <option value="carrot">Carrot</option>
+                                    <option value="pumpkin">Pumpkin</option>
+                                    <option value="tulip">Tulip</option>
                                 </select><br>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" id="subtasks-query" name="subtasks-query">
+                                <input type="checkbox" id="subtasks-query" class="editable" name="subtasksQuery">
                                 <label for="subtasks-query">Add Subtasks</label>
                             </td>
                         </tr>
                         <tr class="subtask-row" style="display: none;">
                             <td>
-                                <label for="subtask">- </label>
-                                <input type="text" class="subtask" name="subtask"></input>
+                                <label for="subtask0">- </label>
+                                <input type="text" id="subtask0" class="subtask editable" name="subtask" maxlength="64" ></input>
                             </td>
                         </tr>
-                        <tr id="save-preset-row">
+                        <tr id="save-preset-row" class = "uneditable">
                             <td>
-                                <input type="checkbox" id="save-preset" name="save-preset">
+                                <input type="checkbox" id="save-preset" name="savePreset">
                                 <label for="save-preset">Save Preset</label>
                             </td>
                         </tr>
@@ -119,7 +100,8 @@
                         <tr>
                             <td>
                                 <div style="display: flex; justify-content: center;">
-                                    <button type="submit">Create</button>
+                                    <button type="button" id = "harvest-task" style="display: none; background-color: red;">Harvest</button>
+                                    <button type="submit" id = "create-task">Create</button>
                                 </div>
                             </td>
                         </tr>
@@ -129,58 +111,53 @@
         </dialog>
     </div>
 
-    
+
 
     <div class="menu-container shop-menu" style="display: none;">
-        <dialog class="menu shop-menu"style="display: flex; flex-direction: column;">
+        <dialog class="menu shop-menu" style="display: flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button type="button" class="menu-top-spacer">X</button>
                 <h1>Crop Shop</h1>
                 <button type="button" class="exit-button" id="shop-exit-button">X</button>
             </div>
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
-                <table class = "menu-table" id = "seed-menu" style="display: none;">
+                <table class="menu-table" id="seed-menu" style="display: none;">
                     <tr class="menu-row" id="sunflower">
                         <tc>
                             <td>
-{#                                <img class="seed-bags" id="sunflower"src="/assets/seed-bags/sunflower-seeds-4x.png">#}
-                                  <img class="seed-bags" id="sunflower"src="{% static 'assets/seed-bags/sunflower-seeds-4x.png' %}">
+                                <img class="seed-bags" id="sunflower"src="{% static 'assets/seed-bags/sunflower-seeds-4x.png' %}">
+{#
                             </td>
                         </tc>
-                        <tc>
-                            <td>
-                                <button class="sunflower-bags" id="1">Buy 1</button><br>
-{#                                <span class = "sunflower-price">50</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
-                                <span class="sunflower-price">50</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                            <tc>
+                                <td>
+                                    <button class="sunflower-bags" id="1">Buy 1</button><br>
 
-                            </td>
-                        </tc>
-                        <tc>
-                            <td>
-                                <button class="sunflower-bags" id="3">Buy 3</button><br>
-{#                                <span class = "sunflower-price">140</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
-                                <span class = "sunflower-price">140</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
-                            </td>
-                        </tc>
-                        <tc>
-                            <td>
-                                <button class="sunflower-bags" id="10">Buy 10</button><br>
-{#                                <span class = "sunflower-price">400</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
-                                <span class = "sunflower-price">400</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
-                            </td>
-                        </tc>
+                                    <span class="sunflower-price">50</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                                </td>
+                            </tc>
+                            <tc>
+                                <td>
+                                    <button class="sunflower-bags" id="3">Buy 3</button><br>
+                                    <span class = "sunflower-price">140</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                                </td>
+                            </tc>
+                            <tc>
+                                <td>
+                                    <button class="sunflower-bags" id="10">Buy 10</button><br>
+                                    <span class = "sunflower-price">400</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
+                                </td>
+                            </tc>
                     </tr>
                     <tr class="menu-row" id="carrot">
-                        <tc> 
+                        <tc>
                             <td>
-{#                                <img class="seed-bags" id="carrot" src="/assets/seed-bags/carrot-seeds-4x.png">#}
                                 <img class="seed-bags" id="carrot" src="{% static 'assets/seed-bags/carrot-seeds-4x.png' %}">
                             </td>
                         </tc>
                         <tc>
                             <td>
                                 <button class="carrot-bags" id="1">Buy 1</button><br>
-{#                                <span class = "carrot-price">50</span><span class="coin"><img src="../assets/coin-medium.png"></span>#}
                                 <span class = "carrot-price">50</span><span class="coin"><img src="{% static 'assets/coin-medium.png' %}"></span>
                             </td>
                         </tc>
@@ -235,13 +212,14 @@
     </div>
 
     <div class="menu-container decoration-plot-menu" style="display: none;">
-        <dialog class="menu decoration-plot-menu"style="display: flex; flex-direction: column;">
+        <dialog class="menu decoration-plot-menu" style="display: flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button type="button" class="menu-top-spacer">X</button>
                 <p>Decorations</p>
                 <button type="button" class="exit-button" id="decoration-plot-exit-button">X</button>
             </div>
-            <div id="decoration-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+            <div id="decoration-container"
+                style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
                 <!-- Decorations dynamically added here -->
             </div>
             <div class="menu-top-container">
@@ -249,38 +227,68 @@
                 <p>Plots</p>
                 <button type="button" class="menu-top-spacer">X</button>
             </div>
-            <div id="plot-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+            <div id="plot-container"
+                style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
                 <!-- Plots dynamically added here -->
             </div>
         </dialog>
     </div>
 
     <div class="menu-container furniture-menu" style="display: none;">
-        <dialog class="menu furniture-menu"style="display: flex; flex-direction: column;">
+        <dialog class="menu furniture-menu" style="display: flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button type="button" class="menu-top-spacer">X</button>
                 <p>Furniture</p>
                 <button type="button" class="exit-button" id="furniture-exit-button">X</button>
             </div>
-            <div id="furniture-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
-                <!-- Furniture dynamically added here -->
-            </div>
-        </dialog>
-    </div>
-    
-    <div class="menu-container furniture-shop-menu" style="display: none;">
-        <dialog class="menu furniture-shop-menu"style="display: flex; flex-direction: column;">
-            <div class="menu-top-container">
-                <button type="button" class="menu-top-spacer">X</button>
-                <p>Furniture Shop</p>
-                <button type="button" class="exit-button" id="furniture-shop-exit-button">X</button>
-            </div>
-            <div id="furniture-shop-container" style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+            <div id="furniture-container"
+                style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
                 <!-- Furniture dynamically added here -->
             </div>
         </dialog>
     </div>
 
+    <div class="menu-container furniture-shop-menu" style="display: none;">
+        <dialog class="menu furniture-shop-menu" style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Furniture Shop</p>
+                <button type="button" class="exit-button" id="furniture-shop-exit-button">X</button>
+            </div>
+            <div id="furniture-shop-container"
+                style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Furniture dynamically added here -->
+            </div>
+        </dialog>
+    </div>
+
+    <div class="menu-container decoration-shop-menu" style="display: none;">
+        <dialog class="menu decoration-shop-menu" style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Decoration Shop</p>
+                <button type="button" class="exit-button" id="decoration-shop-exit-button">X</button>
+            </div>
+            <div id="decoration-shop-container"
+                style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Decorations dynamically added here -->
+            </div>
+        </dialog>
+    </div>
+
+    <div class="menu-container plots-shop-menu" style="display: none;">
+        <dialog class="menu plots-shop-menu" style="display: flex; flex-direction: column;">
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Plot Shop</p>
+                <button type="button" class="exit-button" id="plots-shop-exit-button">X</button>
+            </div>
+            <div id="plots-shop-container"
+                style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <!-- Plots dynamically added here -->
+            </div>
+        </dialog>
+    </div>
 
 
     <div id="edit-buttons-container">
@@ -296,11 +304,10 @@
 {#        <img src="/assets/settings.png" alt="Settings Icon">#}
         <img src="{% static 'assets/edit/cross.png' %}" alt="Settings Icon">
     </div>
-
-    <!--Settings Popup-->
-    <div class="settings-container settings-menu" style="display: none;">
+<!--Settings Popup-->
+    <div class="menu-container settings-menu" style="display: none;">
         <dialog class="menu settings-menu" style="display: inline-flex; flex-direction: column;">
-            <div class="settings-top-container">
+            <div class="menu-top-container">
                 <button class="info-button" id="settings-info-button">?</button>
                 <p>Settings</p>
                 <button class="exit-button" id="settings-exit-button">X</button>
@@ -311,27 +318,31 @@
                         <tr>
                             <td>
                                 <label for="workTime">Pomodoro:</label>
-                                <input type="number" id="workTime" name="workTime" min="10" max="120" step="5" value="25" required>
+                                <input type="number" id="workTime" name="workTime" min="10" max="120" step="1"
+                                    value="25" style="width: 70px" required>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="shortBreakTime">Short Break:</label>
-                                <input type="number" id="shortBreakTime" name="shortBreak" min="1" max="120" step="5" value="5" required>
+                                <input type="number" id="shortBreakTime" name="shortBreak" min="1" max="120" step="1"
+                                    value="5" style="width: 70px" required>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="longBreakTime">Long Break:</label>
-                                <input type="number" id="longBreakTime" name="longBreak" min="1" max="120" step="5" value="15" required>
+                                <input type="number" id="longBreakTime" name="longBreak" min="1" max="120" step="1"
+                                    value="15" style="width: 70px" required>
                             </td>
                         </tr>
-                        <!-- <tr class="subtask-row" style="display: none;">
+                        <tr>
                             <td>
-                                <label for="subtask">- </label>
-                                <input type="text" class="subtask" name="subtask"></input>
+                                <label for="longBreakInterval">Long Break Interval:</label>
+                                <input type="number" id="longBreakInterval" name="longBreakInterval" min="2" max="20"
+                                    step="1" value="4" style="width: 70px" 000000required>
                             </td>
-                        </tr> -->
+                        </tr>
                         <tr>
                             <td>
                                 <input type="checkbox" id="autoStartPomodoro" name="autoStartPomodoro">
@@ -346,11 +357,27 @@
                         </tr>
                         <tr>
                             <td>
-                                <label for="font">Font:</label>
-                                <select id="font" name="font">
-                                    <option value="pixelArt">Pixel Art (Default)</option>
+                                <input type="checkbox" id="autoHideTime" name="autoHideTime">
+                                <label for="autoHideTime">Auto Hide Time when Starting Pomodoro</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="fontStyle">Font Style:</label>
+                                <select id="fontStyle" name="fontStyle">
+                                    <option value="pixelArt">Pixel (Default)</option>
                                     <option value="standard">Standard</option>
                                     <option value="dyslexic">Dyslexic</option>
+                                </select><br>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="fontSize">Font Size:</label>
+                                <select id="fontSize" name="fontSize">
+                                    <option value="small">Small</option>
+                                    <option value="medium">Medium (Default)</option>
+                                    <option value="large">Large</option>
                                 </select><br>
                             </td>
                         </tr>
@@ -361,18 +388,109 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                <label for="longBreakInterval">Long Break Interval:</label>
-                                <input type="number" id="longBreakInterval" name="longBreakInterval" min="2" max="20" step="5" value="4" required>
-                            </td>
-                        </tr>
                     </table>
                 </form>
             </div>
         </dialog>
     </div>
 
+    <!--Coins-->
+    <div class="coins-container">
+        <p id="current-coins-value" style="font-size: 30px;">1000</p>
+        <img src="{% static 'assets/coin-large.png' %}" alt="coins">
+    </div>
+
+    <!--Top left-->
+    <div class="top-left-container">
+        <div id="home-icon-container">
+{#            <img src="/assets/home.png" alt="Home Icon">#}
+            <img src="{% static 'assets/home.png' %}" alt="Home Icon">
+        </div>
+        <div id="settings-icon-container">
+{#            <img src="/assets/settings.png" alt="Settings Icon">#}
+            <img src="{% static 'assets/settings.png' %}" alt="Settings Icon">
+        </div>
+        <div id="soundToggle" onclick="toggleSound()">
+            <img src="{% static 'assets/audio/sound-on.png' %}" alt="Sound On" id="soundOnIcon">
+            <img src="{% static 'assets/audio/sound-off.png' %}" alt="Sound Off" id="soundOffIcon" style="display: none">
+        </div>
+    </div>
+
+    <!--attribution to flaticon-->
+    <!--<a href="https://www.flaticon.com/free-icons/silence" title="silence icons">Silence icons created by Angelo Troiano - Flaticon</a>-->
+
+    <!--Audio for clock-->
+    <audio id="sound">
+        <source src="{% static 'assets/audio/alarm-clock.mp3' %}" type="audio/mpeg">
+    </audio>
+
+    <script>
+        var sound = document.getElementById("sound");
+        var soundOnIcon = document.getElementById("soundOnIcon");
+        var soundOffIcon = document.getElementById("soundOffIcon");
+
+        function toggleSound() {
+            if (sound.muted) {
+                sound.muted = false;
+                soundOnIcon.style.display = "inline";
+                soundOffIcon.style.display = "none";
+            } else {
+                sound.muted = true;
+                soundOnIcon.style.display = "none";
+                soundOffIcon.style.display = "inline";
+            }
+        }
+    </script>
+
+    <!--Home Menu Popup-->
+    <div class="menu-container home-menu" style="display: none; margin-top: 100px; margin-bottom: 100px;">
+        <dialog class="menu home-menu" style="display: inline-flex; flex-direction: column; height: 450px;">
+            <div class="menu-top-container" style="align-self: flex-end;">
+                <button class="exit-button" id="home-exit-button">X</button>
+            </div>
+            <div style="justify-content: center; display: flex;">
+                <table id="home-menu-table">
+                    <tr>
+                        <td>
+                            <!--Show tutorial cards-->
+                            <div style="display: flex; justify-content: center;">
+                                <button id="quick-guide">Quick Guide</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display: flex; justify-content: center;">
+                                <button id="exit-game">Save and Exit Game</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <!--Should delete account from the database-->
+                        <td>
+                            <div style="display: flex; justify-content: center;">
+                                <button id="delete-account">Delete Account</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </dialog>
+    </div>
+
+    <!--Confirmation Popup Screen-->
+    <div class="menu-container confirmation" style="display: none;">
+        <dialog class="menu confirmation" style="display: flex; flex-direction: column; height: 35vh;">
+            <div id="confirmation-container" style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
+                <p id="confirmation-message" style="float:none"></p>
+                <p id="confirmation-note" style="font-size: 2vw; float:none"></p>
+                <div id="confirmation-buttons-container" style="clear:both">
+                    <button type="button" id = "accept-confirmation">Yes</button>
+                    <button type="button" id="deny-confirmation">No</button>
+                </div>
+            </div>
+        </dialog>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
