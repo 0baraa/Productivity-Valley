@@ -698,7 +698,8 @@ export default class FarmScene extends Phaser.Scene {
             for (let j = 0; j < this.clouds.length; j++) {
                 this.clouds[j].moveX();
             }
-            if (this.pomodoro.workFlag){
+            console.log(this.pomodoro.pauseFlag, Utility.getWorkingState());
+            if (Utility.getWorkingState()){
                 this.sunFlares.angle ++;
             }
         }
@@ -707,7 +708,7 @@ export default class FarmScene extends Phaser.Scene {
     }
 
     playPlot() {
-        this.farm.plots[this.selector.plotSelected].playGrowth(this.pomodoro.workTime)
+        this.farm.plots[this.selector.plotSelected].playGrowth()
     }
 
     pausePlot() {
@@ -1311,6 +1312,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 this.playButton.setVisible(true); 
                 this.pauseButton.setVisible(false);
                 this.skipButton.setVisible(false);
+                Utility.setWorkingState(false);
                 return;
             } else {
                 this.skipTimer(); 
@@ -1336,24 +1338,25 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, elapsedTime, 0, this, this.pauseFlag, 0xffa500);
         this.scene.events.emit("timerPaused");
         this.pauseFlag = true;
+        this.workFlag = true;
         this.timer1.updateCircle();
     }
 
     loadTask() {
         let task = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()];
         let plot = this.scene.farm.plots[this.scene.selector.plotSelected];
-        if (!task.completed) {
-            if (this.timer1) {
-            }
-            this.noOfPomodoros = task.pomodoros - task.pomodorosCompleted;
-            let percentageComplete = (plot.growthStage * plot.cropSprites.length + plot.growthStep) / (plot.maxFrame * plot.cropSprites.length);
-            let pomodoros = task.pomodoros * percentageComplete;
-            let totalTimeElapsed = this.workTime * task.pomodoros * percentageComplete;
-            let timerElapsed = totalTimeElapsed - this.workTime * task.pomodorosCompleted;
-            if (this.noOfPomodoros ) {
-                console.log(timerElapsed, totalTimeElapsed, percentageComplete);
-                this.loadTimer(timerElapsed);
-            }
+
+        this.noOfPomodoros = task.pomodoros - task.pomodorosCompleted;
+        let percentageComplete = (plot.growthStage * plot.cropSprites.length + plot.growthStep) / (plot.maxFrame * plot.cropSprites.length);
+        let pomodoros = task.pomodoros * percentageComplete;
+        let totalTimeElapsed = this.workTime * task.pomodoros * percentageComplete;
+        console.log(totalTimeElapsed);
+        if (totalTimeElapsed != 0) {
+            this.noOfPomodoros--;
+            let timerElapsed = Math.floor(totalTimeElapsed - this.workTime * task.pomodorosCompleted);
+
+            console.log(timerElapsed, totalTimeElapsed, percentageComplete);
+            this.loadTimer(timerElapsed);
         }
     }
 
@@ -1380,6 +1383,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 this.scene.events.emit('taskCompleted');
             }
         } else {
+            Utility.setWorkingState(false);
             this.longBreakInterval--;
             if (this.longBreakInterval == 0) {
                 this.longBreakInterval = this.initBreakInterval;
@@ -1686,6 +1690,7 @@ class Plot extends Phaser.GameObjects.Container {
             for (let i = 0; i < this.growthStep; i++) {
                 this.growSelectedCrop(this.findCrop());
             }
+            console.log(this.cropsLeft);
         }
 
         // Make the container interactive
@@ -1862,7 +1867,7 @@ class Plot extends Phaser.GameObjects.Container {
         let workTime = this.scene.pomodoro.workTime;
         let steps = this.cropSprites.length * (this.maxFrame-this.growthStage) - this.growthStep;
         
-        let time = 1000 * workTime * (this.scene.pomodoro.noOfPomodoros + 1);
+        let time = -50 + 1000 * (this.scene.pomodoro.timer1.remainingTime + this.scene.pomodoro.noOfPomodoros * workTime);
         let interval = Math.floor(time/steps);
 
         console.log(interval ,steps, this.scene.pomodoro.noOfPomodoros + 1);
@@ -1898,25 +1903,21 @@ class Plot extends Phaser.GameObjects.Container {
         //check if any crops are left too far behind by the growthStage
         for (let j = 1; j <= this.cropsLeft.length; j++) {
             if (this.cropSprites[this.cropsLeft[j - 1]].anims.getFrameName() <= this.growthStage - 2) {
+                console.log("crop left behind");
                 return (this.cropsLeft[j-1], j-1);
             }
         }
 
         //random number
-        let rand = 0;
-        do {
-            rand = Phaser.Math.Between(0, (this.cropsLeft.length-1));
-            if (rand < 0) {
-                console.log(rand, "random number between 0 and 25/36 is somehow -1");
-
-            }
-        } while (rand >= this.cropsLeft.length && rand < 0);
+        let rand = Phaser.Math.Between(0, (this.cropsLeft.length-1));
         
         let upordown = Phaser.Math.Between(0, 1); // makes it seem more random when cycling through.
 
         //crop selection logic
         for (let i = 0; i < this.cropsLeft.length; i++) {
-            if (this.cropSprites[this.cropsLeft[rand]].anims.getFrameName() > this.growthStage + 1) {
+            let frameNum = parseInt(this.cropSprites[this.cropsLeft[rand]].anims.getFrameName());
+            if (frameNum > this.growthStage + 1 || frameNum >= this.maxFrame) {
+                console.log(frameNum, "searching");
                 if (upordown) {
                     rand++;
                 } else {
@@ -1931,29 +1932,32 @@ class Plot extends Phaser.GameObjects.Container {
                     rand = this.cropsLeft.length - 1;
                 }
             }
-            else { return (this.cropsLeft[rand], rand);} //viable crop found
+            else {return (this.cropsLeft[rand], rand);} //viable crop found
         }
+        console.log("no crop found");
     }
     growSelectedCrop(num, index) {
+        let frameNum = this.cropSprites[num].anims.getFrameName();
+        console.log("1st",frameNum, frameNum >= this.maxFrame);
         //actually increment the frame of the crop
         if (this.cropsLeft.length != 0) { //here for safety's sake
             let frame_jump = 1;
             if (this.crop == "tulip") {
-                if (this.cropSprites[num].anims.getFrameName() == this.maxFrame - 1) {
+                if (frameNum == this.maxFrame - 1) {
                     frame_jump = Math.floor(Math.random() * 6 ) + 1;
                 }
             }
-
-
-            if (this.cropSprites[num].anims.getFrameName() >= this.maxFrame) {
-                this.cropsLeft.splice(index, 1); // remove from list of crops to grow
-                console.log("finished growing crop");
-            }
-            else {
+            if (frameNum < this.maxFrame) {
                 for (let i = 0; i < frame_jump; i++) {
                     this.cropSprites[num].anims.nextFrame();
                     //console.log("grownCrop");
                 }
+            }
+            console.log(frameNum, frameNum >= this.maxFrame);
+            if (frameNum >= this.maxFrame) {
+                this.cropsLeft.splice(index, 1);
+                console.log(this.cropSprites[num].anims.getFrameName(), "removing from cropsLeft")
+                //console.log("finished growing crop");
             }
         }
     }
@@ -1970,9 +1974,9 @@ class Plot extends Phaser.GameObjects.Container {
     }
 
     finishCrops() {
+        console.log("trying to finish crops");
         while (this.growthStage != this.maxFrame) {
-            this.growSelectedCrop(this.findCrop())
-            this.stepGrowth();
+            this.progressCrops();
         }
     }
 
