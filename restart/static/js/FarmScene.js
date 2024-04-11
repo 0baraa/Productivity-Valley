@@ -368,7 +368,7 @@ export default class FarmScene extends Phaser.Scene {
                         furnitureImg.style.width = '100%';
                         furnitureImg.style.height = 'calc(100% - 4vw)';
                         furnitureImg.style.objectFit = 'contain';
-                        furnitureImg.src = './assets/house/furniture/' + furniture.type + '.png';
+                        furnitureImg.src = '/static/assets/house/furniture/' + furniture.type + '.png';
 
                         let buttonDiv = document.createElement('div');
                         buttonDiv.style.display = 'flex';
