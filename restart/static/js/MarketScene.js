@@ -14,7 +14,7 @@ export default class MarketScene extends Phaser.Scene {
         loadStatic('cropShop', 'assets/market/market_stall_seeds.png');
         loadStatic('furnitureShop', 'assets/market/furniture-shop.png');
         loadStatic('decorationShop', 'assets/market/decoration-shop.png');
-        loadStatic('plots-shop', 'assets/market/plots-shop.png');
+        loadStatic('plotShop', 'assets/market/plots-shop.png');
 
     }
 
