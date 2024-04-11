@@ -44,3 +44,7 @@ class UsersCropsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserCrop
         fields = ['username', 'tomato', 'sunflower', 'carrot', 'pumpkin', 'tulip']
+class UserSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSettings
+        fields = ['username', 'pomTimer', 'shortBreak', 'longBreak', 'longBreakInterval', 'autoStartPom', 'autoStartBreak', 'autoHideTime', 'fontStyle', 'fontSize']

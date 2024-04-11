@@ -280,5 +280,30 @@ class UserFurnitureView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class UserSettingsView(APIView):
+    def get(self, request):
+        username = request.data.get('username', None)
+        userFurniture = UserSettings.objects.filter(username=username)
+        serializer = UserSettingsSerializer(userFurniture, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UserSettingsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request):
+        username = request.data.get('username', None)
+        if username is None:
+            return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = UserSettings.objects.get(username=username)
+            user.delete()
+            return Response({"message": f"User with username {username} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except Users.DoesNotExist:
+            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
