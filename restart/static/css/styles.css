@@ -275,7 +275,9 @@ select {
     margin-right: 10px;
 }
 
-
+.inverted-colour {
+    filter: invert(1);
+}
 
 
 
