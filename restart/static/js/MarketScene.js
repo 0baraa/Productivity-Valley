@@ -116,8 +116,8 @@ export default class MarketScene extends Phaser.Scene {
                 if(furnitureButton) [
                     furnitureButton.onclick = () => {
                         // if this.farm.coins >= furniture.price (using true for testing)
-                        if(true) {
-                            // this.farm.coins -= furniture.price;
+                        if(this.farm.getCoins() >= furniture.price) {
+                            this.farm.updateCoins(-furniture.price);
                             let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
                             let farmScene = this.scene.get('FarmScene');
                             farmScene.farm.addFurnitureToInventory(insideFarmhouseScene, furniture.type);
@@ -186,8 +186,8 @@ export default class MarketScene extends Phaser.Scene {
                 if(decorationButton) {
                     decorationButton.onclick = () => {
                         // if this.farm.coins >= decoration.price (using true for testing)
-                        if(true) {
-                            // this.farm.coins -= decoration.price;
+                        if(this.farm.getCoins() >= decoration.price) {
+                            this.farm.updateCoins(-decoration.price);
                             let farmScene = this.scene.get('FarmScene');
                             farmScene.farm.addDecorationToInventory(farmScene, decoration.type);
                             let decorationShopContainer = document.getElementById('decoration-shop-container');
@@ -249,8 +249,8 @@ export default class MarketScene extends Phaser.Scene {
                 if(plotButton) {
                     plotButton.onclick = () => {
                         // if this.farm.coins >= 250 (using true for testing)
-                        if(true) {
-                            // this.farm.coins -= 250;
+                        if(this.farm.getCoins() >= 250) {
+                            this.farm.updateCoins(-250);
                             let farmScene = this.scene.get('FarmScene');
                             farmScene.farm.addPlotToInventory(farmScene);
                             let plotShopContainer = document.getElementById('plots-shop-container');
@@ -328,14 +328,14 @@ class Shop extends Phaser.GameObjects.Sprite {
         let data = Utility.getUserData();
         this.displayedItems = [];
         //create buycrop methods using class driven items
-        for (let i = 0; i < data.cropsOwned.length; i++) {
-            if(parseInt(data.cropsOwned[i].count) >= 0) {
-                this.displayedItems.push(new Item(data.cropsOwned[i].crop, "bags"));
+        for (let i = 0; i < cropsOwned.length; i++) {
+            if(parseInt(cropsOwned[i][1]) >= 0) {
+                this.displayedItems.push(new Item(cropsOwned[i][0]));
 
                 //set price to be lower
             }
             else {
-                this.displayedItems.push(new Item(data.cropsOwned[i].crop, "bags"));
+                this.displayedItems.push(new Item(cropsOwned[i][0], 3));
                 //set price to be higher
             }
         }
@@ -344,23 +344,22 @@ class Shop extends Phaser.GameObjects.Sprite {
 
     updateAffordability() {
         const self = this;
-        let coins = this.farm.coins;
+        let coins = this.farm.getCoins();
         let buyListener = function thingy() {}
         for (let i = 0; i < this.displayedItems.length; i++) {
-            for (let j = 0; j < this.displayedItems[i].buttons.length; j++) {
+            
                 buyListener = function thingy(event) {
-                    self.buyCropEvent(event,self.displayedItems[i].prices[j])
+                self.buyCropEvent(event,self.displayedItems[i].price)
                 }
-                if (this.displayedItems[i].prices[j] <= coins) {
-                    this.displayedItems[i].buttons[j].onclick = buyListener;
-                    this.displayedItems[i].buttons[j].style.cursor = "pointer";
-                    this.displayedItems[i].buttons[j].style.backgroundColor = "#d39f20";
+            if (this.displayedItems[i].price <= coins) {
+                this.displayedItems[i].button.onclick = buyListener;
+                this.displayedItems[i].button.style.cursor = "pointer";
+                this.displayedItems[i].button.style.backgroundColor = "#d39f20";
                 }
                 else {
-                    this.displayedItems[i].buttons[j].onclick = null;
-                    this.displayedItems[i].buttons[j].style.cursor = "default";
-                    this.displayedItems[i].buttons[j].style.backgroundColor = "grey";
-                }
+                this.displayedItems[i].button.onclick = null;
+                this.displayedItems[i].button.style.cursor = "default";
+                this.displayedItems[i].button.style.backgroundColor = "grey";
             }
         }
     }
@@ -368,32 +367,41 @@ class Shop extends Phaser.GameObjects.Sprite {
     removeItemListeners() {
         const self = this;
         for (let i = 0; i < this.displayedItems.length; i++) {
-            for (let j = 0; j < this.displayedItems[i].buttons.length; j++) {
-                this.displayedItems[i].buttons[j].onclick = null;
-            }
+            this.displayedItems[i].button.onclick = null;
         }
     }
 
     buyCropEvent(event,price) {
-        console.log("bought " + event.target.className + " x" + event.target.id + " for " + price + " coins");
-        this.farm.updateCoins(price);
-        Utility.buySeeds(event.target.className,event.target.id,price);
-        this.removeItemListeners();
+        let crop = event.target.className;
+        if (event.target.className.slice(4) == "coin") {
+            crop.slice(5)
+        }
+        console.log(crop);
+        //console.log("bought " + crop + " x" + event.target.id + " for " + price + " coins");
+        this.farm.updateCoins(-price);
+        this.farm.addCropToInventory(crop);
+        //this.removeItemListeners();
         this.updateAffordability();
     }
 }
 
 class Item {
     // represents a seedbag from the html
-    constructor(name, type) {
+    constructor(name, multiplier) {
         const self = this;
+        console.log(name);
         this.name = name;
-        this.type = "-" + type || "";
-        this.buttons = document.getElementsByClassName(this.name+this.type);
-        this.price_tags = document.getElementsByClassName(this.name+"-price");
-        this.prices = [];
-        for (let i = 0; i < this.buttons.length; i++) {
-            this.prices.push(this.price_tags[i].innerHTML);
+        this.multiplier = multiplier || 1;
+        this.button = document.getElementById(this.name+"-button");
+        this.buttonPrice = this.button.getElementsByTagName("span")[0];
+        this.price = 0;
+        console.log(this.price , this.buttonPrice);
+        if (this.button) {
+            if (this.multiplier != 1 && this.buttonPrice.innerText <= 50) {
+                this.buttonPrice.innerText = this.buttonPrice.innerText * this.multiplier;
+            }
+            this.price = this.buttonPrice.innerText;
+            console.log(this.price)
         }
     }
 }
