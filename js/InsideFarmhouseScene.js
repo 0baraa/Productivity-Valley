@@ -99,11 +99,28 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
             farmScene.input.enabled = !farmScene.input.enabled;
             if(this.hidden) {
                 this.children.each(child => child.setVisible(true));
+                this.toggleInverseColour("white");
                 this.hidden = !this.hidden;
             }
             else {
                 this.children.each(child => child.setVisible(false));
+                this.toggleInverseColour("black");
                 this.hidden = !this.hidden;
+            }
+        }
+    }
+
+    toggleInverseColour(colour) {
+        if(colour == "white") {
+            let images = document.querySelectorAll("#edit-buttons-container .edit img, .top-left-container img, .coins-container p");
+            for(let image of images) {
+                image.classList.add("inverted-colour");
+            }
+        }
+        else if(colour == "black") {
+            let images = document.querySelectorAll("#edit-buttons-container .edit img, .top-left-container img, .coins-container p");
+            for(let image of images) {
+                image.classList.remove("inverted-colour");
             }
         }
     }
