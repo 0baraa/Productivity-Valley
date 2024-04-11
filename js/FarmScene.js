@@ -760,11 +760,12 @@ export default class FarmScene extends Phaser.Scene {
             }
             if (!taskable && this.farm.coins >= 50) {
                 this.openAlertWindow("You have no seeds!", "You can buy some from the Market.")
+                return;
             } else if (!taskable) {
                 this.openAlertWindow("You have no seeds!", "But we're very generous and have given you some sunflower seeds. Use it well");
                 this.farm.addCropToInventory("sunflower");
+                return;
             }
-            return;
         }
 
         Utility.toggleMenu(this, "taskMenu");
@@ -1890,6 +1891,7 @@ class Plot extends Phaser.GameObjects.Container {
                     }
                 }
                 else {
+                    console.log("attempting to create task");
                     //show menu
                     this.select();
                     this.scene.events.emit("creatingTask");
