@@ -10,6 +10,7 @@ export default class FarmScene extends Phaser.Scene {
         this.load.bitmapFont('pixelFont', '../fonts/pixeloperatorbitmap.png', '../fonts/pixeloperatorbitmap.xml');
 
         this.load.image('farmBackground', '../assets/farm-background.png');
+        this.load.image('mountains-large', '../assets/large-mountains.png')
         this.load.image('mountains', '../assets/mountains.png');
         this.load.image('fence', '../assets/fence.png');
         this.load.image('level1farmhouse', '../assets/house/level1farmhouse.png');
@@ -46,6 +47,7 @@ export default class FarmScene extends Phaser.Scene {
     create() {
         this.add.image(320, 550, 'farmBackground').setDepth(-1);
 
+        this.add.image(570, 460, 'mountains-large').setScale(2).setAlpha(0);
         this.add.image(320, 520, 'mountains');
 
         this.sun = this.add.sprite(320, 455, 'sun').setDepth(-1);
