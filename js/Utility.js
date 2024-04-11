@@ -91,6 +91,10 @@ export default class Utility {
                 dialogContainer = document.querySelector('.menu-container.home-menu');
                 dialog = document.querySelector('.menu.home-menu');
                 break;
+            case "alertWindow":
+                dialogContainer = document.querySelector('.menu-container.alertWindow');
+                dialog = document.querySelector('.menu.alertWindow');
+                break;
         }
         
         if (dialog.open) {
@@ -153,14 +157,15 @@ export default class Utility {
     
         // Using mock data for now until backend is implemented
         this.data = {
-            "coins": 300,
-            "cropsOwned": [
-                {crop: "tomato", count: 3},
-                {crop:"sunflower", count: 1},
-                {crop:"carrot", count: 2},
-                {crop:"pumpkin", count: -1},
-                {crop:"tulip", count: -1}
-            ],
+            "userData": 
+                {"usernameId": "noobmaster69", "coins": 300, "farmhouseLevel": 1, "x": 70, "y": 570},
+            "cropsOwned": {
+                tomato: -1,
+                sunflower: -1,
+                carrot: -1,
+                pumpkin: -1,
+                tulip: -1
+            },
             
             "plots": [
               {"plotId": 0, "crop": "sunflower", "growthStage": 9, "growthStep": 24, "x": 176, "y": 616, "placed": true}, 
@@ -182,12 +187,10 @@ export default class Utility {
             ],
             "decorations": [
                 {"type": "snowman", "x":50, "y":700, "placed": true}
-            ],
-            "farmhouse":
-                {"level": 1, "x": 70, "y": 570}
-          }
+            ]
+        }
     
-          return this.data;
+        return this.data;
     }
 
     static sendCreatedTaskData(plotID) {
@@ -228,23 +231,6 @@ export default class Utility {
     }
     static getCropOwnedData() {
         //get owned crops data
-    }
-
-    static buySeeds(type, amount, price) {
-        //get data from database
-        let add = true;
-        for (let i = 0; i < this.data.cropsOwned.length; i++) {
-            if (type == this.data.cropsOwned[i].type) {
-                this.data.cropsOwned[i].count += amount;
-                add = false;
-            }
-        }
-        if (add) {
-            //update database.
-            this.data.cropsOwned.push({crop: type, count: amount});
-        }
-        this.data.coins -= price;
-        console.log(this.data.coins);
     }
 
     static getWorkingState() {

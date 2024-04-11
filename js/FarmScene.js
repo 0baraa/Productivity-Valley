@@ -733,7 +733,40 @@ export default class FarmScene extends Phaser.Scene {
         this.openTaskMenu(false);
     }
 
+    openAlertWindow(prompt, note) {
+        Utility.toggleMenu(this, "alertWindow");
+        document.getElementById("alertWindow-message").innerText = prompt;
+        document.getElementById("alertWindow-note").innerText = note;
+        let okButton = document.getElementById("okButton");
+        const close = () => {
+            okButton.removeEventListener('click', close);
+            Utility.toggleMenu(this, "alertWindow");
+        }
+        okButton.addEventListener("click", close);
+    }
+
     openTaskMenu(editing) {
+        if (!editing) {
+            let cropChoice = document.getElementById("cropChoice");
+            let cropsOwned = Object.values(this.farm.saveCropsOwned());
+            let taskable = false;
+            for (let i = 0; i < cropsOwned.length; i++) {
+                if (cropsOwned[i] >= 0) {
+                    cropChoice.options[i].style.display = "display";
+                    taskable = true;
+                } else {
+                    cropChoice.options[i].style.display = "none";
+                }
+            }
+            if (!taskable && this.farm.coins >= 50) {
+                this.openAlertWindow("You have no seeds!", "You can buy some from the Market.")
+            } else if (!taskable) {
+                this.openAlertWindow("You have no seeds!", "But we're very generous and have given you some sunflower seeds. Use it well");
+                this.farm.addCropToInventory("sunflower");
+            }
+            return;
+        }
+
         Utility.toggleMenu(this, "taskMenu");
         let form = document.getElementById("task-form");
         let taskExitButton = document.getElementById('task-exit-button');
@@ -791,6 +824,9 @@ export default class FarmScene extends Phaser.Scene {
                 }
             }
 
+        } else {
+            
+            
         }
 
         const resetTaskMenu = () => {
@@ -1446,20 +1482,24 @@ class PlayerFarm {
         this.decorations = [];
         this.animals = [];
         this.farmhouse = null;
+        this.cropsOwned = [];
 
 
         let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
 
         let data = Utility.getUserData();
-
+        this.userName = data.userData.usernameId;
+        this.loadOwnedCrops(data.cropsOwned);
         this.createPlots(data);
         this.createTasks(data);
         this.createDecorations(data);
-        this.createFarmhouse(data);
+        this.createFarmhouse(data.userData);
         this.createFurniture(insideFarmhouseScene, data);
-        this.showCoins(data.coins);
+        this.showCoins(data.userData.coins);
 
-
+    }
+    loadOwnedCrops(cropsOwned) {
+        this.cropsOwned = cropsOwned;
     }
 
     createPlots(data) {
@@ -1543,14 +1583,20 @@ class PlayerFarm {
     }
 
     createFarmhouse(data) {
-        this.farmhouse = new Farmhouse({scene: this.scene, x: data.farmhouse.x, y: data.farmhouse.y, level: data.farmhouse.level, texture: 'level' + data.farmhouse.level + 'farmhouse'});
+        this.farmhouse = new Farmhouse({scene: this.scene, x: data.x, y: data.y, level: data.farmhouseLevel, texture: 'level' + data.farmhouseLevel + 'farmhouse'});
     }
-
+    getCoins(){
+        return this.coins;
+    }
     showCoins(coins) {
         this.coins = coins;
+        this.coinText = document.getElementById("current-coins-value");
+        this.coinText.innerText = this.coins;
     }
     updateCoins(change) {
         this.coins += change;
+        this.coinText.innerText = this.coins;
+        //save data to db;
     }
 
     createFurniture(scene, data) {
@@ -1579,6 +1625,86 @@ class PlayerFarm {
         let plot = new Plot({scene: scene, x: -1000, y: -1000, id: this.plots.length, crop: "nothing", counter: 0, placed: false});
         this.plots.push(plot);
     }
+
+    addCropToInventory(cropsIn) {
+        console.log(cropsIn.length)
+        if (this.cropsOwned[cropsIn] < 0) {
+            this.cropsOwned[cropsIn] = 0;
+        }
+        this.cropsOwned[cropsIn] ++;
+        console.log(this.cropsOwned);
+    }
+
+    saveCropsOwned() {
+        return this.cropsOwned;
+    }
+
+    savePlots() {
+        let plotsData = [];
+        for (let plot in this.plots) {
+            let data = {
+                usernameId: this.userName,
+                plotId: plot.id,
+                crop: plot.crop,
+                growthStage: plot.growthStage,
+                growthStep: plot.growthStep,
+                x: plot.x,
+                y: plot.y,
+                placed: plot.placed
+            }
+            plotsData.push(data);
+        }
+        return plotsData;
+    }
+    saveTasks() {
+        let tasksData = [];
+        for (let task in this.tasks) {
+            let data = {
+                usernameId: this.userName,
+                plotId: task.plotId,
+                taskName: task.name,
+                pomodoros: task.pomodoros,
+                pomodorosCompleted: task.pomodorosCompleted,
+                completed: task.completed,
+                subtasks: task.subtasks,
+                subtasksCompleted: task.subtasksCompleted,
+            }
+            tasksData.push(data);
+        }
+        return tasksData;
+    }
+    saveFurniture() {
+        let furnitureData = [];
+        for (let furniture in this.furniture) {
+            let data = {
+                usernameId: this.userName,
+                type: furniture.type,
+                x: furniture.x,
+                y: furniture.y,
+                placed: furniture.placed
+            }
+            furnitureData.push(data);
+        }
+        return furnitureData;
+    }
+    saveDecorations() {
+        let decorationData = [];
+        for (let decoration in this.decorations) {
+            let data = {
+                usernameId: this.userName,
+                type: decoration.type,
+                x: decoration.x,
+                y: decoration.y,
+                placed: decoration.placed
+            }
+            decorationData.push(data);
+        }
+        return decorationData;
+    }
+    saveCoins() {
+        return {usernameId: this.userName, coins: this.coins};
+    }
+
 }
 
 class Task {
@@ -1689,7 +1815,6 @@ class Plot extends Phaser.GameObjects.Container {
             for (let i = 0; i < this.growthStep; i++) {
                 this.growSelectedCrop(this.findCrop());
             }
-            console.log(this.cropsLeft);
         }
 
         // Make the container interactive
