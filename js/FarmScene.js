@@ -698,7 +698,7 @@ export default class FarmScene extends Phaser.Scene {
             for (let j = 0; j < this.clouds.length; j++) {
                 this.clouds[j].moveX();
             }
-            console.log(this.pomodoro.pauseFlag, Utility.getWorkingState());
+            
             if (Utility.getWorkingState()){
                 this.sunFlares.angle ++;
             }
@@ -1686,7 +1686,6 @@ class Plot extends Phaser.GameObjects.Container {
             this.occupied = true;
             this.plantCrops();
             console.log(this.growthStep);
-            this.makeCropsLeft();
             for (let i = 0; i < this.growthStep; i++) {
                 this.growSelectedCrop(this.findCrop());
             }
@@ -1850,20 +1849,9 @@ class Plot extends Phaser.GameObjects.Container {
         } 
     }
 
-    makeCropsLeft() {
-        //List of numbered references to possible cropSprites.
-        this.cropsLeft = [];
-        for (let i = 0; i < this.cropSprites.length; i++) {
-            this.cropsLeft.push(i);
-        }
-    }
-
     playGrowth() {
 
         console.log("started growing");
-
-        this.makeCropsLeft();
-
         let workTime = this.scene.pomodoro.workTime;
         let steps = this.cropSprites.length * (this.maxFrame-this.growthStage) - this.growthStep;
         
@@ -1901,23 +1889,22 @@ class Plot extends Phaser.GameObjects.Container {
         //find a crop and grow it by 1.
 
         //check if any crops are left too far behind by the growthStage
-        for (let j = 1; j <= this.cropsLeft.length; j++) {
-            if (this.cropSprites[this.cropsLeft[j - 1]].anims.getFrameName() <= this.growthStage - 2) {
+        for (let j = 1; j <= this.cropSprites.length; j++) {
+            if (this.cropSprites[j-1].anims.getFrameName() <= this.growthStage - 2) {
                 console.log("crop left behind");
                 return (j-1);
             }
         }
 
         //random number
-        let rand = Phaser.Math.Between(0, (this.cropsLeft.length-1));
+        let rand = Phaser.Math.Between(0, (this.cropSprites.length-1));
         
         let upordown = Phaser.Math.Between(0, 1); // makes it seem more random when cycling through.
 
         //crop selection logic
-        for (let i = 0; i < this.cropsLeft.length; i++) {
+        for (let i = 0; i < this.cropSprites.length; i++) {
             let frameNum = parseInt(this.cropSprites[rand].anims.getFrameName());
             if (frameNum > this.growthStage + 1 || frameNum >= this.maxFrame) {
-                console.log(frameNum, "searching");
                 if (upordown) {
                     rand++;
                 } else {
@@ -1925,22 +1912,22 @@ class Plot extends Phaser.GameObjects.Container {
                 } //cycle through crops to find one to actually increment
 
                 //reset random if out of range of list
-                if (rand == this.cropsLeft.length) {
+                if (rand == this.cropSprites.length) {
                     rand = 0;
                 }
                 else if (rand < 0) {
-                    rand = this.cropsLeft.length - 1;
+                    rand = this.cropSprites.length - 1;
                 }
             }
             else {return (rand);} //viable crop found
         }
-        console.log("no crop found");
+        console.log("no crop found expect an error after this");
     }
     growSelectedCrop(index) {
         let frameNum = this.cropSprites[index].anims.getFrameName();
         console.log("1st",frameNum, frameNum >= this.maxFrame);
         //actually increment the frame of the crop
-        if (this.cropsLeft.length != 0) { //here for safety's sake
+        if (this.cropSprites.length != 0) { //here for safety's sake
             let frame_jump = 1;
             if (this.crop == "tulip") {
                 if (frameNum == this.maxFrame - 1) {
