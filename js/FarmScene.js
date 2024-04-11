@@ -1904,7 +1904,7 @@ class Plot extends Phaser.GameObjects.Container {
         for (let j = 1; j <= this.cropsLeft.length; j++) {
             if (this.cropSprites[this.cropsLeft[j - 1]].anims.getFrameName() <= this.growthStage - 2) {
                 console.log("crop left behind");
-                return (this.cropsLeft[j-1], j-1);
+                return (j-1);
             }
         }
 
@@ -1915,7 +1915,7 @@ class Plot extends Phaser.GameObjects.Container {
 
         //crop selection logic
         for (let i = 0; i < this.cropsLeft.length; i++) {
-            let frameNum = parseInt(this.cropSprites[this.cropsLeft[rand]].anims.getFrameName());
+            let frameNum = parseInt(this.cropSprites[rand].anims.getFrameName());
             if (frameNum > this.growthStage + 1 || frameNum >= this.maxFrame) {
                 console.log(frameNum, "searching");
                 if (upordown) {
@@ -1932,12 +1932,12 @@ class Plot extends Phaser.GameObjects.Container {
                     rand = this.cropsLeft.length - 1;
                 }
             }
-            else {return (this.cropsLeft[rand], rand);} //viable crop found
+            else {return (rand);} //viable crop found
         }
         console.log("no crop found");
     }
-    growSelectedCrop(num, index) {
-        let frameNum = this.cropSprites[num].anims.getFrameName();
+    growSelectedCrop(index) {
+        let frameNum = this.cropSprites[index].anims.getFrameName();
         console.log("1st",frameNum, frameNum >= this.maxFrame);
         //actually increment the frame of the crop
         if (this.cropsLeft.length != 0) { //here for safety's sake
@@ -1949,16 +1949,11 @@ class Plot extends Phaser.GameObjects.Container {
             }
             if (frameNum < this.maxFrame) {
                 for (let i = 0; i < frame_jump; i++) {
-                    this.cropSprites[num].anims.nextFrame();
+                    this.cropSprites[index].anims.nextFrame();
                     //console.log("grownCrop");
                 }
             }
             console.log(frameNum, frameNum >= this.maxFrame);
-            if (frameNum >= this.maxFrame) {
-                this.cropsLeft.splice(index, 1);
-                console.log(this.cropSprites[num].anims.getFrameName(), "removing from cropsLeft")
-                //console.log("finished growing crop");
-            }
         }
     }
 
