@@ -98,10 +98,6 @@ export default class Utility {
                 dialogContainer = document.querySelector('.menu-container.chart-menu');
                 dialog = document.querySelector('.menu.chart-menu');
                 break;
-            case "alertWindow":
-                dialogContainer = document.querySelector('.menu-container.alertWindow');
-                dialog = document.querySelector('.menu.alertWindow');
-                break;
         }
 
         
@@ -166,26 +162,25 @@ export default class Utility {
     
         // Using mock data for now until backend is implemented
         this.data = {
-            "userData": 
-                {"usernameId": "noobmaster69", "coins": 300, "farmhouseLevel": 1, "x": 70, "y": 570},
-            "cropsOwned": {
-                tomato: -1,
-                sunflower: -1,
-                carrot: -1,
-                pumpkin: -1,
-                tulip: -1
-            },
+            "coins": 300,
+            "cropsOwned": [
+                {crop: "tomato", count: 3},
+                {crop:"sunflower", count: 1},
+                {crop:"carrot", count: 2},
+                {crop:"pumpkin", count: -1},
+                {crop:"tulip", count: -1}
+            ],
 
             "plots": [
-              {"plotId": 0, "crop": "sunflower", "growthStage": 9, "growthStep": 24, "x": 176, "y": 616, "placed": true}, 
-              {"plotId": 1, "crop": "tulip", "growthStage": 9, "growthStep": 35, "x": 272, "y": 616, "placed": true}, 
-              {"plotId": 2, "crop": "carrot",  "growthStage": 1, "growthStep": 24, "x": 368, "y": 616, "placed": true},
+              {"plotId": 0, "crop": "sunflower", "growthStage": 10, "growthStep": 12, "x": 176, "y": 616, "placed": true},
+              {"plotId": 1, "crop": "tulip", "growthStage": 9, "growthStep": 12, "x": 272, "y": 616, "placed": true},
+              {"plotId": 2, "crop": "carrot",  "growthStage": 1, "growthStep": 2, "x": 368, "y": 616, "placed": true},
               {"plotId": 3, "crop": "nothing", "growthStage": 0, "growthStep": 0, "x": 464, "y": 616, "placed": true},
             ],
             "tasks": [
-                {"plotId": 0, "taskName": "Maths Homework", "pomodoros": 3, "pomodorosCompleted": 3, "completed": true, "subtasks": ["week 7", "week 8"]},
-                {"plotId": 1, "taskName": "Operating Systems CW", "pomodoros": 3, "pomodorosCompleted": 2, "completed": false, "subtasks": ["download files", "start work", "catch up on notes bruh"], "subtasksCompleted": [true,false,false]},
-                {"plotId": 2, "taskName": "go to bed", "pomodoros": 1, "pomodorosCompleted": 0, "completed": false, "subtasks": ["tidy desk", "brush teeth", "get changed", "go piss girl"], "subtasksCompleted": [true,false,false,false]},
+                {"plotId": 0, "taskName": "Maths Homework", "pomodoros": 3, "completed": true, "subtasks": ["week 7", "week 8"]},
+                {"plotId": 1, "taskName": "Operating Systems CW", "pomodoros": 3, "completed": true, "subtasks": ["download files", "start work", "catch up on notes bruh"], "subtasksCompleted": [true,false,false]},
+                {"plotId": 2, "taskName": "go to bed", "pomodoros": 1, "completed": false, "subtasks": ["tidy desk", "brush teeth", "get changed", "go piss girl"], "subtasksCompleted": [true,false,false,false]},
             ],
             "furniture": [
               {"type": "carpet1", "x": 320, "y": 612, "placed": true},
@@ -196,10 +191,39 @@ export default class Utility {
             ],
             "decorations": [
                 {"type": "snowman", "x":50, "y":700, "placed": true}
-            ]
+            ],
+            "farmhouse":
+                {"level": 1, "x": 70, "y": 570}
           }
 
           return this.data;
+    }
+
+    static sendCreatedTaskData() {
+        let form = document.getElementById("task-form");
+        let taskName = form.taskName.value;
+        let time = form.minutes.value;
+        let repetitions = form.repetitions.value;
+        let crop = form.crop.value;
+        let subtaskCheck = document.getElementById("subtasks-query").checked;
+        let savePreset = document.getElementById("save-preset").checked;
+        let task = {name: taskName, time: time, repetitions: repetitions, crop: crop};
+        if (subtaskCheck) {
+            //add subtasks to save;
+            let subtasks = document.getElementsByClassName("subtask");
+            let subtasklist = []
+            for (let i = 0; i<subtasks.length; i++) {
+                if (subtasks[i].value != "") {
+                    subtasklist.push(subtasks[i].value);
+                }
+            }
+            task.subtasks = subtasklist;
+        }
+        if (savePreset) {
+            //save to player's presets.
+        }
+        console.log(task);
+
     }
 
     static updateTaskProgress(plotID, step) {
@@ -214,6 +238,23 @@ export default class Utility {
     }
     static getCropOwnedData() {
         //get owned crops data
+    }
+
+    static buySeeds(type, amount, price) {
+        //get data from database
+        let add = true;
+        for (let i = 0; i < this.data.cropsOwned.length; i++) {
+            if (type == this.data.cropsOwned[i].type) {
+                this.data.cropsOwned[i].count += amount;
+                add = false;
+            }
+        }
+        if (add) {
+            //update database.
+            this.data.cropsOwned.push({crop: type, count: amount});
+        }
+        this.data.coins -= price;
+        console.log(this.data.coins);
     }
 
     static getWorkingState() {
