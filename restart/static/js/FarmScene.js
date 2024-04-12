@@ -200,7 +200,7 @@ export default class FarmScene extends Phaser.Scene {
         const screenHeight = this.sys.game.config.height;
         
         const pomodoroY = screenHeight * 0.2;
-        this.sunFlares = this.add.sprite(320, pomodoroY+221, 'sun-flares').setDepth(-1);
+        this.sunFlares = this.add.sprite(320, pomodoroY+239, 'sun-flares').setDepth(-1);
         this.pomodoro = new Pomodoro(this, 160, pomodoroY, 75);
         
         let homeButton = document.getElementById("home-icon-container");
@@ -769,12 +769,8 @@ export default class FarmScene extends Phaser.Scene {
                 this.clouds[j].moveX();
             }
             
-            // if (Utility.getWorkingState()){
-            //     this.sunFlares.angle ++;
-            // }
-
-            if (this.pomodoro.pauseFlag == false) {
-                this.sunFlares.angle++
+            if (Utility.getWorkingState()){
+                this.sunFlares.angle ++;
             }
         }
         this.skip++;
@@ -1312,7 +1308,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.noOfPomodoros = noOfPomodoros;
         
         this.createButtons();
-        this.createHitArea();
+        //this.createHitArea();
 
         //this.playButton.setVisible(true);
 
@@ -1428,32 +1424,32 @@ class Pomodoro extends Phaser.GameObjects.Container {
         });
     }
 
-    // autoStart() {
-    //     if (this.timer1){
-    //         this.timer1.destroy();
-    //     }
+    autoStart() {
+        if (this.timer1){
+            this.timer1.destroy();
+        }
 
-    //     if (this.workFlag) {
-    //         if (!this.autoStartPomodoro) {
-    //             this.playButton.setVisible(true); 
-    //             this.pauseButton.setVisible(false);
-    //             this.skipButton.setVisible(false);
-    //             Utility.setWorkingState(false);
-    //             return;
-    //         } else {
-    //             this.skipTimer(); 
-    //         }
-    //     } else {
-    //         if (!this.autoStartBreak) { 
-    //             this.playButton.setVisible(true); 
-    //             this.pauseButton.setVisible(false);
-    //             this.skipButton.setVisible(false);
-    //             return; 
-    //         } else {
-    //             this.skipTimer();
-    //         }
-    //     }
-    // }
+        if (this.workFlag) {
+            if (!this.autoStartPomodoro) {
+                this.playButton.setVisible(true); 
+                this.pauseButton.setVisible(false);
+                this.skipButton.setVisible(false);
+                Utility.setWorkingState(false);
+                return;
+            } else {
+                this.skipTimer(); 
+            }
+        } else {
+            if (!this.autoStartBreak) { 
+                this.playButton.setVisible(true); 
+                this.pauseButton.setVisible(false);
+                this.skipButton.setVisible(false);
+                return; 
+            } else {
+                this.skipTimer();
+            }
+        }
+    }
 
     loadTimer(elapsedTime) {
         if (this.timer1) {
