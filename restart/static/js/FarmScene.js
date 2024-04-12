@@ -1376,6 +1376,8 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.pauseButton.setVisible(true);
             this.skipButton.setVisible(true);
 
+            // console.log("test");
+
             console.log(this.workFlag);
             if (this.timer1 && Utility.plotReady && !Utility.isEditMode()){
                 if (this.timer1.remainingTime == 0){
@@ -1399,13 +1401,13 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.pauseButton.setVisible(false);
             this.skipButton.setVisible(false);
 
-            console.log('pause button clicked');
-            this.scene.events.emit('timerPaused');
-            if (this.workFlag) {
-                this.scene.events.emit('pomodoroPaused');
-                Utility.setWorkingState(false);
-            }
-            this.pauseFlag = true;
+            // console.log('pause button clicked');
+            // this.scene.events.emit('timerPaused');
+            // if (this.workFlag) {
+            //     this.scene.events.emit('pomodoroPaused');
+            //     Utility.setWorkingState(false);
+            // }
+            // this.pauseFlag = true;
         });
 
         this.skipButton.on('pointerdown', () => {
@@ -1413,14 +1415,14 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.pauseButton.setVisible(false);
             this.skipButton.setVisible(false);
 
-            console.log('skip button clicked');
-            this.scene.events.emit('timerSkipped');
-            if (this.workFlag) {
-                this.scene.events.emit('pomodoroSkipped');
-                Utility.setWorkingState(false);
-            }
-            console.log('work flag', this.workFlag)
-            this.skipTimer();
+            // console.log('skip button clicked');
+            // this.scene.events.emit('timerSkipped');
+            // if (this.workFlag) {
+            //     this.scene.events.emit('pomodoroSkipped');
+            //     Utility.setWorkingState(false);
+            // }
+            // console.log('work flag', this.workFlag)
+            // this.skipTimer();
         });
     }
 
