@@ -51,7 +51,7 @@ export default class FarmScene extends Phaser.Scene {
         loadSpritesheet('level2farmhousespritesheet', 'assets/house/level2farmhouseanimation.png', { frameWidth: 80, frameHeight: 128 });
         
         loadStatic('marketSign', 'assets/market-sign.png');
-        loadStatic('sun', 'assets/sun.png');
+        // loadStatic('sun', 'assets/sun.png');
         loadStatic('sun-flares', 'assets/sun-flares.png');
         loadStatic('plot', 'assets/larger_plot.png');
         loadStatic('plotSelect', 'assets/plot_select.png');
@@ -102,9 +102,9 @@ export default class FarmScene extends Phaser.Scene {
         this.add.image(570, 460, 'mountains-large').setScale(2).setAlpha(0);
         this.add.image(320, 520, 'mountains').setDepth(-1);
 
-        this.sun = this.add.sprite(320, 455, 'sun').setDepth(-1);
-        this.sun.setInteractive();
-        Utility.addTintOnHover(this.sun);
+        // this.sun = this.add.sprite(320, 455, 'sun').setDepth(-1);
+        // this.sun.setInteractive();
+        // Utility.addTintOnHover(this.sun);
 
         this.clouds = [];
         this.cloudImages = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
@@ -198,7 +198,7 @@ export default class FarmScene extends Phaser.Scene {
         const screenWidth = this.sys.game.config.width;
         const screenHeight = this.sys.game.config.height;
         
-        const pomodoroY = screenHeight * 0.185;
+        const pomodoroY = screenHeight * 0.2;
         this.sunFlares = this.add.sprite(320, pomodoroY+221, 'sun-flares').setDepth(-1);
         this.pomodoro = new Pomodoro(this, 160, pomodoroY, 75);
         
