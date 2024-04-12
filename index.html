@@ -381,22 +381,27 @@
     <!--<a href="https://www.flaticon.com/free-icons/silence" title="silence icons">Silence icons created by Angelo Troiano - Flaticon</a>-->
 
     <!--Audio for clock-->
-    <audio id="sound">
+    <audio id="alarm-long">
         <source src="assets/audio/alarm-clock.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="alarm-short">
+        <source src="assets/audio/alarm-clock-short.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        var sound = document.getElementById("sound");
+        // var sound = document.getElementById("alarm-short");
+        soundMuted = false;
         var soundOnIcon = document.getElementById("soundOnIcon");
         var soundOffIcon = document.getElementById("soundOffIcon");
 
         function toggleSound() {
-            if (sound.muted) {
-                sound.muted = false;
+            if (soundMuted) {
+                soundMuted = false;
                 soundOnIcon.style.display = "inline";
                 soundOffIcon.style.display = "none";
+
             } else {
-                sound.muted = true;
+                soundMuted = true;
                 soundOnIcon.style.display = "none";
                 soundOffIcon.style.display = "inline";
             }
