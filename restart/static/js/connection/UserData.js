@@ -2,11 +2,6 @@
 const axios = require('axios');
 
 
-
-
-const apiUrlalt1 = 'http://localhost:8000/user-crops/';
-
-
 class UserData {     
     fetchData() {         //works
         const url = `http://localhost:8000/users/`;
@@ -92,7 +87,8 @@ class UserData {
                 throw error;
             });
     }
-    addUserCrop(url, data) {     //works
+    addUserCrop(data) {     //works
+        const url = 'http://localhost:8000/user-crops/';
         axios.post(url, data)
             .then(response => {
                 console.log('Crop added successfully:', response.data);
@@ -101,7 +97,26 @@ class UserData {
                 console.error('Error adding decoration for user:', error);
             });
     }
-    
+    deleteUserCrop(username) {    //works
+        const url = `http://localhost:8000/user-crops/`;     
+        const requestOptions = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: username })
+        };
+        return fetch(url, requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('User deleted successfully');
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+            });
+    }
     changeUserMoney(username, money) {      //works
         const url = `http://localhost:8000/users/change-money/`;
     
@@ -224,21 +239,24 @@ const newUserDec = {
     y: 0,
     placed: false
 };
-const newUser2 = {
-    firstName: 'Joe',
-    lastName: 'Jackson',
-    username: 'joejacko',
-    email: 'joejacko@example.com',
+const newUserCrop = {
+    username: 'johndoe',
+    tomato: 0,
+    sunflower: 0,
+    carrot: 0,
+    pumpkin: 0,
+    tulip: 0
 };
 const userData = new UserData();
-userData.addUserDecoration(newUserDec)
+//userData.addUserDecoration(newUserDec)
 //userData.fetchUserDecorations('johndoe')
 //userData.fetchData()
 //userData.addUserDate(newUserDate)
 //userData.changeUserMoney('johndoe', 50)
 //userData.incrementPlots('johndoe')
-//userData.addUserCrop(apiUrlalt1, newUserCrop)
+userData.addUserCrop(newUserCrop)
 //userData.fetchUserCrops(newUserCrop.username)
+//userData.deleteUserCrop('johndoe')
 //userData.createUser(newUser)
 // userData.deleteUser('johndoe')
 //     .then(() => {

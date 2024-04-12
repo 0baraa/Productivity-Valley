@@ -84,8 +84,9 @@ class MoneyView(APIView):
         if username is None or money is None:
             return Response({"error": "Username or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            Users.objects.filter(username=username).update(money=F('money') + money)
-            return Response({"message": f"Money updated successfully for user {username}"}, status=status.HTTP_200_OK)
+            user = Users.objects.get(username=username)
+            user.money = money
+            user.save()
         except Users.DoesNotExist:
             return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -244,11 +245,10 @@ class UserDatesView(APIView):
 #             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class UserDecorationsView(APIView):
     def get(self, request):
-        username = request.data.get('username', None)
-        userDecorations = UserDecorations.objects.filter(username=username)
+        userDecorations = UserDecorations.objects.all()
         serializer = UserDecorationsSerializer(userDecorations, many=True)
+        print(serializer)
         return Response(serializer.data)
-
     def post(self, request):
         print(request.data)
         serializer = UserDecorationsSerializer(data=request.data)
@@ -256,19 +256,39 @@ class UserDecorationsView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class UserCropsView(APIView):
     def get(self, request):
-        username = request.data.get('username', None)
-        userCrops = UserCrop.objects.filter(username=username)
+        userCrops = UserCrop.objects.all()
         serializer = UsersCropsSerializer(userCrops, many=True)
         return Response(serializer.data)
-
+    
     def post(self, request):
+        user = request.data.get('username')
+        try:
+            userInstance = Users.objects.get(username=user)
+        except Users.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = UsersCropsSerializer(data=request.data)
         if serializer.is_valid():
+            serializer.validated_data['username'] = userInstance
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request):
+        username = request.data.get('username', None)
+        if username is None:
+            return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = UserCrop.objects.get(username=username)
+            user.delete()
+            return Response({"message": f"User with username {username} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        except Users.DoesNotExist:
+            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class UserFurnitureView(APIView):
     def get(self, request):
         username = request.data.get('username', None)
