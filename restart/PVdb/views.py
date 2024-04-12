@@ -49,16 +49,17 @@ class PomodoroStatsView(APIView):
 
 class UsersView(APIView):
     def get(self, request):
-        username = request.data.get('username', None)
-        user = Users.objects.get(username=username)
-        output = {"username":user.username,
-                  "email":user.email,
-                  "money":user.money,
-                  "houseStatus":user.houseStatus,
-                  "housex":user.housex,
-                  "housey":user.housey,
-                  "plots":user.plots}
+        output = [{"username":output.username,
+                  "email":output.email,
+                  "money":output.money,
+                  "houseStatus":output.houseStatus,
+                  "housex":output.housex,
+                  "housey":output.housey,
+                  "plots":output.plots}
+                  for output in Users.objects.all()]
         return Response(output)
+
+
     def post (self, request):
         serializer = UsersSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -249,6 +250,7 @@ class UserDecorationsView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        print(request.data)
         serializer = UserDecorationsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

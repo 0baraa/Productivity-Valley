@@ -2,13 +2,14 @@
 const axios = require('axios');
 
 
-const apiUrl = 'http://localhost:8000/users/';
-const apiUrlalt = 'http://localhost:8000/user-decorations/';
+
+
 const apiUrlalt1 = 'http://localhost:8000/user-crops/';
 
 
-class UserData {     //works
-    fetchData(url) {
+class UserData {     
+    fetchData() {         //works
+        const url = `http://localhost:8000/users/`;
         return fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -17,7 +18,7 @@ class UserData {     //works
                 return response.json();
             })
             .then(data => {
-                //console.log('Data fetched successfully:', data);
+                console.log('Data fetched successfully:', data);
                 return data;
             })
             .catch(error => {
@@ -25,7 +26,8 @@ class UserData {     //works
                 throw error;
             });
         }
-    createUser(url, data) {      //works
+    createUser(data) {      //works
+        const url = `http://localhost:8000/users/`;
         axios.post(url, data)
             .then(response => {
                 console.log('User created successfully:', response.data);
@@ -34,7 +36,8 @@ class UserData {     //works
                 console.error('Error creating user:', error);
             });
     }
-    deleteUser(url, username) {     //works
+    deleteUser(username) {    //works
+        const url = `http://localhost:8000/users/`;     
         const requestOptions = {
             method: 'DELETE',
             headers: {
@@ -66,7 +69,8 @@ class UserData {     //works
                 throw error;
             });
     }
-    addUserDecoration(url, data) {   //works
+    addUserDecoration(data) {   //works
+        const url = 'http://localhost:8000/user-decorations/';
         axios.post(url, data)
             .then(response => {
                 console.log('Decoration added successfully:', response.data);
@@ -199,15 +203,6 @@ class UserData {     //works
 
 //export default UserData;
 
-const newUserDec = {
-    username: 'johndoe',
-    decoration: 'Table',
-    coordinates: '55x55'
-};
-const newUserCrop = {
-    username: 'johndoe',
-    crop: 'Corn',
-};
 // const today = new Date();
 // const year = today.getFullYear();
 // const month = today.getMonth() + 1;
@@ -219,10 +214,15 @@ const newUserCrop = {
 //     date: formattedDate
 // };
 const newUser = {
-    firstName: 'John',
-    lastName: 'Doe',
     username: 'johndoe',
     email: 'johndoe@example.com',
+};
+const newUserDec = {
+    username: 'johndoe',
+    decoration: 'gnome',
+    x: 0,
+    y: 0,
+    placed: false
 };
 const newUser2 = {
     firstName: 'Joe',
@@ -231,17 +231,20 @@ const newUser2 = {
     email: 'joejacko@example.com',
 };
 const userData = new UserData();
+userData.addUserDecoration(newUserDec)
+//userData.fetchUserDecorations('johndoe')
+//userData.fetchData()
 //userData.addUserDate(newUserDate)
 //userData.changeUserMoney('johndoe', 50)
-userData.incrementPlots('johndoe')
+//userData.incrementPlots('johndoe')
 //userData.addUserCrop(apiUrlalt1, newUserCrop)
 //userData.fetchUserCrops(newUserCrop.username)
-//userData.createUser(apiUrl, newUser2)
-// userData.deleteUser(apiUrl, 'johndoe')
+//userData.createUser(newUser)
+// userData.deleteUser('johndoe')
 //     .then(() => {
 //         console.log('User deleted successfully');
 //         // Fetch data after successful deletion
-//         userData.fetchData(apiUrl)
+//         userData.fetchData()
 //             .then(data => {
 //                 console.log('Data fetched successfully:', data);
 //             })
