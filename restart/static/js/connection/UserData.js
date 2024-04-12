@@ -21,6 +21,19 @@ class UserData {
                 throw error;
             });
         }
+    fetchUserData(username) {
+        const url = `http://localhost:8000/users/?username=${username}`;
+
+        return axios.get(url)
+            .then(response => {
+                console.log(response.data)
+                return response.data;
+            })
+            .catch(error => {
+                console.error('Error fetching user decorations:', error);
+                throw error;
+            });
+    }
     createUser(data) {      //works
         const url = `http://localhost:8000/users/`;
         axios.post(url, data)
@@ -74,6 +87,29 @@ class UserData {
                 console.error('Error adding decoration for user:', error);
             });
     }
+    fetchUserFurniture(username){   //works
+        const url = `http://localhost:8000/user-furniture/?username=${username}`;
+
+        return axios.get(url)
+            .then(response => {
+                console.log(response.data)
+                return response.data;
+            })
+            .catch(error => {
+                console.error('Error fetching user decorations:', error);
+                throw error;
+            });
+    }
+    addUserFurniture(data) {   //works
+        const url = 'http://localhost:8000/user-furniture/';
+        axios.post(url, data)
+            .then(response => {
+                console.log('Decoration added successfully:', response.data);
+            })
+            .catch(error => {
+                console.error('Error adding decoration for user:', error);
+            });
+    }
     fetchUserCrops(username){    //works
         const url = `http://localhost:8000/user-crops/?username=${username}`;
 
@@ -99,6 +135,49 @@ class UserData {
     }
     deleteUserCrop(username) {    //works
         const url = `http://localhost:8000/user-crops/`;     
+        const requestOptions = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: username })
+        };
+        return fetch(url, requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('User crop deleted successfully');
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+            });
+    }
+    fetchUserSettings(username){    //works
+        const url = `http://localhost:8000/user-settings/?username=${username}`;
+
+        return axios.get(url)
+            .then(response => {
+                console.log(response.data)
+                return response.data;
+            })
+            .catch(error => {
+                console.error('Error fetching user crops:', error);
+                throw error;
+            });
+    }
+    addUserSettings(data) {     //works
+        const url = 'http://localhost:8000/user-settings/';
+        axios.post(url, data)
+            .then(response => {
+                console.log('Crop added successfully:', response.data);
+            })
+            .catch(error => {
+                console.error('Error adding decoration for user:', error);
+            });
+    }
+    deleteUserSettings(username) {    //works
+        const url = `http://localhost:8000/user-settings/`;     
         const requestOptions = {
             method: 'DELETE',
             headers: {
@@ -218,7 +297,7 @@ class UserData {
 
 }
 
-//export default UserData;
+export default UserData;
 
 // const today = new Date();
 // const year = today.getFullYear();
@@ -249,14 +328,38 @@ const newUserCrop = {
     pumpkin: 0,
     tulip: 0
 };
+const newUserfurn = {
+    username: 'johndoe',
+    furniture: 'table',
+    x: 0,
+    y: 0,
+    placed: false
+};
+const newUserSettings = {
+    username: 'johndoe',
+    pomtimer: 25,
+    shortBreak: 5,
+    longBreak: 25,
+    longBreakInterval: 5,
+    autoStartPom: false,
+    autoStartBreak: false,
+    autoHideTime: false,
+    fontStyle: 'comic sans',
+    fontSize: 10
+};
 const userData = new UserData();
+userData.fetchUserData('johndoe')
 //userData.addUserDecoration(newUserDec)
-//userData.fetchUserDecorations('johndoe')
+userData.fetchUserDecorations('johndoe')
+//userData.addUserFurniture(newUserfurn)
+userData.fetchUserFurniture(newUserfurn)
+//userData.addUserSettings(newUserSettings)
+userData.fetchUserSettings('johndoe')
 //userData.fetchData()
 //userData.updateHouse('johndoe', 2)
 //userData.addUserDate(newUserDate)
 //userData.changeUserMoney('johndoe', 50)
-userData.updatePlots('johndoe', 4)
+//userData.updatePlots('johndoe', 4)
 //userData.addUserCrop(newUserCrop)
 //userData.fetchUserCrops(newUserCrop.username)
 //userData.deleteUserCrop('johndoe')

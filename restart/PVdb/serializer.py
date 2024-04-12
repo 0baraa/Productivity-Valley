@@ -14,7 +14,7 @@ class UserPlotsSerializer(serializers.ModelSerializer):
 class TasksSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tasks
-        fields = ['taskName', 'username', 'plotNumber', 'pomodorros']
+        fields = ['taskName', 'username', 'taskCompleted' 'plotNumber', 'pomodorros', 'pomodorrosCompleted', 'subTask1', 'subTaskCompleted1', 'subTask2', 'subTaskCompleted2', 'subTask3', 'subTaskCompleted3', 'subTask4', 'subTaskCompleted4', 'subTask5', 'subTaskCompleted5', 'subTask6', 'subTaskCompleted6', 'subTask7', 'subTaskCompleted7', 'subTask8', 'subTaskCompleted8', 'subTask9', 'subTaskCompleted9', 'subTask10', 'subTaskCompleted10', ]
 
 class UserDatesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,7 +38,7 @@ class UserDecorationsSerializer(serializers.ModelSerializer):
 
 class UserFurnitureSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserDecorations
+        model = UserFurniture
         fields = ['username', 'furniture', 'x', 'y', 'placed']
 
 class UsersCropsSerializer(serializers.ModelSerializer):

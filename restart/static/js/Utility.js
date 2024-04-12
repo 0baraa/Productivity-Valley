@@ -1,4 +1,4 @@
-//import UserData from "../../connection/UserData.js"
+import UserData from "/connection/UserData.js"
 //""
 // 在togglemenu中了chart
 export default class Utility {
@@ -110,46 +110,60 @@ export default class Utility {
 
     }
 
-    static getUserData() {
+    static getUserData(username) {
         // Called in create method of FarmScene
         // Fetches user data from the backend
         // Then formats data in appropriate way
         // This data is used to create a PlayerFarm object, which is then displayed
-    
+        const user = new UserData()
+        console.log(currentUsername)
+        let userData = user.fetchUserData(currentUsername)
+        let userCrops = user.fetchUserCrops(username)
+        let userDecs = user.fetchUserDecorations(username)
+        let userFurniture = user.fetchUserFurniture(username)
+        let userSettings = user.fetchUserSettings(username)
+
+        return {
+            userData: userData,
+            userCrops: userCrops,
+            userDecorations: userDecs,
+            userFurniture: userFurniture,
+            userSettings: userSettings
+        };
     
         // Using mock data for now until backend is implemented
-        this.data = {
-            "coins": 300,
-            "cropsOwned": [
-                {crop: "tomato", count: 3},
-                {crop:"sunflower", count: 1},
-                {crop:"carrot", count: 2},
-                {crop:"pumpkin", count: -1},
-                {crop:"flower", count: -1}
-            ],
-            //plots should have coordinates saved also
-            "plots": [
-              {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616, "placed": true},
-              {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true},
-              {"id": 3, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616, "placed": true},
-              {"id": 4, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616, "placed": true},
-            ],
-            "furniture": [
-              {"type": "carpet1", "x": 320, "y": 612, "placed": true},
-              {"type": "bookshelf", "x": 281, "y": 580, "placed": true},
-              {"type": "coatrack", "x": 350, "y": 580, "placed": true},
-              {"type": "plant", "x": 245, "y": 590, "placed": true},
-              {"type": "table2", "x": 400, "y": 590, "placed": false}
-            ],
-            "decorations": [
-                {"type": "snowman", "x":50, "y":700, "placed": true}
-            ],
-            "farmhouse":[
-                {"level": 1, "x": 70, "y": 570}
-            ]
-          }
+        // this.data = {
+        //     "coins": 300,
+        //     "cropsOwned": [
+        //         {crop: "tomato", count: 3},
+        //         {crop:"sunflower", count: 1},
+        //         {crop:"carrot", count: 2},
+        //         {crop:"pumpkin", count: -1},
+        //         {crop:"flower", count: -1}
+        //     ],
+        //     //plots should have coordinates saved also
+        //     "plots": [
+        //       {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616, "placed": true},
+        //       {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true},
+        //       {"id": 3, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616, "placed": true},
+        //       {"id": 4, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616, "placed": true},
+        //     ],
+        //     "furniture": [
+        //       {"type": "carpet1", "x": 320, "y": 612, "placed": true},
+        //       {"type": "bookshelf", "x": 281, "y": 580, "placed": true},
+        //       {"type": "coatrack", "x": 350, "y": 580, "placed": true},
+        //       {"type": "plant", "x": 245, "y": 590, "placed": true},
+        //       {"type": "table2", "x": 400, "y": 590, "placed": false}
+        //     ],
+        //     "decorations": [
+        //         {"type": "snowman", "x":50, "y":700, "placed": true}
+        //     ],
+        //     "farmhouse":[
+        //         {"level": 1, "x": 70, "y": 570}
+        //     ]
+        //   }
     
-          return this.data;
+        //   return this.data;
     }
 
     static sendCreatedTaskData() {

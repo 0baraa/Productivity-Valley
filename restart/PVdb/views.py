@@ -324,9 +324,9 @@ class UserCropsView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class UserFurnitureView(APIView):
     def get(self, request):
-        username = request.data.get('username', None)
-        userFurniture = UserFurniture.objects.filter(username=username)
-        serializer = UserFurnitureSerializer(userFurniture, many=True)
+        userDecorations = UserFurniture.objects.all()
+        serializer = UserFurnitureSerializer(userDecorations, many=True)
+        print(serializer)
         return Response(serializer.data)
 
     def post(self, request):
@@ -337,23 +337,30 @@ class UserFurnitureView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class UserSettingsView(APIView):
     def get(self, request):
-        username = request.data.get('username', None)
-        userFurniture = UserSettings.objects.filter(username=username)
-        serializer = UserSettingsSerializer(userFurniture, many=True)
+        userDecorations = UserSettings.objects.all()
+        serializer = UserSettingsSerializer(userDecorations, many=True)
+        print(serializer)
         return Response(serializer.data)
 
     def post(self, request):
+        user = request.data.get('username')
+        try:
+            userInstance = Users.objects.get(username=user)
+        except Users.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = UserSettingsSerializer(data=request.data)
         if serializer.is_valid():
+            serializer.validated_data['username'] = userInstance
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request):
         username = request.data.get('username', None)
         if username is None:
             return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = UserSettings.objects.get(username=username)
+            user = UserCrop.objects.get(username=username)
             user.delete()
             return Response({"message": f"User with username {username} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Users.DoesNotExist:
