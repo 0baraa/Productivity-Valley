@@ -8,7 +8,7 @@ const apiUrlalt = 'http://localhost:8000/user-decorations/';
 const apiUrlalt1 = 'http://localhost:8000/user-crops/';
 
 
-class UserData {     //works
+export default class UserData {     //works
     fetchData(url) {
         return fetch(url)
             .then(response => {
