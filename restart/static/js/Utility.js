@@ -102,6 +102,10 @@ export default class Utility {
                 dialogContainer = document.querySelector('.menu-container.alertWindow');
                 dialog = document.querySelector('.menu.alertWindow');
                 break;
+            case "upgradeHouseMenu":
+                dialogContainer = document.querySelector('.menu-container.house-upgrade-menu');
+                dialog = document.querySelector('.menu.house-upgrade-menu');
+                break;
         }
 
         
@@ -188,11 +192,11 @@ export default class Utility {
                 {"plotId": 2, "taskName": "go to bed", "pomodoros": 1, "pomodorosCompleted": 0, "completed": false, "subtasks": ["tidy desk", "brush teeth", "get changed", "go piss girl"], "subtasksCompleted": [true,false,false,false]},
             ],
             "furniture": [
-              {"type": "carpet1", "x": 320, "y": 612, "placed": true},
-              {"type": "bookshelf", "x": 281, "y": 580, "placed": true},
-              {"type": "coatrack", "x": 350, "y": 580, "placed": true},
-              {"type": "plant", "x": 245, "y": 590, "placed": true},
-              {"type": "table2", "x": 400, "y": 590, "placed": false}
+            //   {"type": "carpet1", "x": 320, "y": 612, "placed": true},
+            //   {"type": "bookshelf", "x": 281, "y": 580, "placed": true},
+            //   {"type": "coatrack", "x": 350, "y": 580, "placed": true},
+            //   {"type": "plant", "x": 245, "y": 590, "placed": true},
+            //   {"type": "table2", "x": 400, "y": 590, "placed": false}
             ],
             "decorations": [
                 {"type": "snowman", "x":50, "y":700, "placed": true}

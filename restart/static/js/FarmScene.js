@@ -585,6 +585,22 @@ export default class FarmScene extends Phaser.Scene {
             Utility.toggleMenu(this.scene.get('InsideFarmhouseScene'), "furnitureMenu");
         });
 
+        let houseUpgradeExitButton = document.getElementById('house-upgrade-exit-button');
+        houseUpgradeExitButton.addEventListener('click', () => {
+            Utility.toggleMenu(this, "upgradeHouseMenu");
+        });
+
+        let houseUpgradeButton = document.getElementById('house-upgrade-button');
+        houseUpgradeButton.addEventListener('click', () => {
+            if(this.farm.getCoins() >= 1000) {
+                // Update in database
+                this.farm.updateCoins(-1000);
+                this.farm.farmhouse.upgrade();
+                Utility.toggleMenu(this, "upgradeHouseMenu");
+            }
+        });
+        
+
         let decorationPlotExitButton = document.getElementById('decoration-plot-exit-button');
         decorationPlotExitButton.addEventListener('click', () => {
             // Clear the decoration and plot containers
@@ -2384,8 +2400,13 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
     }
 
     handleClick() {
-        let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
-        insideFarmhouseScene.toggleHideScene(this.scene);
+        if(this.level !== 1) {
+            let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
+            insideFarmhouseScene.toggleHideScene(this.scene);
+        }
+        else {
+            Utility.toggleMenu(this.scene, "upgradeHouseMenu");
+        }
     }
 
     // Upgrade the farmhouse to the next level
