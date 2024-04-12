@@ -908,7 +908,7 @@ export default class FarmScene extends Phaser.Scene {
                 console.log(this.farm.tasks, taskConfig);
                 var taskName = document.getElementById("taskName").value;
 
-                this.mountainsLarge.setAlpha(1);
+                // this.mountainsLarge.setAlpha(1);
 
                 //  clear the div
                 var wrapperDiv = document.getElementById("wrapperContainer");
@@ -1938,6 +1938,15 @@ class Plot extends Phaser.GameObjects.Container {
 
 
         this.on('pointerdown', () => {
+            // if (this.farm){
+            //     console.log(this.farm.tasks);
+            //     console.log("works");
+            // }
+            // console.log(this.id);
+            // this.tasks = this.farm.saveTasks();
+            // console.log(this.tasks);
+            
+            // displaySubtasks();
             if (Utility.isDeleteMode() && this.crop === "nothing") {
                 this.wasDeleted = true;
                 this.setVisible(false); // make the sprite invisible
