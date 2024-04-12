@@ -54,6 +54,23 @@ export default class MarketScene extends Phaser.Scene {
         this.allDecorations = [
             { type: 'snowman', price: 100 },
             { type: 'gnome', price: 100 },
+            { type: 'autumn-tree', price: 200},
+            { type: 'dirt-rock', price: 100},
+            { type: 'dirt-rocks', price: 200},
+            { type: 'ice-rock', price: 100},
+            { type: 'icy-rocks', price: 200},
+            { type: 'leafy-rock', price: 100},
+            { type: 'leafy-rocks', price: 200},
+            { type: 'palm-tree', price: 200},
+            { type: 'pine-tree', price: 200},
+            { type: 'red-sandstone-rock', price: 100},
+            { type: 'red-sandstone-rocks', price: 200},
+            { type: 'sandstone-rock', price: 100},
+            { type: 'sandstone-rocks', price: 200},
+            { type: 'snowy-rock', price: 100},
+            { type: 'snowy-rocks', price: 200},
+            { type: 'stump', price: 200}
+
         ];
 
         //Set camera zoom to 2x as canvas size of farmhouse interior is 320px wide, rather than 640px
@@ -325,26 +342,46 @@ class Shop extends Phaser.GameObjects.Sprite {
     }
 
     setSeeds() {
-        let cropsOwned = this.farm.getOwnedCrops();
+        let cropsOwned = Object.keys(this.farm.getOwnedCrops());
+        console.log(cropsOwned);
         this.displayedItems = [];
         //create buycrop methods using class driven items
         for (let i = 0; i < cropsOwned.length; i++) {
-            this.displayedItems.push(new Item(cropsOwned[i][0]));
+            this.displayedItems.push(new Item(cropsOwned[i]));
         }
+        console.log(this.displayedItems);
+
+    }
+    buyListener(event) {
+        let crop = event.target.className;
+        if (crop.slice(4) == "coin") {
+            console.log(crop);
+            crop.slice(5)
+        }
+        let type = event.target.nodeName;
+        let button = event.target;
+        if (type == "IMG") {
+            console.log(type);
+            console.log(event.target.parentElement.parentElement);
+            button = event.target.parentElement.parentElement;
+        } else if (type == "SPAN") {
+            button = event.target.parentElement;
+        }
+        let price = button.getElementsByTagName("span")[0].innerText;
+        
+        this.buyCropEvent(crop, price);
 
     }
 
     updateAffordability() {
-        const self = this;
+        console.log(this.displayedItems);
         let coins = this.farm.getCoins();
         let cropsOwned = this.farm.getOwnedCrops();
-        let buyListener = function thingy() {}
+        let buyListener = (event) => {this.buyListener(event);};
         for (let i = 0; i < this.displayedItems.length; i++) {
             let count = cropsOwned[this.displayedItems[i].name];
             let price = this.displayedItems[i].price;
-            buyListener = function thingy(event) {
-                self.buyCropEvent(event,self.displayedItems[i].price);
-            }
+            this.displayedItems[i].button.onclick = null;
             if (count < 0 && price <= 50) {
                 price *= 3;
                 this.displayedItems[i].button.getElementsByTagName("span")[0].innerText = price;
@@ -369,17 +406,14 @@ class Shop extends Phaser.GameObjects.Sprite {
     }
 
     removeItemListeners() {
-        const self = this;
         for (let i = 0; i < this.displayedItems.length; i++) {
             this.displayedItems[i].button.onclick = null;
         }
     }
 
-    buyCropEvent(event,price) {
-        let crop = event.target.className;
-        if (event.target.className.slice(4) == "coin") {
-            crop.slice(5)
-        }
+    buyCropEvent(crop,price) {
+
+        console.log(price);
         console.log(crop);
         //console.log("bought " + crop + " x" + event.target.id + " for " + price + " coins");
         this.farm.updateCoins(-price);
@@ -398,7 +432,7 @@ class Item {
         this.button = document.getElementById(this.name+"-button");
         this.buttonPrice = this.button.getElementsByTagName("span")[0];
         this.price = 0;
-        console.log(this.price , this.buttonPrice);
+        console.log(this.button);
         if (this.button) {
             this.price = this.buttonPrice.innerText;
             console.log(this.price)

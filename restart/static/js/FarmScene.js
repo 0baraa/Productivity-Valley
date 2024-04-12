@@ -913,16 +913,19 @@ export default class FarmScene extends Phaser.Scene {
                     this.farm.editTask(taskConfig);
                 }
                 else {
-                    this.farm.plots[this.selector.plotSelected].setupCrops();
+                    let cropType = document.getElementById("cropChoice").value;
+                    this.farm.plots[this.selector.plotSelected].setupCrops(cropType);
                     Utility.setPlotReady(true);
                     taskConfig.plotId = this.selector.plotSelected, 
                     this.farm.addTask(taskConfig);
-                    taskConfig.crop = document.getElementById("crop").value;
-                    taskConfig.growthStage = 0;
-                    taskConfig.growthStep = 0;
+                    this.farm.removeCropFromInventory(cropType);
+                    this.farm.saveCropsOwned();
+
                 }
                 console.log(this.farm.tasks, taskConfig);
                 console.log(document.getElementById("taskName").value)
+                this.farm.saveTasks();
+                this.farm.savePlots();
             }
             else if (event.type == "click") {
                 if (!this.farm.plots[this.selector.plotSelected].occupied){
@@ -1672,6 +1675,11 @@ class PlayerFarm {
         this.cropsOwned[cropsIn] ++;
         console.log(this.cropsOwned);
     }
+    removeCropFromInventory(cropsIn) {
+        if (this.cropsOwned[cropsIn] > 0) {
+            this.cropsOwned[cropsIn] --;
+        }
+    }
 
     saveCropsOwned() {
         return this.cropsOwned;
@@ -1951,8 +1959,8 @@ class Plot extends Phaser.GameObjects.Container {
         this.scene.selector.setVisible(true);
     }
 
-    setupCrops() {
-        this.crop = document.getElementById('cropChoice').value;
+    setupCrops(cropType) {
+        this.crop = cropType;
         this.plantCrops();
         //this.playGrowth();
     }
