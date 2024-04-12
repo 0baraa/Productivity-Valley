@@ -102,7 +102,7 @@ class HouseView(APIView):
             user = Users.objects.get(username=username)
             user.houseStatus = houseState
             user.save()
-            return Response({"message": f"Money updated successfully for user {username}"}, status=status.HTTP_200_OK)
+            return Response({"message": f"house updated successfully for user {username}"}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
