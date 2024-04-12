@@ -348,12 +348,12 @@ class Shop extends Phaser.GameObjects.Sprite {
     }
 
     setSeeds() {
-        let cropsOwned = Object.keys(this.farm.getOwnedCrops());
-        console.log(cropsOwned);
+        let seedsOwned = Object.keys(this.farm.getOwnedSeeds());
+        console.log(seedsOwned);
         this.displayedItems = [];
         //create buycrop methods using class driven items
-        for (let i = 0; i < cropsOwned.length; i++) {
-            this.displayedItems.push(new Item(cropsOwned[i]));
+        for (let i = 0; i < seedsOwned.length; i++) {
+            this.displayedItems.push(new Item(seedsOwned[i]));
         }
         console.log(this.displayedItems);
 
@@ -382,10 +382,10 @@ class Shop extends Phaser.GameObjects.Sprite {
     updateAffordability() {
         console.log(this.displayedItems);
         let coins = this.farm.getCoins();
-        let cropsOwned = this.farm.getOwnedCrops();
+        let seedsOwned = this.farm.getOwnedSeeds();
         let buyListener = (event) => {this.buyListener(event);};
         for (let i = 0; i < this.displayedItems.length; i++) {
-            let count = cropsOwned[this.displayedItems[i].name];
+            let count = seedsOwned[this.displayedItems[i].name];
             let price = this.displayedItems[i].price;
             this.displayedItems[i].button.onclick = null;
             if (count < 0 && price <= 50) {
@@ -423,7 +423,7 @@ class Shop extends Phaser.GameObjects.Sprite {
         console.log(crop);
         //console.log("bought " + crop + " x" + event.target.id + " for " + price + " coins");
         this.farm.updateCoins(-price);
-        this.farm.addCropToInventory(crop);
+        this.farm.addSeedToInventory(crop);
         //this.removeItemListeners();
         this.updateAffordability();
     }
