@@ -769,8 +769,12 @@ export default class FarmScene extends Phaser.Scene {
                 this.clouds[j].moveX();
             }
             
-            if (Utility.getWorkingState()){
-                this.sunFlares.angle ++;
+            // if (Utility.getWorkingState()){
+            //     this.sunFlares.angle ++;
+            // }
+
+            if (this.pomodoro.pauseFlag == false) {
+                this.sunFlares.angle++
             }
         }
         this.skip++;
@@ -792,7 +796,7 @@ export default class FarmScene extends Phaser.Scene {
 
     harvestPlot() {
         this.farm.plots[this.selector.plotSelected].harvest();
-        this.farm.tasks.splice(this.farm.findSelectedTaskIndex());
+        this.farm.tasks.splice(this.farm.findSelectedTaskIndex(), 1);
     }
 
     editTaskMenu() {
@@ -818,10 +822,10 @@ export default class FarmScene extends Phaser.Scene {
     openTaskMenu(editing) {
         if (!editing) {
             let cropChoice = document.getElementById("cropChoice");
-            let cropsOwned = Object.values(this.farm.saveCropsOwned());
+            let seedsOwned = Object.values(this.farm.saveseedsOwned());
             let taskable = false;
-            for (let i = 0; i < cropsOwned.length; i++) {
-                if (cropsOwned[i] >= 0) {
+            for (let i = 0; i < seedsOwned.length; i++) {
+                if (seedsOwned[i] >= 0) {
                     cropChoice.options[i].style.display = "display";
                     taskable = true;
                 } else {
@@ -833,7 +837,7 @@ export default class FarmScene extends Phaser.Scene {
                 return;
             } else if (!taskable) {
                 this.openAlertWindow("You have no seeds!", "But we're very generous and have given you some sunflower seeds. Use it well");
-                this.farm.addCropToInventory("sunflower");
+                this.farm.addSeedToInventory("sunflower");
                 return;
             }
         }
@@ -954,7 +958,7 @@ export default class FarmScene extends Phaser.Scene {
                     taskConfig.plotId = this.selector.plotSelected, 
                     this.farm.addTask(taskConfig);
                     this.farm.removeCropFromInventory(cropType);
-                    this.farm.saveCropsOwned();
+                    this.farm.saveseedsOwned();
 
                 }
                 console.log(this.farm.tasks, taskConfig);
@@ -1062,6 +1066,7 @@ class Selector extends Phaser.GameObjects.Sprite {
     constructor (config) {
         super (config.scene, config.x, config.y, config.sprite);
         this.plotSelected = null;
+
         config.scene.add.existing(this);
     }
 }
@@ -1124,7 +1129,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
         this.updateTimeString();
 
-        this.timeString.setVisible(false);
+        this.timeString.setVisible(true);
 
         this.fillCircle = new SectorCircle(scene, this.x, this.y, radius, -90, -90, this.color);
 
@@ -1141,6 +1146,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
         this.scene.events.on('showTime', this.showTime, this);
         this.scene.events.on('hideTime', this.hideTime, this);
+
     }
 
     skipTimer() {
@@ -1350,7 +1356,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         // create play button image
         this.playButton = this.scene.add.image(this.x + 160, this.y*2 - 10, 'play-button').setScale(.23);
         this.playButton.setDepth(1);
-        this.playButton.setVisible(false);
+        this.playButton.setVisible(true);
         this.playButton.setInteractive();
         // Utility.addTintOnHover(this.playButton);
 
@@ -1370,7 +1376,10 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
         // Event listeners to the images
         this.playButton.on('pointerdown', () => {
-            console.log('play button clicked');
+            this.playButton.setVisible(false);
+            this.pauseButton.setVisible(true);
+            this.skipButton.setVisible(true);
+
             console.log(this.workFlag);
             if (this.timer1 && Utility.plotReady && !Utility.isEditMode()){
                 if (this.timer1.remainingTime == 0){
@@ -1390,6 +1399,10 @@ class Pomodoro extends Phaser.GameObjects.Container {
         });
 
         this.pauseButton.on('pointerdown', () => {
+            this.playButton.setVisible(true);
+            this.pauseButton.setVisible(false);
+            this.skipButton.setVisible(false);
+
             console.log('pause button clicked');
             this.scene.events.emit('timerPaused');
             if (this.workFlag) {
@@ -1400,6 +1413,10 @@ class Pomodoro extends Phaser.GameObjects.Container {
         });
 
         this.skipButton.on('pointerdown', () => {
+            this.playButton.setVisible(true);
+            this.pauseButton.setVisible(false);
+            this.skipButton.setVisible(false);
+
             console.log('skip button clicked');
             this.scene.events.emit('timerSkipped');
             if (this.workFlag) {
@@ -1411,32 +1428,32 @@ class Pomodoro extends Phaser.GameObjects.Container {
         });
     }
 
-    autoStart() {
-        if (this.timer1){
-            this.timer1.destroy();
-        }
+    // autoStart() {
+    //     if (this.timer1){
+    //         this.timer1.destroy();
+    //     }
 
-        if (this.workFlag) {
-            if (!this.autoStartPomodoro) {
-                this.playButton.setVisible(true); 
-                this.pauseButton.setVisible(false);
-                this.skipButton.setVisible(false);
-                Utility.setWorkingState(false);
-                return;
-            } else {
-                this.skipTimer(); 
-            }
-        } else {
-            if (!this.autoStartBreak) { 
-                this.playButton.setVisible(true); 
-                this.pauseButton.setVisible(false);
-                this.skipButton.setVisible(false);
-                return; 
-            } else {
-                this.skipTimer();
-            }
-        }
-    }
+    //     if (this.workFlag) {
+    //         if (!this.autoStartPomodoro) {
+    //             this.playButton.setVisible(true); 
+    //             this.pauseButton.setVisible(false);
+    //             this.skipButton.setVisible(false);
+    //             Utility.setWorkingState(false);
+    //             return;
+    //         } else {
+    //             this.skipTimer(); 
+    //         }
+    //     } else {
+    //         if (!this.autoStartBreak) { 
+    //             this.playButton.setVisible(true); 
+    //             this.pauseButton.setVisible(false);
+    //             this.skipButton.setVisible(false);
+    //             return; 
+    //         } else {
+    //             this.skipTimer();
+    //         }
+    //     }
+    // }
 
     loadTimer(elapsedTime) {
         if (this.timer1) {
@@ -1452,6 +1469,8 @@ class Pomodoro extends Phaser.GameObjects.Container {
     }
 
     loadTask() {
+        console.log(this.scene.farm.findSelectedTaskIndex())
+        console.log(this.scene.farm.tasks);
         let task = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()];
         let plot = this.scene.farm.plots[this.scene.selector.plotSelected];
 
@@ -1470,6 +1489,10 @@ class Pomodoro extends Phaser.GameObjects.Container {
     }
 
     skipTimer() {
+        this.playButton.setVisible(true);
+        this.pauseButton.setVisible(false);
+        this.skipButton.setVisible(false);
+
         if (this.timer1){
             this.timer1.destroy();
         }
@@ -1485,9 +1508,9 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, 0, this, this.pauseFlag, 0xffa500);
                 this.scene.events.emit('pomodoroStarted');
             } else {
-                this.playButton.destroy();
-                this.pauseButton.destroy();
-                this.skipButton.destroy();
+                this.playButton.setVisible(destroy);
+                this.pauseButton.setVisible(destroy);
+                this.skipButton.setVisible(destroy);
                 Utility.setWorkingState(false);
                 this.scene.events.emit('taskCompleted');
             }
@@ -1503,44 +1526,44 @@ class Pomodoro extends Phaser.GameObjects.Container {
         }
     }
 
-    createHitArea() {
-        // Create an invisible sprite to handle pointer events
-        this.hitArea = this.scene.add.circle(this.x, this.y, this.radius - 35);
-        this.hitArea.setDepth(1);
-        this.hitArea.setAlpha(1); // Make it invisible
+    // createHitArea() {
+    //     // Create an invisible sprite to handle pointer events
+    //     this.hitArea = this.scene.add.circle(this.x, this.y, this.radius - 35);
+    //     this.hitArea.setDepth(1);
+    //     this.hitArea.setAlpha(1); // Make it invisible
 
-        // Add event listeners
-        this.hitArea.setInteractive();
+    //     // Add event listeners
+    //     this.hitArea.setInteractive();
 
-        this.hitArea.on('pointerover', this.onPointerOver, this);
-        this.hitArea.on('pointerout', this.onPointerOut, this);
+    //     this.hitArea.on('pointerover', this.onPointerOver, this);
+    //     this.hitArea.on('pointerout', this.onPointerOut, this);
 
-        this.add(this.hitArea);
-    }
+    //     this.add(this.hitArea);
+    // }
 
-    onPointerOver() {
-        this.scene.events.emit('showTime');
+    // onPointerOver() {
+        // this.scene.events.emit('showTime');
         
-        this.playButton.setVisible(true);
-        if (this.timer1){
-            if (this.pauseFlag || this.timer1.remainingTime == 0 || this.timer1.paused) {
-                this.playButton.setVisible(true);
-                this.pauseButton.setVisible(false);
-                this.skipButton.setVisible(false);
-            } else {
-                this.playButton.setVisible(false);
-                this.pauseButton.setVisible(true);
-                this.skipButton.setVisible(true);
-            }
-        }
-    }
+        // this.playButton.setVisible(true);
+        // if (this.timer1){
+        //     if (this.pauseFlag || this.timer1.remainingTime == 0 || this.timer1.paused) {
+        //         this.playButton.setVisible(true);
+        //         this.pauseButton.setVisible(false);
+        //         this.skipButton.setVisible(false);
+        //     } else {
+        //         this.playButton.setVisible(false);
+        //         this.pauseButton.setVisible(true);
+        //         this.skipButton.setVisible(true);
+        //     }
+        // }
+    // }
 
-    onPointerOut() {
-        this.scene.events.emit('hideTime');
-        this.playButton.setVisible(false);
-        this.pauseButton.setVisible(false);
-        this.skipButton.setVisible(false);
-    }
+    // onPointerOut() {
+        // this.scene.events.emit('hideTime');
+        // this.playButton.setVisible(false);
+        // this.pauseButton.setVisible(false);
+        // this.skipButton.setVisible(false);
+    // }
 }
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
@@ -1550,19 +1573,19 @@ class PlayerFarm {
         this.scene = scene;
         this.coins = 0;
         this.plots = [];
-        this.cropsOwned = [];
+        this.seedsOwned = [];
         this.furniture = [];
         this.decorations = [];
         this.animals = [];
         this.farmhouse = null;
-        this.cropsOwned = [];
+        this.seedsOwned = [];
 
 
         let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
 
         let data = Utility.getUserData();
         this.userName = data.userData.usernameId;
-        this.loadOwnedCrops(data.cropsOwned);
+        this.loadOwnedSeeds(data.seedsOwned);
         this.createPlots(data);
         this.createTasks(data);
         this.createDecorations(data);
@@ -1571,53 +1594,16 @@ class PlayerFarm {
         this.showCoins(data.userData.coins);
 
     }
-    loadOwnedCrops(cropsOwned) {
-        this.cropsOwned = cropsOwned;
+    loadOwnedSeeds(seedsOwned) {
+        this.seedsOwned = seedsOwned;
     }
-    getOwnedCrops() {
-        return this.cropsOwned;
+    getOwnedSeeds() {
+        return this.seedsOwned;
     }
 
     createPlots(data) {
-        let x, zoom;
-        let y = 0;
-        let along = false;
-        // calculate camera offset and zoom based on plot number
-        switch (data.plots.length) {
-            case 2:
-                x = -100;
-                y = -40;
-                zoom = 1.455;
-                along = true;
-                break;
-            case 4:
-                x = -100;
-                zoom = 1.455;
-                break;
-            case 6:
-                x = -50;
-                zoom = 1.2;
-                break;
-            default:
-                x = 0;
-                zoom = 1;
-        }
-        // adjust camera
-        // scene.cameras.main.setScroll(x, y)
-        // scene.cameras.main.setZoom(zoom,zoom);
-        let plotX, plotY;
         for (let i = 0; i < data.plots.length; i++) {
 
-            // if (along) {
-            //     plotX = 165 + (100 * (i));
-            //     plotY = 610;
-            // } else {
-            //     plotX = 165 + (100 * (i % (data.plots.length / 2)));
-            //     plotY = 610 + (100 * Math.floor(i / (data.plots.length / 2)));
-            // }
-            //adjustable plot numbers:
-
-            
             let plot = new Plot({ scene: this.scene, 
                                 x: data.plots[i].x, y: data.plots[i].y, 
                                 id: data.plots[i].plotId, crop: data.plots[i].crop, 
@@ -1638,9 +1624,28 @@ class PlayerFarm {
 
     createTasks(data) {
         this.tasks = []
-        for (let i =0; i < data.tasks.length; i++) {
-            data.tasks[i].scene = this.scene;
-            this.tasks.push(new Task(data.tasks[i]));
+
+        let tasksData = data.tasks;
+        console.log(tasksData);
+        for (let i =0; i < tasksData.length; i++) {
+            let task = tasksData[i];
+            let subtasks = [];
+            let subtasksCompleted = [];
+            for (let j = 1; j <= 10; j++) {
+                let subtask = task["subTask"+j];
+                let subtaskCompleted = task["subTask"+j+"Completed"];
+                if (subtask != null) {
+                    subtasks.push(subtask);
+                    subtasksCompleted.push(subtaskCompleted);
+                    console.log(subtask, subtaskCompleted);
+                }
+            }
+            if (subtasks.length != 0) {
+                tasksData[i].subtasks = subtasks;
+                tasksData[i].subtasksCompleted = subtasksCompleted;
+            }
+            tasksData[i].scene = this.scene;
+            this.tasks.push(new Task(tasksData[i]));
         }
     }
     
@@ -1675,6 +1680,7 @@ class PlayerFarm {
         this.coins += change;
         this.coinText.innerText = this.coins;
         //save data to db;
+        this.saveCoins();
     }
 
     createFurniture(scene, data) {
@@ -1704,22 +1710,22 @@ class PlayerFarm {
         this.plots.push(plot);
     }
 
-    addCropToInventory(cropsIn) {
+    addSeedToInventory(cropsIn) {
         console.log(cropsIn.length)
-        if (this.cropsOwned[cropsIn] < 0) {
-            this.cropsOwned[cropsIn] = 0;
+        if (this.seedsOwned[cropsIn] < 0) {
+            this.seedsOwned[cropsIn] = 0;
         }
-        this.cropsOwned[cropsIn] ++;
-        console.log(this.cropsOwned);
+        this.seedsOwned[cropsIn] ++;
+        console.log(this.seedsOwned);
     }
     removeCropFromInventory(cropsIn) {
-        if (this.cropsOwned[cropsIn] > 0) {
-            this.cropsOwned[cropsIn] --;
+        if (this.seedsOwned[cropsIn] > 0) {
+            this.seedsOwned[cropsIn] --;
         }
     }
 
-    saveCropsOwned() {
-        return this.cropsOwned;
+    saveseedsOwned() {
+        return this.seedsOwned;
     }
 
     savePlots() {
@@ -1741,7 +1747,8 @@ class PlayerFarm {
     }
     saveTasks() {
         let tasksData = [];
-        for (let task in this.tasks) {
+        for (let i = 0; i < this.tasks.length; i++) {
+            let task = this.tasks[i];
             let data = {
                 usernameId: this.userName,
                 plotId: task.plotId,
@@ -1749,9 +1756,32 @@ class PlayerFarm {
                 pomodoros: task.pomodoros,
                 pomodorosCompleted: task.pomodorosCompleted,
                 completed: task.completed,
-                subtasks: task.subtasks,
-                subtasksCompleted: task.subtasksCompleted,
+                subTask1: null,
+                subTask1Completed: null,
+                subTask2: null,
+                subTask2Completed: null,
+                subTask3: null,
+                subTask3Completed:null,
+                subTask4: null,
+                subTask4Completed:null,
+                subTask5: null,
+                subTask5Completed:null,
+                subTask6: null,
+                subTask6Completed:null,
+                subTask7: null,
+                subTask7Completed:null,
+                subTask8: null,
+                subTask8Completed:null,
+                subTask9: null,
+                subTask9Completed:null,
+                subTask10: null,
+                subTask10Completed:null,
             }
+            for (let i = 1; i <= task.subtasks.length; i++) {
+                data["subTask" + i] = task.subtasks[i-1];
+                data["subTask"+i+"Completed"] = task.subtasksCompleted[i-1];
+            }
+            console.log(data);
             tasksData.push(data);
         }
         return tasksData;
@@ -1787,6 +1817,21 @@ class PlayerFarm {
     saveCoins() {
         return {usernameId: this.userName, coins: this.coins};
     }
+
+    addTaskToDB(taskConfig) {
+        taskConfig.usernameId = this.userName;
+        return taskConfig;
+    }
+    addPlotToDB(plotConfig) {
+        plotConfig.usernameId = this.userName;
+    }
+    addFurnitureToDB(furnitureConfig) {
+        furnitureConfig.usernameId = this.userName;
+    }
+    addDecorationToDB(decorationConfig) {
+        decorationConfig.usernameId = this.userName;
+    }
+
 
 }
 
