@@ -1703,10 +1703,12 @@ class PlayerFarm {
     }
 
     saveseedsOwned() {
+        if (this.userName == null) {return;}
         return this.seedsOwned;
     }
 
     savePlots() {
+        if (this.userName == null) {return;}
         let plotsData = [];
         for (let plot in this.plots) {
             let data = {
@@ -1724,6 +1726,7 @@ class PlayerFarm {
         return plotsData;
     }
     saveTasks() {
+        if (this.userName == null) {return;}
         let tasksData = [];
         for (let i = 0; i < this.tasks.length; i++) {
             let task = this.tasks[i];
@@ -1765,6 +1768,7 @@ class PlayerFarm {
         return tasksData;
     }
     saveFurniture() {
+        if (this.userName == null) {return;}
         let furnitureData = [];
         for (let furniture in this.furniture) {
             let data = {
@@ -1779,6 +1783,7 @@ class PlayerFarm {
         return furnitureData;
     }
     saveDecorations() {
+        if (this.userName == null) {return;}
         let decorationData = [];
         for (let decoration in this.decorations) {
             let data = {
@@ -1793,20 +1798,25 @@ class PlayerFarm {
         return decorationData;
     }
     saveCoins() {
+        if (this.userName == null) {return;}
         return {usernameId: this.userName, coins: this.coins};
     }
 
     addTaskToDB(taskConfig) {
+        if (this.userName == null) {return;}
         taskConfig.usernameId = this.userName;
         return taskConfig;
     }
     addPlotToDB(plotConfig) {
+        if (this.userName == null) {return;}
         plotConfig.usernameId = this.userName;
     }
     addFurnitureToDB(furnitureConfig) {
+        if (this.userName == null) {return;}
         furnitureConfig.usernameId = this.userName;
     }
     addDecorationToDB(decorationConfig) {
+        if (this.userName == null) {return;}
         decorationConfig.usernameId = this.userName;
     }
 
@@ -1818,6 +1828,7 @@ class Task {
         this.scene = config.scene;
         this.plotId = config.plotId;
         this.name = config.taskName;
+        this.elapsedTime = config.elapsedTime || 0;
         this.pomodoros = config.pomodoros;
         this.pomodorosCompleted = config.pomodorosCompleted || 0;
         this.subtasks = config.subtasks || [];
