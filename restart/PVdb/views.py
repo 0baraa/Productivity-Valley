@@ -87,6 +87,7 @@ class MoneyView(APIView):
             user = Users.objects.get(username=username)
             user.money = money
             user.save()
+            return Response({"message": f"Money updated successfully for user {username}"}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -94,11 +95,14 @@ class MoneyView(APIView):
 class HouseView(APIView):
      def post(self, request):
         username = request.data.get('username', None)
+        houseState = request.data.get('houseStatus', None)
         if username is None:
             return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            Users.objects.filter(username=username).update(houseStatus=F('houseStatus') + 1)
-            return Response({"message": f"House Status updated successfully for user {username}"}, status=status.HTTP_200_OK)
+            user = Users.objects.get(username=username)
+            user.houseStatus = houseState
+            user.save()
+            return Response({"message": f"Money updated successfully for user {username}"}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:

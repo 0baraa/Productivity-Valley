@@ -111,13 +111,13 @@ class UserData {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                console.log('User deleted successfully');
+                console.log('User crop deleted successfully');
             })
             .catch(error => {
                 console.error('Error deleting user:', error);
             });
     }
-    changeUserMoney(username, money) {      //works
+    updateUserMoney(username, money) {      //works
         const url = `http://localhost:8000/users/change-money/`;
     
         const requestData = {
@@ -142,11 +142,12 @@ class UserData {
             console.error('Error updating money:', error);
         });
     }
-    incrementHouse(username) {      //works
+    updateHouse(username, houseStatus) {      //works
         const url = `http://localhost:8000/users/change-house/`;
     
         const requestData = {
             username: username,
+            houseStatus:houseStatus
         };
         console.log(requestData)
         fetch(url, {
@@ -166,7 +167,7 @@ class UserData {
             console.error('Error updating money:', error);
         });
     }
-    incrementPlots(username) {      //works
+    updatePlots(username) {      //works
         const url = `http://localhost:8000/users/change-plots/`;
     
         const requestData = {
@@ -251,10 +252,11 @@ const userData = new UserData();
 //userData.addUserDecoration(newUserDec)
 //userData.fetchUserDecorations('johndoe')
 //userData.fetchData()
+userData.updateHouse('johndoe', 2)
 //userData.addUserDate(newUserDate)
 //userData.changeUserMoney('johndoe', 50)
 //userData.incrementPlots('johndoe')
-userData.addUserCrop(newUserCrop)
+//userData.addUserCrop(newUserCrop)
 //userData.fetchUserCrops(newUserCrop.username)
 //userData.deleteUserCrop('johndoe')
 //userData.createUser(newUser)
