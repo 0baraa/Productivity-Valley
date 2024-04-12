@@ -1622,11 +1622,13 @@ class PlayerFarm {
     createTasks(data) {
         this.tasks = []
         for (let i =0; i < data.tasks.length; i++) {
+            data.tasks[i].scene = this.scene;
             this.tasks.push(new Task(data.tasks[i]));
         }
     }
     
     addTask(taskConfig) {
+        taskConfig.scene = this.scene;
         this.tasks.push(new Task(taskConfig));
     }
 
@@ -1773,6 +1775,7 @@ class PlayerFarm {
 
 class Task {
     constructor(config) {
+        this.scene = config.scene;
         this.plotId = config.plotId;
         this.name = config.taskName;
         this.pomodoros = config.pomodoros;
@@ -1800,6 +1803,51 @@ class Task {
         this.subtasks = config.subtasks || this.subtasks;
         this.subtasksCompleted = config.subtasksCompleted || this.subtasksCompleted;
         this.completed = config.completed || this.completed;
+    }
+
+    updateTaskScreen() {
+        var wrapperDiv = document.getElementById("wrapperContainer");
+        var taskNameDiv = document.getElementById("taskNameDiv");
+        var subtasksDiv = document.getElementById("subtasksDiv");
+
+        wrapperDiv.style.display = "flex";
+        subtasksDiv.innerHTML = "";
+        taskNameDiv.innerText = this.name;
+
+        console.log(currentUsername);
+
+        const updateListener = (event) => {this.updateSubtasksCompleted(event)}
+        
+        if (this.subtasks.length == 0) {return;}
+
+        for (let i = 0; i < this.subtasks.length; i++) {
+            let subtaskName = this.subtasks[i];
+            let checked = this.subtasksCompleted[i];
+            var textNode = document.createTextNode(subtaskName);
+            var br = document.createElement('br');
+
+            // create checkbox
+            var checkbox = document.createElement("input");
+            checkbox.setAttribute("type", "checkbox");
+            checkbox.setAttribute("id", i);
+            checkbox.checked = checked;
+            checkbox.style.width = "15px";
+            checkbox.style.height = "15px";
+            checkbox.onclick = updateListener;
+
+
+            subtasksDiv.appendChild(checkbox);
+            subtasksDiv.appendChild(textNode);
+            subtasksDiv.appendChild(br);
+        }
+    }
+
+    updateSubtasksCompleted(event) {
+        let index = event.target.id;
+        this.subtasksCompleted[index] = event.target.checked;
+        this.scene.farm.saveTasks();
+        console.log(this.subtasksCompleted);
+        
     }
 }
 
@@ -1950,6 +1998,7 @@ class Plot extends Phaser.GameObjects.Container {
                     else {
                         this.select();
                         this.scene.pomodoro.loadTask();
+                        this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].updateTaskScreen();
                         Utility.setPlotReady(true);
                     }
                 }

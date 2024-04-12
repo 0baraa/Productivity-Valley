@@ -87,7 +87,7 @@
                         <tr class="subtask-row" style="display: none;">
                             <td>
                                 <label for="subtask0">- </label>
-                                <input type="text" id="subtask0" class="subtask editable" name="subtask" maxlength="64" ></input>
+                                <input type="text" id="subtask0" class="subtask editable" name="subtask" maxlength="32" ></input>
                             </td>
                         </tr>
                         <tr id="save-preset-row" class = "uneditable">
@@ -493,6 +493,14 @@
                 </div>
             </div>
         </dialog>
+    </div>
+
+    <div class="wrapper-container" id="wrapperContainer"
+        style="position: absolute; top: 55px; right: 4%; width: 250px; align-items: center; justify-content: center; display: none; border: solid; border-color: black; background-color: yellow;">
+        <div class="task-name" id="taskNameDiv" style="font-size: 28px;"></div>
+        <div id="subtasksDiv" class="subtasks"
+            style="position: absolute; top: 30px; color: black; font-size: 24px; border: solid; border-color: black; background-color: yellowgreen; width: 250px;">
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
