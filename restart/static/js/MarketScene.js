@@ -304,6 +304,7 @@ export default class MarketScene extends Phaser.Scene {
         //Swtich to farm scene when door is clicked
         this.farmSign.on('pointerdown', () => {
             this.scene.stop();
+            this.scene.get('InsideFarmhouseScene').toggleHideSubtasks();
             // Show edit button
             editButton.style.display = 'inline';
             //Re-enable input for farm scene

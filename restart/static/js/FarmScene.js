@@ -190,6 +190,7 @@ export default class FarmScene extends Phaser.Scene {
             // Disable input for FarmScene
             if(!Utility.isEditMode()) {
                 this.input.enabled = false;
+                this.scene.get('InsideFarmhouseScene').toggleHideSubtasks();
                 this.scene.launch('MarketScene');
             }
         });

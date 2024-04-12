@@ -112,11 +112,19 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
 
     toggleHideSubtasks() {
         let subtasks = document.getElementById("wrapperContainer");
-        if(subtasks.style.display == "none") {
-            subtasks.style.display = "block";
-        }
-        else {
-            subtasks.style.display = "none";
+        let subtasksDiv = document.getElementById('subtasksDiv');
+
+        // Try to find an input inside subtasksDiv
+        let childInput = subtasksDiv.querySelector('input');
+
+        // Check if a child input was found
+        if (childInput !== null) {
+            if(subtasks.style.display == "none") {
+                subtasks.style.display = "block";
+            }
+            else {
+                subtasks.style.display = "none";
+            }
         }
     }
 
