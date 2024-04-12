@@ -325,19 +325,11 @@ class Shop extends Phaser.GameObjects.Sprite {
     }
 
     setSeeds() {
-        let data = Utility.getUserData();
+        let cropsOwned = this.farm.getOwnedCrops();
         this.displayedItems = [];
         //create buycrop methods using class driven items
         for (let i = 0; i < cropsOwned.length; i++) {
-            if(parseInt(cropsOwned[i][1]) >= 0) {
-                this.displayedItems.push(new Item(cropsOwned[i][0]));
-
-                //set price to be lower
-            }
-            else {
-                this.displayedItems.push(new Item(cropsOwned[i][0], 3));
-                //set price to be higher
-            }
+            this.displayedItems.push(new Item(cropsOwned[i][0]));
         }
 
     }
@@ -345,18 +337,30 @@ class Shop extends Phaser.GameObjects.Sprite {
     updateAffordability() {
         const self = this;
         let coins = this.farm.getCoins();
+        let cropsOwned = this.farm.getOwnedCrops();
         let buyListener = function thingy() {}
         for (let i = 0; i < this.displayedItems.length; i++) {
-            
-                buyListener = function thingy(event) {
-                self.buyCropEvent(event,self.displayedItems[i].price)
-                }
+            let count = cropsOwned[this.displayedItems[i].name];
+            let price = this.displayedItems[i].price;
+            buyListener = function thingy(event) {
+                self.buyCropEvent(event,self.displayedItems[i].price);
+            }
+            if (count < 0 && price <= 50) {
+                price *= 3;
+                this.displayedItems[i].button.getElementsByTagName("span")[0].innerText = price;
+                this.displayedItems[i].price = price;
+            }
+            else if (count >= 0 && price > 50) {
+                price = price / 3;
+                this.displayedItems[i].button.getElementsByTagName("span")[0].innerText = price;
+                this.displayedItems[i].price = price;
+            }
             if (this.displayedItems[i].price <= coins) {
                 this.displayedItems[i].button.onclick = buyListener;
                 this.displayedItems[i].button.style.cursor = "pointer";
                 this.displayedItems[i].button.style.backgroundColor = "#d39f20";
-                }
-                else {
+            }
+            else {
                 this.displayedItems[i].button.onclick = null;
                 this.displayedItems[i].button.style.cursor = "default";
                 this.displayedItems[i].button.style.backgroundColor = "grey";
@@ -387,19 +391,15 @@ class Shop extends Phaser.GameObjects.Sprite {
 
 class Item {
     // represents a seedbag from the html
-    constructor(name, multiplier) {
+    constructor(name) {
         const self = this;
         console.log(name);
         this.name = name;
-        this.multiplier = multiplier || 1;
         this.button = document.getElementById(this.name+"-button");
         this.buttonPrice = this.button.getElementsByTagName("span")[0];
         this.price = 0;
         console.log(this.price , this.buttonPrice);
         if (this.button) {
-            if (this.multiplier != 1 && this.buttonPrice.innerText <= 50) {
-                this.buttonPrice.innerText = this.buttonPrice.innerText * this.multiplier;
-            }
             this.price = this.buttonPrice.innerText;
             console.log(this.price)
         }

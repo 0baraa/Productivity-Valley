@@ -1536,6 +1536,9 @@ class PlayerFarm {
     loadOwnedCrops(cropsOwned) {
         this.cropsOwned = cropsOwned;
     }
+    getOwnedCrops() {
+        return this.cropsOwned;
+    }
 
     createPlots(data) {
         let x, zoom;
