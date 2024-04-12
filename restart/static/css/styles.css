@@ -279,7 +279,10 @@ select {
     filter: invert(1);
 }
 
-
+.menu.house-upgrade-menu {
+    width: 65vw;
+    height: 40vh;
+}
 
 
 

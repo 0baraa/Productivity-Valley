@@ -87,69 +87,75 @@ export default class MarketScene extends Phaser.Scene {
 
 
         this.furnitureShop.on('pointerdown', () => {
-            let furnitureContainer = document.getElementById('furniture-shop-container');
+            if(this.farm.farmhouse.level !== 1) {
+                let furnitureContainer = document.getElementById('furniture-shop-container');
 
 
-            let userFurniture = []
-            for(let furniture of this.farm.furniture) {
-                userFurniture.push(furniture.type);
-            }
+                let userFurniture = []
+                for(let furniture of this.farm.furniture) {
+                    userFurniture.push(furniture.type);
+                }
 
-            // lockedFurniture contains furniture which the user does not currently own
-            let lockedFurniture = this.allFurniture.filter(furniture => !userFurniture.includes(furniture.type));
+                // lockedFurniture contains furniture which the user does not currently own
+                let lockedFurniture = this.allFurniture.filter(furniture => !userFurniture.includes(furniture.type));
 
-            for(let furniture of lockedFurniture) {
-                let furnitureDiv = document.createElement('div');
-                furnitureDiv.style.width = '12vw';
-                furnitureDiv.style.height = '12vw';
-                furnitureDiv.style.display = 'flex';
-                furnitureDiv.style.flexDirection = 'column';
-                furnitureDiv.style.justifyContent = 'center';
-                furnitureDiv.style.marginBottom = '1vh';
+                for(let furniture of lockedFurniture) {
+                    let furnitureDiv = document.createElement('div');
+                    furnitureDiv.style.width = '12vw';
+                    furnitureDiv.style.height = '12vw';
+                    furnitureDiv.style.display = 'flex';
+                    furnitureDiv.style.flexDirection = 'column';
+                    furnitureDiv.style.justifyContent = 'center';
+                    furnitureDiv.style.marginBottom = '1vh';
 
-                let furnitureImg = document.createElement('img');
-                furnitureImg.style.width = '100%';
-                furnitureImg.style.height = 'calc(100% - 4vw)';
-                furnitureImg.style.objectFit = 'contain';
-                furnitureImg.src = '/static/assets/house/furniture/' + furniture.type + '.png';
+                    let furnitureImg = document.createElement('img');
+                    furnitureImg.style.width = '100%';
+                    furnitureImg.style.height = 'calc(100% - 4vw)';
+                    furnitureImg.style.objectFit = 'contain';
+                    furnitureImg.src = '/static/assets/house/furniture/' + furniture.type + '.png';
 
-                let buttonDiv = document.createElement('div');
-                buttonDiv.style.display = 'flex';
-                buttonDiv.style.justifyContent = 'center';
+                    let buttonDiv = document.createElement('div');
+                    buttonDiv.style.display = 'flex';
+                    buttonDiv.style.justifyContent = 'center';
 
-                let furnitureButton = document.createElement('button');
-                furnitureButton.classList.add('price-button');
-                furnitureButton.id = furniture.type + '-shop-button';
-                furnitureButton.textContent = furniture.price;
+                    let furnitureButton = document.createElement('button');
+                    furnitureButton.classList.add('price-button');
+                    furnitureButton.id = furniture.type + '-shop-button';
+                    furnitureButton.textContent = furniture.price;
 
-                buttonDiv.appendChild(furnitureButton);
-                furnitureDiv.appendChild(furnitureImg);
-                furnitureDiv.appendChild(buttonDiv);
-                furnitureContainer.appendChild(furnitureDiv);
-            }
+                    buttonDiv.appendChild(furnitureButton);
+                    furnitureDiv.appendChild(furnitureImg);
+                    furnitureDiv.appendChild(buttonDiv);
+                    furnitureContainer.appendChild(furnitureDiv);
+                }
 
-            for(let furniture of lockedFurniture) {
-                let furnitureButton = document.getElementById(furniture.type + '-shop-button');
-                if(furnitureButton) [
-                    furnitureButton.onclick = () => {
-                        // if this.farm.coins >= furniture.price (using true for testing)
-                        if(this.farm.getCoins() >= furniture.price) {
-                            this.farm.updateCoins(-furniture.price);
-                            let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
-                            let farmScene = this.scene.get('FarmScene');
-                            farmScene.farm.addFurnitureToInventory(insideFarmhouseScene, furniture.type);
-                            let furnitureShopContainer = document.getElementById('furniture-shop-container');
-                            while (furnitureShopContainer.firstChild) {
-                                furnitureShopContainer.removeChild(furnitureShopContainer.firstChild);
+                for(let furniture of lockedFurniture) {
+                    let furnitureButton = document.getElementById(furniture.type + '-shop-button');
+                    if(furnitureButton) [
+                        furnitureButton.onclick = () => {
+                            // if this.farm.coins >= furniture.price (using true for testing)
+                            if(this.farm.getCoins() >= furniture.price) {
+                                this.farm.updateCoins(-furniture.price);
+                                let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
+                                let farmScene = this.scene.get('FarmScene');
+                                farmScene.farm.addFurnitureToInventory(insideFarmhouseScene, furniture.type);
+                                let furnitureShopContainer = document.getElementById('furniture-shop-container');
+                                while (furnitureShopContainer.firstChild) {
+                                    furnitureShopContainer.removeChild(furnitureShopContainer.firstChild);
+                                }
+
+                                Utility.toggleMenu(this, 'furnitureShopMenu');
                             }
-
-                            Utility.toggleMenu(this, 'furnitureShopMenu');
                         }
-                    }
-                ]
+                    ]
+                }
+
+                Utility.toggleMenu(this, 'furnitureShopMenu');
             }
 
-            Utility.toggleMenu(this, 'furnitureShopMenu');
+            else {
+                this.scene.get('FarmScene').openAlertWindow("You haven't upgraded your farmhouse!", "Upgrade your farmhouse to unlock this shop.");
+            }
 
         });
 
