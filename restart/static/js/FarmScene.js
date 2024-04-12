@@ -768,8 +768,12 @@ export default class FarmScene extends Phaser.Scene {
                 this.clouds[j].moveX();
             }
             
-            if (Utility.getWorkingState()){
-                this.sunFlares.angle ++;
+            // if (Utility.getWorkingState()){
+            //     this.sunFlares.angle ++;
+            // }
+
+            if (this.pomodoro.pauseFlag == false) {
+                this.sunFlares.angle++
             }
         }
         this.skip++;
@@ -1061,6 +1065,7 @@ class Selector extends Phaser.GameObjects.Sprite {
     constructor (config) {
         super (config.scene, config.x, config.y, config.sprite);
         this.plotSelected = null;
+
         config.scene.add.existing(this);
     }
 }
@@ -1123,7 +1128,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
         this.updateTimeString();
 
-        this.timeString.setVisible(false);
+        this.timeString.setVisible(true);
 
         this.fillCircle = new SectorCircle(scene, this.x, this.y, radius, -90, -90, this.color);
 
@@ -1140,6 +1145,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
         this.scene.events.on('showTime', this.showTime, this);
         this.scene.events.on('hideTime', this.hideTime, this);
+
     }
 
     skipTimer() {
@@ -1349,7 +1355,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         // create play button image
         this.playButton = this.scene.add.image(this.x + 160, this.y*2 - 10, 'play-button').setScale(.23);
         this.playButton.setDepth(1);
-        this.playButton.setVisible(false);
+        this.playButton.setVisible(true);
         this.playButton.setInteractive();
         // Utility.addTintOnHover(this.playButton);
 
@@ -1369,7 +1375,10 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
         // Event listeners to the images
         this.playButton.on('pointerdown', () => {
-            console.log('play button clicked');
+            this.playButton.setVisible(false);
+            this.pauseButton.setVisible(true);
+            this.skipButton.setVisible(true);
+
             console.log(this.workFlag);
             if (this.timer1 && Utility.plotReady && !Utility.isEditMode()){
                 if (this.timer1.remainingTime == 0){
@@ -1389,6 +1398,10 @@ class Pomodoro extends Phaser.GameObjects.Container {
         });
 
         this.pauseButton.on('pointerdown', () => {
+            this.playButton.setVisible(true);
+            this.pauseButton.setVisible(false);
+            this.skipButton.setVisible(false);
+
             console.log('pause button clicked');
             this.scene.events.emit('timerPaused');
             if (this.workFlag) {
@@ -1399,6 +1412,10 @@ class Pomodoro extends Phaser.GameObjects.Container {
         });
 
         this.skipButton.on('pointerdown', () => {
+            this.playButton.setVisible(true);
+            this.pauseButton.setVisible(false);
+            this.skipButton.setVisible(false);
+
             console.log('skip button clicked');
             this.scene.events.emit('timerSkipped');
             if (this.workFlag) {
@@ -1410,32 +1427,32 @@ class Pomodoro extends Phaser.GameObjects.Container {
         });
     }
 
-    autoStart() {
-        if (this.timer1){
-            this.timer1.destroy();
-        }
+    // autoStart() {
+    //     if (this.timer1){
+    //         this.timer1.destroy();
+    //     }
 
-        if (this.workFlag) {
-            if (!this.autoStartPomodoro) {
-                this.playButton.setVisible(true); 
-                this.pauseButton.setVisible(false);
-                this.skipButton.setVisible(false);
-                Utility.setWorkingState(false);
-                return;
-            } else {
-                this.skipTimer(); 
-            }
-        } else {
-            if (!this.autoStartBreak) { 
-                this.playButton.setVisible(true); 
-                this.pauseButton.setVisible(false);
-                this.skipButton.setVisible(false);
-                return; 
-            } else {
-                this.skipTimer();
-            }
-        }
-    }
+    //     if (this.workFlag) {
+    //         if (!this.autoStartPomodoro) {
+    //             this.playButton.setVisible(true); 
+    //             this.pauseButton.setVisible(false);
+    //             this.skipButton.setVisible(false);
+    //             Utility.setWorkingState(false);
+    //             return;
+    //         } else {
+    //             this.skipTimer(); 
+    //         }
+    //     } else {
+    //         if (!this.autoStartBreak) { 
+    //             this.playButton.setVisible(true); 
+    //             this.pauseButton.setVisible(false);
+    //             this.skipButton.setVisible(false);
+    //             return; 
+    //         } else {
+    //             this.skipTimer();
+    //         }
+    //     }
+    // }
 
     loadTimer(elapsedTime) {
         if (this.timer1) {
@@ -1469,6 +1486,10 @@ class Pomodoro extends Phaser.GameObjects.Container {
     }
 
     skipTimer() {
+        this.playButton.setVisible(true);
+        this.pauseButton.setVisible(false);
+        this.skipButton.setVisible(false);
+
         if (this.timer1){
             this.timer1.destroy();
         }
@@ -1484,9 +1505,9 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, 0, this, this.pauseFlag, 0xffa500);
                 this.scene.events.emit('pomodoroStarted');
             } else {
-                this.playButton.destroy();
-                this.pauseButton.destroy();
-                this.skipButton.destroy();
+                this.playButton.setVisible(destroy);
+                this.pauseButton.setVisible(destroy);
+                this.skipButton.setVisible(destroy);
                 Utility.setWorkingState(false);
                 this.scene.events.emit('taskCompleted');
             }
@@ -1502,44 +1523,44 @@ class Pomodoro extends Phaser.GameObjects.Container {
         }
     }
 
-    createHitArea() {
-        // Create an invisible sprite to handle pointer events
-        this.hitArea = this.scene.add.circle(this.x, this.y, this.radius - 35);
-        this.hitArea.setDepth(1);
-        this.hitArea.setAlpha(1); // Make it invisible
+    // createHitArea() {
+    //     // Create an invisible sprite to handle pointer events
+    //     this.hitArea = this.scene.add.circle(this.x, this.y, this.radius - 35);
+    //     this.hitArea.setDepth(1);
+    //     this.hitArea.setAlpha(1); // Make it invisible
 
-        // Add event listeners
-        this.hitArea.setInteractive();
+    //     // Add event listeners
+    //     this.hitArea.setInteractive();
 
-        this.hitArea.on('pointerover', this.onPointerOver, this);
-        this.hitArea.on('pointerout', this.onPointerOut, this);
+    //     this.hitArea.on('pointerover', this.onPointerOver, this);
+    //     this.hitArea.on('pointerout', this.onPointerOut, this);
 
-        this.add(this.hitArea);
-    }
+    //     this.add(this.hitArea);
+    // }
 
-    onPointerOver() {
-        this.scene.events.emit('showTime');
+    // onPointerOver() {
+        // this.scene.events.emit('showTime');
         
-        this.playButton.setVisible(true);
-        if (this.timer1){
-            if (this.pauseFlag || this.timer1.remainingTime == 0 || this.timer1.paused) {
-                this.playButton.setVisible(true);
-                this.pauseButton.setVisible(false);
-                this.skipButton.setVisible(false);
-            } else {
-                this.playButton.setVisible(false);
-                this.pauseButton.setVisible(true);
-                this.skipButton.setVisible(true);
-            }
-        }
-    }
+        // this.playButton.setVisible(true);
+        // if (this.timer1){
+        //     if (this.pauseFlag || this.timer1.remainingTime == 0 || this.timer1.paused) {
+        //         this.playButton.setVisible(true);
+        //         this.pauseButton.setVisible(false);
+        //         this.skipButton.setVisible(false);
+        //     } else {
+        //         this.playButton.setVisible(false);
+        //         this.pauseButton.setVisible(true);
+        //         this.skipButton.setVisible(true);
+        //     }
+        // }
+    // }
 
-    onPointerOut() {
-        this.scene.events.emit('hideTime');
-        this.playButton.setVisible(false);
-        this.pauseButton.setVisible(false);
-        this.skipButton.setVisible(false);
-    }
+    // onPointerOut() {
+        // this.scene.events.emit('hideTime');
+        // this.playButton.setVisible(false);
+        // this.pauseButton.setVisible(false);
+        // this.skipButton.setVisible(false);
+    // }
 }
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
