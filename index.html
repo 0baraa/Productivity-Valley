@@ -23,7 +23,7 @@
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
                 <form id="task-form" style="display: flex; justify-content: center;">
                     <table id="task-menu-table">
-                        <tr class = "uneditable">
+                        <tr class="uneditable">
                             <td>
                                 <label for="preset">Preset:</label>
                                 <select id="preset" name="preset">
@@ -34,16 +34,18 @@
                         <tr>
                             <td>
                                 <label for="taskName">Task Name:</label>
-                                <input type="text" id="taskName" class="editable" name="taskName" maxlength="25" value="Task" required><br>
+                                <input type="text" id="taskName" class="editable" name="taskName" maxlength="25"
+                                    value="Task" required><br>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="repetitions">Sessions:</label>
-                                <input type="number" id="repetitions" class="editable" name="repetitions" style="width: 70px" min="1" max="20" step="1" value="1" required>
+                                <input type="number" id="repetitions" class="editable" name="repetitions"
+                                    style="width: 70px" min="1" max="20" step="1" value="1" required>
                             </td>
                         </tr>
-                        <tr class = "uneditable">
+                        <tr class="uneditable">
                             <td>
                                 <label for="cropChoice">Crop:</label>
                                 <select id="cropChoice" name="cropChoice">
@@ -64,10 +66,11 @@
                         <tr class="subtask-row" style="display: none;">
                             <td>
                                 <label for="subtask0">- </label>
-                                <input type="text" id="subtask0" class="subtask editable" name="subtask" maxlength="64" ></input>
+                                <input type="text" id="subtask0" class="subtask editable" name="subtask"
+                                    maxlength="64"></input>
                             </td>
                         </tr>
-                        <tr id="save-preset-row" class = "uneditable">
+                        <tr id="save-preset-row" class="uneditable">
                             <td>
                                 <input type="checkbox" id="save-preset" name="savePreset">
                                 <label for="save-preset">Save Preset</label>
@@ -78,8 +81,9 @@
                         <tr>
                             <td>
                                 <div style="display: flex; justify-content: center;">
-                                    <button type="button" id = "harvest-task" style="display: none; background-color: red;">Harvest</button>
-                                    <button type="submit" id = "create-task">Create</button>
+                                    <button type="button" id="harvest-task"
+                                        style="display: none; background-color: red;">Harvest</button>
+                                    <button type="submit" id="create-task">Create</button>
                                 </div>
                             </td>
                         </tr>
@@ -103,14 +107,16 @@
                     <tr class="menu-row" id="sunflower">
                         <tc>
                             <td>
-                                <img class="seed-bags" id="sunflower-bag" src="/assets/seed-bags/sunflower-seeds-4x.png">
+                                <img class="seed-bags" id="sunflower-bag"
+                                    src="/assets/seed-bags/sunflower-seeds-4x.png">
                             </td>
                         </tc>
                         <tc>
                             <td>
-                                <button id="sunflower-button" class="sunflower"><span class="sunflower">50</span><span class="coin sunflower"><img class="sunflower"
-                                        src="../assets/coin-medium.png" alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
-                                
+                                <button id="sunflower-button" class="sunflower"><span class="sunflower">50</span><span
+                                        class="coin sunflower"><img class="sunflower" src="../assets/coin-medium.png"
+                                            alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
+
                             </td>
                         </tc>
                     </tr>
@@ -122,9 +128,10 @@
                         </tc>
                         <tc>
                             <td>
-                                <button id="carrot-button" class="carrot"><span class="carrot">50</span><span class="coin carrot"><img class="carrot"
-                                        src="../assets/coin-medium.png" alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
-                                
+                                <button id="carrot-button" class="carrot"><span class="carrot">50</span><span
+                                        class="coin carrot"><img class="carrot" src="../assets/coin-medium.png"
+                                            alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
+
                             </td>
                         </tc>
                     </tr>
@@ -136,9 +143,10 @@
                         </tc>
                         <tc>
                             <td>
-                                <button id="pumpkin-button" class="pumpkin"><span class="pumpkin">50</span><span class="coin pumpkin"><img class="pumpkin"
-                                        src="../assets/coin-medium.png" alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
-                                
+                                <button id="pumpkin-button" class="pumpkin"><span class="pumpkin">50</span><span
+                                        class="coin pumpkin"><img class="pumpkin" src="../assets/coin-medium.png"
+                                            alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
+
                             </td>
                         </tc>
                     </tr>
@@ -150,13 +158,14 @@
                         </tc>
                         <tc>
                             <td>
-                                <button id="tulip-button" class="tulip"><span class="tulip">50</span><span class="coin tulip"><img class="tulip"
-                                        src="../assets/coin-medium.png" alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
-                                
+                                <button id="tulip-button" class="tulip"><span class="tulip">50</span><span
+                                        class="coin tulip"><img class="tulip" src="../assets/coin-medium.png"
+                                            alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
+
                             </td>
                         </tc>
                     </tr>
-                    <tr class="menu-row" id="tomato" style = "display:none">
+                    <tr class="menu-row" id="tomato" style="display:none">
                         <tc>
                             <td>
                                 <img class="seed-bags" id="tomato-bag" src="/assets/seed-bags/pumpkin-seeds-4x.png">
@@ -164,9 +173,10 @@
                         </tc>
                         <tc>
                             <td>
-                                <button id="tomato-button" class="tomato"><span class="tomato">50</span><span class="coin tomato"><img class="tomato"
-                                        src="../assets/coin-medium.png" alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
-                                
+                                <button id="tomato-button" class="tomato"><span class="tomato">50</span><span
+                                        class="coin tomato"><img class="tomato" src="../assets/coin-medium.png"
+                                            alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
+
                             </td>
                         </tc>
                     </tr>
@@ -359,7 +369,7 @@
 
     <!--Coins-->
     <div class="coins-container">
-        <p id="current-coins-value" style="font-size: 30px;">1000</p>
+        <p id="current-coins-value" style="font-size: 30px;"></p>
         <img src="assets/coin-large.png" alt="coins">
     </div>
 
@@ -447,13 +457,14 @@
     <!--Confirmation Popup Screen-->
     <div class="menu-container confirmation" style="display: none;">
         <dialog class="menu confirmation" style="display: flex; flex-direction: column; height: 35vh;">
-            <div id="confirmation-container" style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
+            <div id="confirmation-container"
+                style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
                 <p id="confirmation-message" style="float:none; text-align: center"></p>
                 <br>
                 <p id="confirmation-note" style="font-size: 2vw; float:none; text-align: center"></p>
                 <br>
                 <div id="confirmation-buttons-container" style="clear:both">
-                    <button type="button" id = "accept-confirmation">Yes</button>
+                    <button type="button" id="accept-confirmation">Yes</button>
                     <button type="button" id="deny-confirmation">No</button>
                 </div>
             </div>
@@ -462,15 +473,24 @@
 
     <div class="menu-container alertWindow" style="display: none;">
         <dialog class="menu alertWindow" style="display: flex; flex-direction: column; height: 35vh;">
-            <div id="alertWindow-container" style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
+            <div id="alertWindow-container"
+                style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
                 <p id="alertWindow-message" style="float:none; text-align: center;"></p>
                 <p id="alertWindow-note" style="float:none; text-align: center;"></p>
-                <div style = "flex-basis: 100%; height: 0;"></div>
+                <div style="flex-basis: 100%; height: 0;"></div>
                 <div id="alertWindow-buttons-container" style="clear:both">
                     <button type="button" id="okButton">OK</button>
                 </div>
             </div>
         </dialog>
+    </div>
+
+    <div class="wrapper-container" id="wrapperContainer"
+        style="position: absolute; top: 60px; right: 8%; width: 250px; align-items: center; justify-content: center; display: none; border: solid; border-color: black; background-color: yellow;">
+        <div class="task-name" id="taskNameDiv" style="font-size: 28px;"></div>
+        <div id="subtasksDiv" class="subtasks"
+            style="position: absolute; top: 30px; color: black; font-size: 24px; border: solid; border-color: black; background-color: yellowgreen; width: 250px;">
+        </div>
     </div>
 
 </body>

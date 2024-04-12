@@ -49,6 +49,8 @@ export default class FarmScene extends Phaser.Scene {
         this.add.image(320, 550, 'farmBackground').setDepth(-2);
 
         this.mountainsLarge = this.add.image(570, 460, 'mountains-large').setScale(2).setAlpha(0).setDepth(-1);
+        // this.subtasksText = this.add.text(570, 460, 'hello').setDepth(1);
+
         this.add.image(320, 520, 'mountains').setDepth(-1);
 
         this.sun = this.add.sprite(320, 455, 'sun').setDepth(-1);
@@ -684,14 +686,14 @@ export default class FarmScene extends Phaser.Scene {
         // Check Subtask checkbox is checked 
         let addSubtasks = document.getElementById('subtasks-query');
 
-        addSubtasks.addEventListener('change', function () {
-            if (addSubtasks.checked) { //Display subtask
-                this.mountainsLarge.setAlpha(1);
-                displaySubtasks()
-            } else {
+        // addSubtasks.addEventListener('change', function () {
+        //     if (addSubtasks.checked) { //Display subtask
+        //         this.mountainsLarge.setAlpha(1);
+        //         displaySubtasks()
+        //     } else {
                 
-            }
-        })
+        //     }
+        // })
     }
 
     updateSelector() {
@@ -904,7 +906,33 @@ export default class FarmScene extends Phaser.Scene {
                     //Utility.sendCreatedTaskData(taskConfig);
                 }
                 console.log(this.farm.tasks, taskConfig);
-                console.log(document.getElementById("taskName").value)
+                var taskName = document.getElementById("taskName").value;
+
+                this.mountainsLarge.setAlpha(1);
+
+                //  clear the div
+                var wrapperDiv = document.getElementById("wrapperContainer");
+                var taskNameDiv = document.getElementById("taskNameDiv");
+                var subtasksDiv = document.getElementById("subtasksDiv");
+
+                wrapperDiv.style.display = "flex";
+                subtasksDiv.innerHTML = "";
+                taskNameDiv.innerHTML = taskName;
+
+                subtasksData.forEach(function(element){
+                    var textNode = document.createTextNode(element);
+                    var br = document.createElement('br');
+
+                    // create checkbox
+                    var checkbox = document.createElement("input");
+                    checkbox.setAttribute("type", "checkbox");
+                    checkbox.style.width = "15px";
+                    checkbox.style.height = "15px";
+
+                    subtasksDiv.appendChild(checkbox);
+                    subtasksDiv.appendChild(textNode);
+                    subtasksDiv.appendChild(br);
+                })
             }
             else if (event.type == "click") {
                 if (!this.farm.plots[this.selector.plotSelected].occupied) {
@@ -945,10 +973,6 @@ export default class FarmScene extends Phaser.Scene {
         harvestButton.addEventListener('click', close);
         //add exit listener
         taskExitButton.addEventListener('click', close);
-    }
-
-    displaySubtasks() {
-        
     }
     
     toggleSound() {
