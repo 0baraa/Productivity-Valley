@@ -884,10 +884,10 @@ export default class FarmScene extends Phaser.Scene {
                     Utility.setPlotReady(true);
                     taskConfig.plotId = this.selector.plotSelected, 
                     this.farm.addTask(taskConfig);
-                    taskConfig.crop = document.getElementById("crop").value;
+                    taskConfig.crop = document.getElementById("cropChoice").value;
                     taskConfig.growthStage = 0;
                     taskConfig.growthStep = 0;
-                    Utility.sendCreatedTaskData(taskConfig);
+                    //Utility.sendCreatedTaskData(taskConfig);
                 }
                 console.log(this.farm.tasks, taskConfig);
                 console.log(document.getElementById("taskName").value)
@@ -1917,9 +1917,8 @@ class Plot extends Phaser.GameObjects.Container {
     }
 
     setupCrops() {
-        this.crop = document.getElementById('crop').value;
+        this.crop = document.getElementById('cropChoice').value;
         this.plantCrops();
-        //this.playGrowth();
     }
 
     resetPlot() {
