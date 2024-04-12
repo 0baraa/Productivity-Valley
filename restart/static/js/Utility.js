@@ -171,7 +171,7 @@ export default class Utility {
         // Using mock data for now until backend is implemented
         this.data = {
             "userData": 
-                {"usernameId": "noobmaster69", "coins": 300, "farmhouseLevel": 1, "x": 70, "y": 570},
+                {"usernameId": "noobmaster69", "coins": 3000, "farmhouseLevel": 1, "x": 70, "y": 570},
             "cropsOwned": {
                 tomato: -1,
                 sunflower: -1,
