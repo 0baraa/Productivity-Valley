@@ -1,15 +1,10 @@
 // import axios from 'axios';
-// const axios = require('axios');
-axios.defaults.withCredentials = true;
+const axios = require('axios');
 
 
-const apiUrl = 'http://localhost:8000/users/';
-const apiUrlalt = 'http://localhost:8000/user-decorations/';
-const apiUrlalt1 = 'http://localhost:8000/user-crops/';
-
-
-class UserData {     //works
-    fetchData(url) {
+class UserData {     
+    fetchData() {         //works
+        const url = `http://localhost:8000/users/`;
         return fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -18,7 +13,7 @@ class UserData {     //works
                 return response.json();
             })
             .then(data => {
-                //console.log('Data fetched successfully:', data);
+                console.log('Data fetched successfully:', data);
                 return data;
             })
             .catch(error => {
@@ -26,7 +21,8 @@ class UserData {     //works
                 throw error;
             });
         }
-    createUser(url, data) {      //works
+    createUser(data) {      //works
+        const url = `http://localhost:8000/users/`;
         axios.post(url, data)
             .then(response => {
                 console.log('User created successfully:', response.data);
@@ -35,7 +31,8 @@ class UserData {     //works
                 console.error('Error creating user:', error);
             });
     }
-    deleteUser(url, username) {     //works
+    deleteUser(username) {    //works
+        const url = `http://localhost:8000/users/`;     
         const requestOptions = {
             method: 'DELETE',
             headers: {
@@ -67,7 +64,8 @@ class UserData {     //works
                 throw error;
             });
     }
-    addUserDecoration(url, data) {   //works
+    addUserDecoration(data) {   //works
+        const url = 'http://localhost:8000/user-decorations/';
         axios.post(url, data)
             .then(response => {
                 console.log('Decoration added successfully:', response.data);
@@ -89,7 +87,8 @@ class UserData {     //works
                 throw error;
             });
     }
-    addUserCrop(url, data) {     //works
+    addUserCrop(data) {     //works
+        const url = 'http://localhost:8000/user-crops/';
         axios.post(url, data)
             .then(response => {
                 console.log('Crop added successfully:', response.data);
@@ -98,14 +97,34 @@ class UserData {     //works
                 console.error('Error adding decoration for user:', error);
             });
     }
-    changeUserMoney(username, amount) {
+    deleteUserCrop(username) {    //works
+        const url = `http://localhost:8000/user-crops/`;     
+        const requestOptions = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: username })
+        };
+        return fetch(url, requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('User crop deleted successfully');
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+            });
+    }
+    updateUserMoney(username, money) {      //works
         const url = `http://localhost:8000/users/change-money/`;
     
         const requestData = {
             username: username,
-            money: amount
+            money: money
         };
-    
+        console.log(requestData)
         fetch(url, {
             method: 'POST',
             headers: {
@@ -118,6 +137,55 @@ class UserData {     //works
                 throw new Error('Network response was not ok');
             }
             console.log('Money updated successfully');
+        })
+        .catch(error => {
+            console.error('Error updating money:', error);
+        });
+    }
+    updateHouse(username, houseStatus) {      //works
+        const url = `http://localhost:8000/users/change-house/`;
+    
+        const requestData = {
+            username: username,
+            houseStatus:houseStatus
+        };
+        console.log(requestData)
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log('House status updated successfully');
+        })
+        .catch(error => {
+            console.error('Error updating money:', error);
+        });
+    }
+    updatePlots(username) {      //works
+        const url = `http://localhost:8000/users/change-plots/`;
+    
+        const requestData = {
+            username: username,
+        };
+        console.log(requestData)
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log('Plots updated successfully');
         })
         .catch(error => {
             console.error('Error updating money:', error);
@@ -149,45 +217,54 @@ class UserData {     //works
 
 }
 
-export default UserData;
+//export default UserData;
 
+// const today = new Date();
+// const year = today.getFullYear();
+// const month = today.getMonth() + 1;
+// const day = today.getDate();
+// const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+// console.log(formattedDate)
+// const newUserDate = {
+//     username: 'johndoe',
+//     date: formattedDate
+// };
+const newUser = {
+    username: 'johndoe',
+    email: 'johndoe@example.com',
+};
 const newUserDec = {
     username: 'johndoe',
-    decoration: 'Table',
-    coordinates: '55x55'
+    decoration: 'gnome',
+    x: 0,
+    y: 0,
+    placed: false
 };
 const newUserCrop = {
     username: 'johndoe',
-    crop: 'Corn',
-};
-const today = new Date();
-const year = today.getFullYear();
-const month = today.getMonth() + 1;
-const day = today.getDate();
-const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-console.log(formattedDate)
-const newUserDate = {
-    username: 'johndoe',
-    date: formattedDate
-};
-const newUser = {
-    firstName: 'John',
-    lastName: 'Doe',
-    username: 'johndoe',
-    email: 'johndoe@example.com',
-    timeSpent: 120 ,
+    tomato: 0,
+    sunflower: 0,
+    carrot: 0,
+    pumpkin: 0,
+    tulip: 0
 };
 const userData = new UserData();
-userData.addUserDate(newUserDate)
+//userData.addUserDecoration(newUserDec)
+//userData.fetchUserDecorations('johndoe')
+//userData.fetchData()
+userData.updateHouse('johndoe', 2)
+//userData.addUserDate(newUserDate)
 //userData.changeUserMoney('johndoe', 50)
-//userData.addUserCrop(apiUrlalt1, newUserCrop)
+//userData.incrementPlots('johndoe')
+//userData.addUserCrop(newUserCrop)
 //userData.fetchUserCrops(newUserCrop.username)
-//userData.createUser(apiUrl, newUser)
-// userData.deleteUser(apiUrl, 'johndoe')
+//userData.deleteUserCrop('johndoe')
+//userData.createUser(newUser)
+// userData.deleteUser('johndoe')
 //     .then(() => {
 //         console.log('User deleted successfully');
 //         // Fetch data after successful deletion
-//         userData.fetchData(apiUrl)
+//         userData.fetchData()
 //             .then(data => {
 //                 console.log('Data fetched successfully:', data);
 //             })

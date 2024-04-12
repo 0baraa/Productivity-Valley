@@ -3,8 +3,6 @@
 export default class Utility {
     static editMode = false;
     static deleteMode = false;
-    static working = false;
-    static isPlotReady = false;
 
     static toggleEditMode() {
         this.editMode = !this.editMode;
@@ -83,6 +81,7 @@ export default class Utility {
                 dialogContainer = document.querySelector('.menu-container.plots-shop-menu');
                 dialog = document.querySelector('.menu.plots-shop-menu');
                 break;
+<<<<<<< HEAD
             case "settingsMenu":
                 dialogContainer = document.querySelector('.menu-container.settings-menu');
                 dialog = document.querySelector('.menu.settings-menu');
@@ -95,6 +94,8 @@ export default class Utility {
                 dialogContainer = document.querySelector('.menu-container.alertWindow');
                 dialog = document.querySelector('.menu.alertWindow');
                 break;
+=======
+>>>>>>> moreDB
         }
         
         if (dialog.open) {
@@ -112,6 +113,7 @@ export default class Utility {
             scene.sys.game.input.enabled = false;
         }
     }
+<<<<<<< HEAD
     static throwConfirmationScreen (scene, action, prompt, promptNote) {
         let dialogContainer = document.querySelector('.menu-container.confirmation');
         let dialog = document.querySelector('.menu.confirmation');
@@ -147,6 +149,8 @@ export default class Utility {
     static chuckUserOut() {
         window.location.href = "../landing.html";
     }
+=======
+>>>>>>> moreDB
 
     static getUserData() {
         // Called in create method of FarmScene
@@ -193,14 +197,15 @@ export default class Utility {
         return this.data;
     }
 
-    static sendCreatedTaskData(plotID) {
+    static sendCreatedTaskData() {
         let form = document.getElementById("task-form");
         let taskName = form.taskName.value;
-        let sessions = form.repetitions.value;
+        let time = form.minutes.value;
+        let repetitions = form.repetitions.value;
         let crop = form.crop.value;
-        let subtaskCheck = form.subtasksQuery.checked;
-        let savePreset = form.savePreset.checked;
-        let task = {name: taskName, sessions: sessions, crop: crop, plotID: plotID};
+        let subtaskCheck = document.getElementById("subtasks-query").checked;
+        let savePreset = document.getElementById("save-preset").checked;
+        let task = {name: taskName, time: time, repetitions: repetitions, crop: crop};
         if (subtaskCheck) {
             //add subtasks to save;
             let subtasks = document.getElementsByClassName("subtask");
@@ -219,10 +224,6 @@ export default class Utility {
 
     }
 
-    static updateTaskProgress(plotID, step) {
-
-    }
-
     static getPlotData() {
         //get plot data specifically
     }
@@ -233,6 +234,7 @@ export default class Utility {
         //get owned crops data
     }
 
+<<<<<<< HEAD
     static getWorkingState() {
         return this.working;
     }
@@ -245,5 +247,22 @@ export default class Utility {
     }
     static setPlotReady(state) {
         this.isPlotReady = state;
+=======
+    static buySeeds(type, amount, price) {
+        //get data from database
+        let add = true;
+        for (let i = 0; i < this.data.cropsOwned.length; i++) {
+            if (type == this.data.cropsOwned[i].type) {
+                this.data.cropsOwned[i].count += amount;
+                add = false;
+            }
+        }
+        if (add) {
+            //update database.
+            this.data.cropsOwned.push({crop: type, count: amount});
+        }
+        this.data.coins -= price;
+        console.log(this.data.coins);
+>>>>>>> moreDB
     }
 }

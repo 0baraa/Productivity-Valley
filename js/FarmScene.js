@@ -21,7 +21,6 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('sun', '../assets/sun.png');
         this.load.image('sun-flares', '../assets/sun-flares.png')
         this.load.image('plot', '../assets/larger_plot.png');
-        this.load.image('plotSelect', '../assets/plot_select.png');
 
         this.load.image('snowman', '../assets/decorations/snowman.png');
         this.load.image('gnome', '../assets/decorations/gnome.png');
@@ -33,11 +32,20 @@ export default class FarmScene extends Phaser.Scene {
         this.load.image('cloud5', '../assets/clouds/cloud5.png');
         this.load.image('cloud6', '../assets/clouds/cloud6.png');
 
+<<<<<<< HEAD
         this.load.spritesheet("butterfly1AS", "../assets/animals/butterfly2-as.png", { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", { frameWidth: 20, frameHeight: 28 });
         this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", { frameWidth: 19, frameHeight: 41 });
         this.load.spritesheet("pumpkinGrowth", "../assets/crops/pumpkin-growth-AS.png", { frameWidth: 33, frameHeight: 39 });
         this.load.spritesheet("tulipGrowth", "../assets/crops/tulip-growth-AS.png", { frameWidth: 10, frameHeight: 22 });
+=======
+        this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", {frameWidth: 20, frameHeight: 30});
+        this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", {frameWidth: 19, frameHeight: 41});
+        this.load.spritesheet("butterfly1AS", "../assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16 })
+        this.load.spritesheet("butterfly2AS", "../assets/animals/butterfly2-as.png", {frameWidth: 16, frameHeight:16 })
+        this.load.spritesheet("carrotGrowth", "../assets/crops/carrot-growth-AS.png", { frameWidth: 20, frameHeight: 30 });
+        this.load.spritesheet("sunflowerGrowth", "../assets/crops/sunflower-growth-AS.png", { frameWidth: 19, frameHeight: 41 });
+>>>>>>> moreDB
 
         this.load.image('play-button', '../assets/clock/play-button.png');
         this.load.image('pause-button', '../assets/clock/pause-button.png');
@@ -80,9 +88,8 @@ export default class FarmScene extends Phaser.Scene {
             yoyo: true
         });
 
-        //needs to be replaced with a setinterval function with random delay. (also to be only activated when flowers are growing)
         this.time.addEvent({
-            delay: 10000,
+            delay: 5000,
             callback: () => generateButterfly(this),
             loop: true
         });
@@ -106,12 +113,13 @@ export default class FarmScene extends Phaser.Scene {
         //Create crop animations.
         this.anims.create({
             key: 'carrotAnim',
-            frames: this.anims.generateFrameNumbers("carrotGrowth", { start: 0, end: 10 }),
+            frames: this.anims.generateFrameNumbers("carrotGrowth", { start: 0, end: 10, }),
             frameRate: 1,
             repeat: 0
         });
         this.anims.create({
             key: 'sunflowerAnim',
+<<<<<<< HEAD
             frames: this.anims.generateFrameNumbers("sunflowerGrowth", { start: 0, end: 10 }),
             frameRate: 1,
             repeat: 0
@@ -125,6 +133,9 @@ export default class FarmScene extends Phaser.Scene {
         this.anims.create({
             key: "tulipAnim",
             frames: this.anims.generateFrameNumbers("tulipGrowth", { start: 0, end: 15 }),
+=======
+            frames: this.anims.generateFrameNumbers("sunflowerGrowth", { start: 0, end: 10, }),
+>>>>>>> moreDB
             frameRate: 1,
             repeat: 0
         });
@@ -184,6 +195,7 @@ export default class FarmScene extends Phaser.Scene {
             deleteAccountButton.addEventListener('click', deleteAccount);
         });
 
+<<<<<<< HEAD
         let settingsButton = document.getElementById("settings-icon-container");
         settingsButton.addEventListener('click', () => {
             Utility.toggleMenu(this, "settingsMenu");
@@ -216,6 +228,8 @@ export default class FarmScene extends Phaser.Scene {
         this.selector = new Selector({ scene: this, x: -300, y: -100, sprite: "plotSelect" });
         this.selector.setVisible(false);
 
+=======
+>>>>>>> moreDB
         let editButton = document.getElementById('edit-button');
         let tickButton = document.getElementById('tick-button');
         let plusButton = document.getElementById('plus-button');
@@ -668,6 +682,7 @@ export default class FarmScene extends Phaser.Scene {
         insideFarmhouseScene.load.on('complete', () => {
             this.farm = new PlayerFarm(this);
         });
+<<<<<<< HEAD
 
 
 
@@ -701,6 +716,8 @@ export default class FarmScene extends Phaser.Scene {
             this.selector.x = this.farm.plots[this.selector.plotSelected].x;
             this.selector.y = this.farm.plots[this.selector.plotSelected].y;
         }
+=======
+>>>>>>> moreDB
     }
 
     updateAnimations() {
@@ -1145,7 +1162,10 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
     }
 
     startTimer() {
+<<<<<<< HEAD
         this.scene.events.emit('timerStarted');
+=======
+>>>>>>> moreDB
         this.timerEvent = this.scene.time.addEvent({
             delay: 1000, // Update every second
             callback: this.updateTimer,
@@ -1226,7 +1246,6 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         // Check if timer is completed
         if (this.remainingTime <= 0) {
             this.scene.events.emit('timerCompleted');
-            Utility.setWorkingState(false);
             this.timeString.destroy();
             if (this.repeatDurationInSeconds > 0) {
                 // If repeat duration is specified, restart the timer
@@ -1247,7 +1266,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
 // Events for the timer
 class Pomodoro extends Phaser.GameObjects.Container {
-    constructor(scene, x, y, radius, noOfPomodoros = 2) {
+    constructor(scene, x, y, radius, workTime = 1, shortBreakTime = 0.5, longBreakTime = 2, noOfPomodoros = 2, autoStartBreak = false, autoStartPomodoro = true, longBreakInterval = 2) {
         super(scene, x, y);
         scene.add.existing(this);
 
@@ -1256,6 +1275,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.y = y;
         this.radius = radius;
 
+<<<<<<< HEAD
 
         this.workFlag = false; // true = work time, false = break time
         this.pauseFlag = false;
@@ -1265,10 +1285,29 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.updateTimeSettings();
         this.noOfPomodoros = noOfPomodoros;
 
+=======
+        this.workTime = workTime; // In Minutes
+        this.shortBreakTime = shortBreakTime; // In Minutes
+        this.longBreakTime = longBreakTime; // In Minutes
+        this.longBreakInterval = longBreakInterval;
+        this.autoStartBreak = autoStartBreak;
+        this.autoStartPomodoro = autoStartPomodoro;
+        this.noOfPomodoros = noOfPomodoros;
+
+        this.workFlag = true; // true = work time, false = break time
+        this.pauseFlag = false;
+
+        this.initBreakInterval = longBreakInterval;
+
+        this.workTime = this.workTime * 60;
+        this.shortBreakTime = this.shortBreakTime * 60;
+        this.longBreakTime = this.longBreakTime * 60;
+
+>>>>>>> moreDB
         this.createButtons();
         this.createHitArea();
 
-        //this.playButton.setVisible(true);
+        this.playButton.setVisible(true);
 
         this.scene.events.on('timerCompleted', this.autoStart, this);
 
@@ -1278,6 +1317,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.add(this.graphics);
     }
 
+<<<<<<< HEAD
     setupPomodoro() {
         this.createButtons();
     }
@@ -1291,6 +1331,8 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.autoStartPomodoro = document.getElementById("autoStartPomodoro").checked;
     }
 
+=======
+>>>>>>> moreDB
     drawBackCircle() {
         // Clear previous graphics
         this.graphics.clear();
@@ -1332,8 +1374,13 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.playButton.on('pointerdown', () => {
             console.log('play button clicked');
             console.log(this.workFlag);
+<<<<<<< HEAD
             if (this.timer1 && Utility.plotReady && !Utility.isEditMode()) {
                 if (this.timer1.remainingTime == 0) {
+=======
+            if (this.timer1){
+                if (this.timer1.remainingTime == 0){
+>>>>>>> moreDB
                     this.skipTimer();
                 } else {
                     if (this.workFlag) {
@@ -1344,7 +1391,11 @@ class Pomodoro extends Phaser.GameObjects.Container {
                     this.pauseFlag = false;
 
                 }
+<<<<<<< HEAD
             } else if (Utility.plotReady()) {
+=======
+            } else {
+>>>>>>> moreDB
                 this.skipTimer();
             }
         });
@@ -1352,20 +1403,27 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.pauseButton.on('pointerdown', () => {
             console.log('pause button clicked');
             this.scene.events.emit('timerPaused');
+<<<<<<< HEAD
             if (this.workFlag) {
                 this.scene.events.emit('pomodoroPaused');
                 Utility.setWorkingState(false);
             }
+=======
+>>>>>>> moreDB
             this.pauseFlag = true;
         });
 
         this.skipButton.on('pointerdown', () => {
             console.log('skip button clicked');
             this.scene.events.emit('timerSkipped');
+<<<<<<< HEAD
             if (this.workFlag) {
                 this.scene.events.emit('pomodoroSkipped');
                 Utility.setWorkingState(false);
             }
+=======
+            
+>>>>>>> moreDB
             console.log('work flag', this.workFlag)
             this.skipTimer();
         });
@@ -1445,19 +1503,27 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].pomodorosCompleted++;
         }
         this.workFlag = !this.workFlag;
-        if (this.workFlag) {
+
+        if (!this.workFlag) {
             if (this.noOfPomodoros != 0) {
                 Utility.setWorkingState(true);
                 this.noOfPomodoros--;
+<<<<<<< HEAD
                 console.log("pomodoro started");
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, 0, this, this.pauseFlag, 0xffa500);
                 this.scene.events.emit('pomodoroStarted');
+=======
+                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, this, this.pauseFlag, 0xffa500);
+>>>>>>> moreDB
             } else {
                 this.playButton.destroy();
                 this.pauseButton.destroy();
                 this.skipButton.destroy();
+<<<<<<< HEAD
                 Utility.setWorkingState(false);
                 this.scene.events.emit('taskCompleted');
+=======
+>>>>>>> moreDB
             }
         } else {
             Utility.setWorkingState(false);
@@ -1479,7 +1545,6 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
         // Add event listeners
         this.hitArea.setInteractive();
-
         this.hitArea.on('pointerover', this.onPointerOver, this);
         this.hitArea.on('pointerout', this.onPointerOut, this);
 
@@ -1488,7 +1553,11 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
     onPointerOver() {
         this.scene.events.emit('showTime');
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> moreDB
         this.playButton.setVisible(true);
         if (this.timer1) {
             if (this.pauseFlag || this.timer1.remainingTime == 0 || this.timer1.paused) {
@@ -1536,8 +1605,11 @@ class PlayerFarm {
         this.createDecorations(data);
         this.createFarmhouse(data.userData);
         this.createFurniture(insideFarmhouseScene, data);
+<<<<<<< HEAD
         this.showCoins(data.userData.coins);
 
+=======
+>>>>>>> moreDB
     }
     loadOwnedCrops(cropsOwned) {
         this.cropsOwned = cropsOwned;
@@ -1593,6 +1665,7 @@ class PlayerFarm {
             });
             this.plots.push(plot);
         }
+<<<<<<< HEAD
     }
 
     findSelectedTaskIndex() {
@@ -1608,6 +1681,9 @@ class PlayerFarm {
         for (let i = 0; i < data.tasks.length; i++) {
             this.tasks.push(new Task(data.tasks[i]));
         }
+=======
+        this.showCoins(scene, data.coins);
+>>>>>>> moreDB
     }
 
     addTask(taskConfig) {
@@ -1855,6 +1931,18 @@ class Plot extends Phaser.GameObjects.Container {
             this.occupied = false;
         } else {
             this.occupied = true;
+<<<<<<< HEAD
+=======
+        }
+
+        // Create the plot sprite and add it to the container
+        this.plotSprite = this.scene.add.sprite(0, 0, 'plot');
+        Utility.addTintOnHover(this.plotSprite);
+        this.add(this.plotSprite);
+
+        // if there's crops saved, load those crops
+        if (this.crop !== "nothing") {
+>>>>>>> moreDB
             this.plantCrops();
             console.log(this.growthStep);
             for (let i = 0; i < this.growthStep; i++) {
@@ -1922,6 +2010,7 @@ class Plot extends Phaser.GameObjects.Container {
                 this.placed = false;
                 return;
             }
+<<<<<<< HEAD
             if (!Utility.isEditMode() && !Utility.getWorkingState()) {
                 // if occupied prompt for harvest, if unoccupied, open start task menu.
                 if (this.occupied) {
@@ -1933,13 +2022,76 @@ class Plot extends Phaser.GameObjects.Container {
                         this.scene.pomodoro.loadTask();
                         Utility.setPlotReady(true);
                     }
+=======
+            if(!Utility.isEditMode()) {
+                // if occupied, attempt harvest, if unoccupied, open start task menu.
+                if (this.occupied) {
+                    this.harvest();
+                    this.occupied = false;
+>>>>>>> moreDB
                 }
                 else {
                     console.log("attempting to create task");
                     //show menu
+<<<<<<< HEAD
                     this.select();
                     this.scene.events.emit("creatingTask");
                     // listened to by the scene class
+=======
+                    Utility.toggleMenu(this.scene, "taskMenu");
+                    const self = this;
+                    let form = document.getElementById("task-form");
+                    let taskExitButton = document.getElementById('task-exit-button');
+                    let subtasksCheck = document.getElementById("subtasks-query");
+                const showHideSubtasks = function openHideSubtasks(event) {
+                    let subtasksRows = document.getElementsByClassName("subtask-row");
+
+                    for (let i = 0; i < subtasksRows.length; i++) {
+                        if(subtasksCheck.checked) {subtasksRows[i].style.display = "block";} 
+                        else {subtasksRows[i].style.display = "none";}
+                    }
+                }
+                const addSubtask = function (event) {
+                    let filled = true;
+                    let subtasks = document.getElementsByClassName("subtask");
+                    for (let i = 0; i < subtasks.length; i++) {
+                        if (subtasks[i].value == "") {
+                            filled = false;
+                        }
+                    }
+                    if (filled && subtasks.length < 10) {
+                        let table = document.getElementById("task-menu-table")
+                        let newSubtask = document.createElement('input')
+                        newSubtask.value = "";
+                        let row = table.insertRow(table.rows.length - 2);
+                        let cell = row.insertCell(0);
+                        row.class = "subtask-row";
+                        cell.innerHTML = '<label for="subtask"> - </label><input type ="text" class="subtask" name="subtask"></input>';
+                    }
+                }
+                const close = function submitHandler(event) {
+                        //starts crop growth, removes listeners, or just removes listeners
+                        form.removeEventListener('submit', close);
+                        taskExitButton.removeEventListener('click', close)
+                    subtasksCheck.removeEventListener('click', showHideSubtasks);
+                        Utility.toggleMenu(self.scene, "taskMenu");
+                        if (event.type == "submit") {
+                            event.preventDefault();
+                            self.setupCrops();
+                            Utility.sendCreatedTaskData();
+                    }
+                    }
+                    //add subtask listener
+                subtasksCheck.addEventListener('click', showHideSubtasks);
+                //add subtaskfilled listener
+                form.addEventListener('keydown', addSubtask);
+                //add submit listener
+                    form.addEventListener('submit', close);
+                    //add exit listener
+                    taskExitButton.addEventListener('click', close);
+
+                    
+>>>>>>> moreDB
                 }
             }
         });
@@ -1952,15 +2104,22 @@ class Plot extends Phaser.GameObjects.Container {
         }
     }
 
+<<<<<<< HEAD
     select() {
         this.scene.selector.setPosition(this.x, this.y);
         this.scene.selector.plotSelected = this.id;
         this.scene.selector.setVisible(true);
     }
 
+=======
+>>>>>>> moreDB
     setupCrops() {
         this.crop = document.getElementById('cropChoice').value;
         this.plantCrops();
+<<<<<<< HEAD
+=======
+        this.playGrowth();
+>>>>>>> moreDB
     }
 
     resetPlot() {
@@ -1975,10 +2134,8 @@ class Plot extends Phaser.GameObjects.Container {
     }
 
     plantCrops() {
-        this.occupied = true;
-        let xoff = -35;
-        let yoff = -40;
         this.gridSize = 5;
+<<<<<<< HEAD
         if (this.crop === "pumpkin") {
             this.gridSize = 3;
             xoff = -30;
@@ -1988,6 +2145,10 @@ class Plot extends Phaser.GameObjects.Container {
             xoff = -40;
             yoff = -42;
         }
+=======
+        this.occupied = true;
+
+>>>>>>> moreDB
         let cellWidth = this.plotSprite.width / this.gridSize;
         let cellHeight = this.plotSprite.height / this.gridSize;
 
@@ -1997,7 +2158,12 @@ class Plot extends Phaser.GameObjects.Container {
                 let x = col * cellWidth + cellWidth / 2;
                 let y = row * cellHeight + cellHeight / 2;
                 //If setOrigin is not 0,0 or 1,1 then when the plot container is moved the crop sprites will look wrong
+<<<<<<< HEAD
                 let crop = this.scene.add.sprite(x + xoff, y + yoff, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");
+=======
+                let crop = this.scene.add.sprite(x - 35, y - 40, this.crop + "Growth").setOrigin(1, 1).play(this.crop + "Anim");
+                // immediately stops animation so that it can be controlled.
+>>>>>>> moreDB
                 crop.stop();
                 for (let i = 0; i < this.growthStage; i++) {
                     crop.anims.nextFrame();
@@ -2013,10 +2179,14 @@ class Plot extends Phaser.GameObjects.Container {
             }
         }
         //Used for growth
+<<<<<<< HEAD
         this.maxFrame = this.cropSprites[0].anims.getTotalFrames() - 1;
         if (this.crop == "tulip") {
             this.maxFrame -= 5;
         }
+=======
+        this.maxFrame = this.cropSprites[0].anims.getTotalFrames();
+>>>>>>> moreDB
     }
 
     playGrowth() {
@@ -2097,6 +2267,7 @@ class Plot extends Phaser.GameObjects.Container {
         let frameNum = this.cropSprites[index].anims.getFrameName();
         console.log("1st", frameNum, frameNum >= this.maxFrame);
         //actually increment the frame of the crop
+<<<<<<< HEAD
         if (this.cropSprites.length != 0) { //here for safety's sake
             let frame_jump = 1;
             if (this.crop == "tulip") {
@@ -2116,6 +2287,20 @@ class Plot extends Phaser.GameObjects.Container {
 
     stepGrowth() {
         this.growthStep++;
+=======
+        if (this.cropsLeft.length != 0) { //here for safety's sake
+            this.cropSprites[num].anims.nextFrame(1);
+            if (this.cropSprites[num].anims.getFrameName() == this.maxFrame - 1) {
+                this.cropsLeft.splice(rand, 1); // remove from list of crops to grow
+                console.log("finished growing crop");
+            }
+            this.growthStep++;
+        }
+        else {
+            //in the event of the crops somehow finishing early, it will still finish the counter
+            this.growthStep++;
+        }
+>>>>>>> moreDB
     }
 
     pauseGrowth() {
@@ -2149,17 +2334,17 @@ class Plot extends Phaser.GameObjects.Container {
 
         switch (this.crop) {
             case "sunflower":
+<<<<<<< HEAD
                 this.scene.farm.coins += 10 * 1.2 * this.size * this.size;
+=======
+                this.scene.farm.coins += 100 * 1.2 * this.size * this.size; // i don' think we need to multiply by number of crops but anyway, this is better than a loop calculating
+>>>>>>> moreDB
                 // scene.coinsText.setText('Coins: ' + scene.farm.coins);
                 break;
             case "carrot":
-                this.scene.farm.coins += 10 * 1.5 * this.size * this.size;
+                this.scene.farm.coins += 100 * 1.5 * this.size * this.size;
                 // scene.coinsText.setText('Coins: ' + scene.farm.coins);
                 break;
-            case "tulip":
-                this.scene.farm.coins += 5 * this.size * this.size;
-            case "pumpkin":
-                this.scene.farm.coins += 10 * 2 * this.size * this.size;
         }
         //remove crops
         for (let cropSprite of this.cropSprites) {
