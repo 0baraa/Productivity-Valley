@@ -58,6 +58,24 @@ export default class FarmScene extends Phaser.Scene {
 
         loadStatic('snowman', 'assets/decorations/snowman.png');
         loadStatic('gnome', 'assets/decorations/gnome.png');
+        loadStatic('autumn-tree', 'assets/decorations/autumn-tree.png');
+        loadStatic('dirt-rock', 'assets/decorations/dirt-rock.png');
+        loadStatic('dirt-rocks', 'assets/decorations/dirt-rocks.png');
+        loadStatic('ice-rock', 'assets/decorations/ice-rock.png');
+        loadStatic('icy-rocks', 'assets/decorations/icy-rocks.png');
+        loadStatic('leafy-rock', 'assets/decorations/leafy-rock.png');
+        loadStatic('leafy-rocks', 'assets/decorations/leafy-rocks.png');
+        loadStatic('palm-tree', 'assets/decorations/palm-tree.png');
+        loadStatic('pine-tree', 'assets/decorations/pine-tree.png');
+        loadStatic('red-sandstone-rock', 'assets/decorations/red-sandstone-rock.png');
+        loadStatic('red-sandstone-rocks', 'assets/decorations/red-sandstone-rocks.png');
+        loadStatic('sandstone-rock', 'assets/decorations/sandstone-rock.png');
+        loadStatic('sandstone-rocks', 'assets/decorations/sandstone-rocks.png');
+        loadStatic('snowy-rock', 'assets/decorations/snowy-rock.png');
+        loadStatic('snowy-rocks', 'assets/decorations/snowy-rocks.png');
+        loadStatic('stump', 'assets/decorations/stump.png');
+
+
         loadStatic('cloud1', 'assets/clouds/cloud1.png');
         loadStatic('cloud2', 'assets/clouds/cloud2.png');
         loadStatic('cloud3', 'assets/clouds/cloud3.png');
