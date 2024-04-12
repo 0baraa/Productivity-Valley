@@ -167,11 +167,12 @@ class UserData {
             console.error('Error updating money:', error);
         });
     }
-    updatePlots(username) {      //works
+    updatePlots(username, plots) {      //works
         const url = `http://localhost:8000/users/change-plots/`;
     
         const requestData = {
             username: username,
+            plots: plots
         };
         console.log(requestData)
         fetch(url, {
@@ -252,10 +253,10 @@ const userData = new UserData();
 //userData.addUserDecoration(newUserDec)
 //userData.fetchUserDecorations('johndoe')
 //userData.fetchData()
-userData.updateHouse('johndoe', 2)
+//userData.updateHouse('johndoe', 2)
 //userData.addUserDate(newUserDate)
 //userData.changeUserMoney('johndoe', 50)
-//userData.incrementPlots('johndoe')
+userData.updatePlots('johndoe', 4)
 //userData.addUserCrop(newUserCrop)
 //userData.fetchUserCrops(newUserCrop.username)
 //userData.deleteUserCrop('johndoe')
