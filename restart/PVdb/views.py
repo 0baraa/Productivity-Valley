@@ -20,7 +20,7 @@ class PomodoroStatsView(APIView):
 
         # Filter UserDates records for the given user and date range
         data = UserDates.objects.filter(
-            username__username=username,
+            username__usernameId=username,
             date__range=[week_ago, today]
         ).annotate(
             date=TruncDay('date')
@@ -49,12 +49,12 @@ class PomodoroStatsView(APIView):
 
 class UsersView(APIView):
     def get(self, request):
-        output = [{"username":output.username,
+        output = [{"usernameId":output.usernameId,
                   "email":output.email,
-                  "money":output.money,
-                  "houseStatus":output.houseStatus,
-                  "housex":output.housex,
-                  "housey":output.housey,
+                  "coins":output.coins,
+                  "farmHouseLevel":output.farmHouseLevel,
+                  "x":output.x,
+                  "y":output.y,
                   "plots":output.plots}
                   for output in Users.objects.all()]
         return Response(output)
@@ -66,66 +66,66 @@ class UsersView(APIView):
             serializer.save()
             return Response(serializer.data)
     def delete(self, request):
-        username = request.data.get('username', None)
-        if username is None:
+        usernameId = request.data.get('usernameId', None)
+        if usernameId is None:
             return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = Users.objects.get(username=username)
+            user = Users.objects.get(usernameId=usernameId)
             user.delete()
-            return Response({"message": f"User with username {username} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"message": f"User with username {usernameId} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Users.DoesNotExist:
-            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"User with username {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class MoneyView(APIView):
      def post(self, request):
-        username = request.data.get('username', None)
-        money = request.data.get('money', None)
-        if username is None or money is None:
+        usernameId = request.data.get('usernameId', None)
+        coins = request.data.get('coins', None)
+        if usernameId is None or money is None:
             return Response({"error": "Username or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = Users.objects.get(username=username)
-            user.money = money
+            user = Users.objects.get(usernameId=usernameId)
+            user.coins = coins
             user.save()
-            return Response({"message": f"Money updated successfully for user {username}"}, status=status.HTTP_200_OK)
+            return Response({"message": f"Money updated successfully for user {usernameId}"}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
-            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"User with username {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class HouseView(APIView):
      def post(self, request):
-        username = request.data.get('username', None)
-        houseState = request.data.get('houseStatus', None)
-        if username is None:
+        usernameId = request.data.get('usernameId', None)
+        farmHouseLevel = request.data.get('farmHouseLevel', None)
+        if usernameId is None:
             return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = Users.objects.get(username=username)
-            user.houseStatus = houseState
+            user = Users.objects.get(usernameId=usernameId)
+            user.farmHouseLevel = farmHouseLevel
             user.save()
-            return Response({"message": f"Money updated successfully for user {username}"}, status=status.HTTP_200_OK)
+            return Response({"message": f"Money updated successfully for user {usernameId}"}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
-            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"User with usernameId {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class PlotView(APIView):
      def post(self, request):
-        username = request.data.get('username', None)
+        usernameId = request.data.get('usernameId', None)
         plots = request.data.get('plots', None)
-        if username is None:
-            return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        if usernameId is None:
+            return Response({"error": "usernameId not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = Users.objects.get(username=username)
+            user = Users.objects.get(usernameId=usernameId)
             user.plots = plots
             user.save()
-            return Response({"message": f"Plots updated successfully for user {username}"}, status=status.HTTP_200_OK)
+            return Response({"message": f"Plots updated successfully for user {usernameId}"}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
-            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"User with usernameId {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class UserPlotsView(APIView):
     def get(self, request):
-        username = request.data.get('username', None)
-        userPlots = UserPlots.objects.filter(username=username)
+        usernameId = request.data.get('usernameId', None)
+        userPlots = UserPlots.objects.filter(usernameId=usernameId)
         serializer = UserPlotsSerializer(userPlots, many=True)
         return Response(serializer.data)
 
@@ -137,15 +137,9 @@ class UserPlotsView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class TasksView(APIView):
     def get(self, request):
-        username = request.data.get('username', None)
-        output = [{"taskName":output.taskName,
-                   "username":output.username.username,
-                  "taskCompleted":output.taskCompleted,
-                  "plotNumber":output.plotNumber,
-                  "pomodorros":output.pomodorros,
-                  "pomodorrosCompleted":output.pomodorrosCompleted}
-                  for output in Tasks.objects.filter(username=username)]
-        return Response(output)
+        userCrops = Tasks.objects.all()
+        serializer = TasksSerializer(userCrops, many=True)
+        return Response(serializer.data)
     def post (self, request):
         serializer = TasksSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -153,12 +147,12 @@ class TasksView(APIView):
             return Response(serializer.data)
     def delete(self, request):
         taskName = request.data.get('taskName', None)
-        username = request.data.get('username', None)
+        usernameId = request.data.get('usernameId', None)
 
-        if taskName is None or username is None:
+        if taskName is None or usernameId is None:
             return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            task = Tasks.objects.get(taskName=taskName, username= username)
+            task = Tasks.objects.get(taskName=taskName, usernameId= usernameId)
             task.delete()
             return Response({"message": f"Task with name {taskName} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Users.DoesNotExist:
@@ -167,28 +161,28 @@ class TasksView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class TaskCompletedView(APIView):
      def post(self, request):
-        username = request.data.get('username', None)
+        usernameId = request.data.get('usernameId', None)
         taskName = request.data.get('taskName', None)
-        if username is None or taskName is None:
-            return Response({"error": "Username or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        if usernameId is None or taskName is None:
+            return Response({"error": "usernameId or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            Tasks.objects.filter(username=username, taskName=taskName).update(taskCompleted=True)
-            return Response({"message": f"Task completed successfully for user {username}"}, status=status.HTTP_200_OK)
+            Tasks.objects.filter(usernameId=usernameId, taskName=taskName).update(completed=True)
+            return Response({"message": f"Task completed successfully for user {usernameId}"}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
-            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"User with usernameId {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class IncreasePomodorroView(APIView):
      def post(self, request):
-        username = request.data.get('username', None)
+        usernameId = request.data.get('usernameId', None)
         taskName=request.data.get('taskName', None)
-        if username is None or taskName is None:
-            return Response({"error": "Username or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        if usernameId is None or taskName is None:
+            return Response({"error": "usernameId or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            Tasks.objects.filter(username=username, taskName=taskName).update(pomodorrosCompleted=F('pomodorrosCompleted') + 1)
-            return Response({"message": f"Task status updated successfully for user {username}"}, status=status.HTTP_200_OK)
+            Tasks.objects.filter(usernameId=usernameId, taskName=taskName).update(pomodorrosCompleted=F('pomodorrosCompleted') + 1)
+            return Response({"message": f"Task status updated successfully for user {usernameId}"}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
-            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"User with usernameId {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class UserDatesView(APIView):
@@ -199,7 +193,7 @@ class UserDatesView(APIView):
 
     def post(self, request):
         # 尝试获取现有记录
-        user_date = UserDates.objects.filter(username=request.data.get('username'), date=request.data.get('date')).first()
+        user_date = UserDates.objects.filter(usernameId=request.data.get('usernameId'), date=request.data.get('date')).first()
         if user_date:
             # 如果存在，更新记录
             user_date.timeSpent += int(request.data.get('timeSpent', 0))
@@ -297,29 +291,29 @@ class UserCropsView(APIView):
         return Response(serializer.data)
     
     def post(self, request):
-        user = request.data.get('username')
+        user = request.data.get('usernameId')
         try:
-            userInstance = Users.objects.get(username=user)
+            userInstance = Users.objects.get(usernameId=user)
         except Users.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = UsersCropsSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.validated_data['username'] = userInstance
+            serializer.validated_data['usernameId'] = userInstance
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     def delete(self, request):
-        username = request.data.get('username', None)
-        if username is None:
-            return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        usernameId = request.data.get('usernameId', None)
+        if usernameId is None:
+            return Response({"error": "usernameId not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = UserCrop.objects.get(username=username)
+            user = UserCrop.objects.get(usernameId=usernameId)
             user.delete()
-            return Response({"message": f"User with username {username} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"message": f"User with usernameId {usernameId} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Users.DoesNotExist:
-            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"User with usernameId {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class UserFurnitureView(APIView):
@@ -343,28 +337,28 @@ class UserSettingsView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        user = request.data.get('username')
+        user = request.data.get('usernameId')
         try:
-            userInstance = Users.objects.get(username=user)
+            userInstance = Users.objects.get(usernameId=user)
         except Users.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = UserSettingsSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.validated_data['username'] = userInstance
+            serializer.validated_data['usernameId'] = userInstance
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request):
-        username = request.data.get('username', None)
-        if username is None:
-            return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        usernameId = request.data.get('usernameId', None)
+        if usernameId is None:
+            return Response({"error": "usernameId not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = UserCrop.objects.get(username=username)
+            user = UserCrop.objects.get(usernameId=usernameId)
             user.delete()
-            return Response({"message": f"User with username {username} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"message": f"User with usernameId {usernameId} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except Users.DoesNotExist:
-            return Response({"error": f"User with username {username} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"User with usernameId {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

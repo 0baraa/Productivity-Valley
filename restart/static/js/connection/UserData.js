@@ -21,8 +21,8 @@ class UserData {
                 throw error;
             });
         }
-    fetchUserData(username) {
-        const url = `http://localhost:8000/users/?username=${username}`;
+    fetchUserData(usernameId) {
+        const url = `http://localhost:8000/users/?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -44,14 +44,14 @@ class UserData {
                 console.error('Error creating user:', error);
             });
     }
-    deleteUser(username) {    //works
+    deleteUser(usernameId) {    //works
         const url = `http://localhost:8000/users/`;     
         const requestOptions = {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username: username })
+            body: JSON.stringify({ usernameId: usernameId })
         };
         return fetch(url, requestOptions)
             .then(response => {
@@ -64,8 +64,8 @@ class UserData {
                 console.error('Error deleting user:', error);
             });
     }
-    fetchUserDecorations(username){   //works
-        const url = `http://localhost:8000/user-decorations/?username=${username}`;
+    fetchUserDecorations(usernameId){   //works
+        const url = `http://localhost:8000/user-decorations/?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -87,8 +87,8 @@ class UserData {
                 console.error('Error adding decoration for user:', error);
             });
     }
-    fetchUserFurniture(username){   //works
-        const url = `http://localhost:8000/user-furniture/?username=${username}`;
+    fetchUserFurniture(usernameId){   //works
+        const url = `http://localhost:8000/user-furniture/?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -110,8 +110,8 @@ class UserData {
                 console.error('Error adding decoration for user:', error);
             });
     }
-    fetchUserCrops(username){    //works
-        const url = `http://localhost:8000/user-crops/?username=${username}`;
+    fetchUserCrops(usernameId){    //works
+        const url = `http://localhost:8000/user-crops/?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -133,14 +133,14 @@ class UserData {
                 console.error('Error adding decoration for user:', error);
             });
     }
-    deleteUserCrop(username) {    //works
+    deleteUserCrop(usernameId) {    //works
         const url = `http://localhost:8000/user-crops/`;     
         const requestOptions = {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username: username })
+            body: JSON.stringify({ usernameId: usernameId })
         };
         return fetch(url, requestOptions)
             .then(response => {
@@ -153,8 +153,8 @@ class UserData {
                 console.error('Error deleting user:', error);
             });
     }
-    fetchUserSettings(username){    //works
-        const url = `http://localhost:8000/user-settings/?username=${username}`;
+    fetchUserSettings(usernameId){    //works
+        const url = `http://localhost:8000/user-settings/?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -176,14 +176,14 @@ class UserData {
                 console.error('Error adding decoration for user:', error);
             });
     }
-    deleteUserSettings(username) {    //works
+    deleteUserSettings(usernameId) {    //works
         const url = `http://localhost:8000/user-settings/`;     
         const requestOptions = {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username: username })
+            body: JSON.stringify({ usernameId: usernameId })
         };
         return fetch(url, requestOptions)
             .then(response => {
@@ -196,12 +196,12 @@ class UserData {
                 console.error('Error deleting user:', error);
             });
     }
-    updateUserMoney(username, money) {      //works
+    updateUserMoney(usernameId, coins) {      //works
         const url = `http://localhost:8000/users/change-money/`;
     
         const requestData = {
-            username: username,
-            money: money
+            usernameId: usernameId,
+            coins: coins
         };
         console.log(requestData)
         fetch(url, {
@@ -221,12 +221,12 @@ class UserData {
             console.error('Error updating money:', error);
         });
     }
-    updateHouse(username, houseStatus) {      //works
+    updateHouse(usernameId, houseStatus) {      //works
         const url = `http://localhost:8000/users/change-house/`;
     
         const requestData = {
-            username: username,
-            houseStatus:houseStatus
+            usernameId: usernameId,
+            farmHouseLevel:farmHouseLevel
         };
         console.log(requestData)
         fetch(url, {
@@ -246,11 +246,11 @@ class UserData {
             console.error('Error updating money:', error);
         });
     }
-    updatePlots(username, plots) {      //works
+    updatePlots(usernameId, plots) {      //works
         const url = `http://localhost:8000/users/change-plots/`;
     
         const requestData = {
-            username: username,
+            usernameId: usernameId,
             plots: plots
         };
         console.log(requestData)
@@ -271,8 +271,8 @@ class UserData {
             console.error('Error updating money:', error);
         });
     }
-    getuserDates(username) {
-        const url = `http://localhost:8000/user-dates/?username=${username}`;
+    getuserDates(usernameId) {
+        const url = `http://localhost:8000/user-dates/?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -294,10 +294,7 @@ class UserData {
             console.error('Error adding decoration for user:', error);
         });
     }
-
 }
-
-export default UserData;
 
 // const today = new Date();
 // const year = today.getFullYear();
@@ -306,22 +303,22 @@ export default UserData;
 // const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
 // console.log(formattedDate)
 // const newUserDate = {
-//     username: 'johndoe',
+//     usernameId: 'johndoe',
 //     date: formattedDate
 // };
 const newUser = {
-    username: 'johndoe',
+    usernameId: 'johndoe',
     email: 'johndoe@example.com',
 };
 const newUserDec = {
-    username: 'johndoe',
+    usernameId: 'johndoe',
     decoration: 'gnome',
     x: 0,
     y: 0,
     placed: false
 };
 const newUserCrop = {
-    username: 'johndoe',
+    usernameId: 'johndoe',
     tomato: 0,
     sunflower: 0,
     carrot: 0,
@@ -329,14 +326,14 @@ const newUserCrop = {
     tulip: 0
 };
 const newUserfurn = {
-    username: 'johndoe',
+    usernameId: 'johndoe',
     furniture: 'table',
     x: 0,
     y: 0,
     placed: false
 };
 const newUserSettings = {
-    username: 'johndoe',
+    usernameId: 'johndoe',
     pomtimer: 25,
     shortBreak: 5,
     longBreak: 25,
@@ -361,7 +358,7 @@ userData.fetchUserSettings('johndoe')
 //userData.changeUserMoney('johndoe', 50)
 //userData.updatePlots('johndoe', 4)
 //userData.addUserCrop(newUserCrop)
-//userData.fetchUserCrops(newUserCrop.username)
+//userData.fetchUserCrops(newUserCrop.usernameId)
 //userData.deleteUserCrop('johndoe')
 //userData.createUser(newUser)
 // userData.deleteUser('johndoe')

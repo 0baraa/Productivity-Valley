@@ -110,7 +110,7 @@ export default class Utility {
 
     }
 
-    static getUserData(username) {
+    static getUserData() {
         // Called in create method of FarmScene
         // Fetches user data from the backend
         // Then formats data in appropriate way
@@ -118,14 +118,14 @@ export default class Utility {
         const user = new UserData()
         console.log(currentUsername)
         let userData = user.fetchUserData(currentUsername)
-        let userCrops = user.fetchUserCrops(username)
-        let userDecs = user.fetchUserDecorations(username)
-        let userFurniture = user.fetchUserFurniture(username)
-        let userSettings = user.fetchUserSettings(username)
+        let userCrops = user.fetchUserCrops(currentUsername)
+        let userDecs = user.fetchUserDecorations(currentUsername)
+        let userFurniture = user.fetchUserFurniture(currentUsername)
+        let userSettings = user.fetchUserSettings(currentUsername)
 
         return {
             userData: userData,
-            userCrops: userCrops,
+            seedsOwned: userCrops,
             userDecorations: userDecs,
             userFurniture: userFurniture,
             userSettings: userSettings
@@ -133,37 +133,40 @@ export default class Utility {
     
         // Using mock data for now until backend is implemented
         // this.data = {
-        //     "coins": 300,
-        //     "cropsOwned": [
-        //         {crop: "tomato", count: 3},
-        //         {crop:"sunflower", count: 1},
-        //         {crop:"carrot", count: 2},
-        //         {crop:"pumpkin", count: -1},
-        //         {crop:"flower", count: -1}
-        //     ],
-        //     //plots should have coordinates saved also
+        //     "userData": 
+        //         {"usernameId": "noobmaster69", "coins": 3000, "farmhouseLevel": 1, "x": 70, "y": 570},
+        //     "cropsOwned": {
+        //         tomato: -1,
+        //         sunflower: -1,
+        //         carrot: -1,
+        //         pumpkin: -1,
+        //         tulip: -1
+        //     },
+
         //     "plots": [
-        //       {"id": 1, "crop": "sunflower", "growthStage": 3, "task": "Maths Homework", "x": 176, "y": 616, "placed": true},
-        //       {"id": 2, "crop": "sunflower", "growthStage": 9, "task": "Computation Catchup", "x": 272, "y": 616, "placed": true},
-        //       {"id": 3, "crop": "carrot", "growthStage": 2, "x": 368, "y": 616, "placed": true},
-        //       {"id": 4, "crop": "nothing", "growthStage": 0, "x": 464, "y": 616, "placed": true},
+        //       {"plotId": 0, "crop": "sunflower", "growthStage": 9, "growthStep": 24, "x": 176, "y": 616, "placed": true}, 
+        //       {"plotId": 1, "crop": "tulip", "growthStage": 9, "growthStep": 35, "x": 272, "y": 616, "placed": true}, 
+        //       {"plotId": 2, "crop": "carrot",  "growthStage": 1, "growthStep": 24, "x": 368, "y": 616, "placed": true},
+        //       {"plotId": 3, "crop": "nothing", "growthStage": 0, "growthStep": 0, "x": 464, "y": 616, "placed": true},
+        //     ],
+        //     "tasks": [
+        //         {"plotId": 0, "taskName": "Maths Homework", "pomodoros": 3, "pomodorosCompleted": 3, "completed": true, "subtasks": ["week 7", "week 8"]},
+        //         {"plotId": 1, "taskName": "Operating Systems CW", "pomodoros": 3, "pomodorosCompleted": 2, "completed": false, "subtasks": ["download files", "start work", "catch up on notes bruh"], "subtasksCompleted": [true,false,false]},
+        //         {"plotId": 2, "taskName": "go to bed", "pomodoros": 1, "pomodorosCompleted": 0, "completed": false, "subtasks": ["tidy desk", "brush teeth", "get changed", "go piss girl go piss girl go piss girl go piss girl go piss girl"], "subtasksCompleted": [true,false,false,false]},
         //     ],
         //     "furniture": [
-        //       {"type": "carpet1", "x": 320, "y": 612, "placed": true},
-        //       {"type": "bookshelf", "x": 281, "y": 580, "placed": true},
-        //       {"type": "coatrack", "x": 350, "y": 580, "placed": true},
-        //       {"type": "plant", "x": 245, "y": 590, "placed": true},
-        //       {"type": "table2", "x": 400, "y": 590, "placed": false}
+        //     //   {"type": "carpet1", "x": 320, "y": 612, "placed": true},
+        //     //   {"type": "bookshelf", "x": 281, "y": 580, "placed": true},
+        //     //   {"type": "coatrack", "x": 350, "y": 580, "placed": true},
+        //     //   {"type": "plant", "x": 245, "y": 590, "placed": true},
+        //     //   {"type": "table2", "x": 400, "y": 590, "placed": false}
         //     ],
         //     "decorations": [
         //         {"type": "snowman", "x":50, "y":700, "placed": true}
-        //     ],
-        //     "farmhouse":[
-        //         {"level": 1, "x": 70, "y": 570}
         //     ]
         //   }
     
-        //   return this.data;
+        // return this.data;
     }
 
     static sendCreatedTaskData() {
