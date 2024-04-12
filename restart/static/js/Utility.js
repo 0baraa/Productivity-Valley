@@ -172,7 +172,7 @@ export default class Utility {
         this.data = {
             "userData": 
                 {"usernameId": "noobmaster69", "coins": 3000, "farmhouseLevel": 1, "x": 70, "y": 570},
-            "cropsOwned": {
+            "seedsOwned": {
                 tomato: -1,
                 sunflower: -1,
                 carrot: -1,
@@ -187,7 +187,7 @@ export default class Utility {
               {"plotId": 3, "crop": "nothing", "growthStage": 0, "growthStep": 0, "x": 464, "y": 616, "placed": true},
             ],
             "tasks": [
-                {"plotId": 0, "taskName": "Maths Homework", "pomodoros": 3, "pomodorosCompleted": 3, "completed": true, "subtasks": ["week 7", "week 8"]},
+                {"plotId": 0, "taskName": "Maths Homework", "pomodoros": 3, "pomodorosCompleted": 2, "elapsedTime": 1, "completed": true, "subTask1": "week 7", "subTask1Completed": false, subTask2: "week 8", "subTask2Completed": true},
                 {"plotId": 1, "taskName": "Operating Systems CW", "pomodoros": 3, "pomodorosCompleted": 2, "completed": false, "subtasks": ["download files", "start work", "catch up on notes bruh"], "subtasksCompleted": [true,false,false]},
                 {"plotId": 2, "taskName": "go to bed", "pomodoros": 1, "pomodorosCompleted": 0, "completed": false, "subtasks": ["tidy desk", "brush teeth", "get changed", "go piss girl go piss girl go piss girl go piss girl go piss girl"], "subtasksCompleted": [true,false,false,false]},
             ],
