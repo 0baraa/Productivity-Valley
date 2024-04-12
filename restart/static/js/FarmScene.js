@@ -75,6 +75,9 @@ export default class FarmScene extends Phaser.Scene {
         loadStatic('play-button', 'assets/clock/play-button.png');
         loadStatic('pause-button', 'assets/clock/pause-button.png');
         loadStatic('skip-button', 'assets/clock/skip-button.png');
+
+        // loadStatic('step12','assets/step_12.png');
+        // loadStatic('step34','assets/step_34.png');
     }
 
 
@@ -198,10 +201,32 @@ export default class FarmScene extends Phaser.Scene {
                 deleteAccountButton.removeEventListener('click', deleteAccount);
                 Utility.toggleMenu(this, "homeMenu");
             }
+    
             const showGuide = () => {
-                homeClose();
-                Utility.showInfo(this, "homeGuide");
-            }
+                homeClose(); 
+                Utility.toggleMenu(this, "showInfo"); 
+            
+                let okButton = document.getElementById("okButton-info");
+                let p1 = document.getElementById("infoWindow-message");
+                let p2 = document.getElementById("infoWindow-note1");
+                let p3 = document.getElementById("infoWindow-note2");
+                let p4 = document.getElementById("infoWindow-note3");
+                let p5 = document.getElementById("infoWindow-note4");
+            
+               
+                p1.innerText = "Welcome to guide";
+                p2.innerText = "First: purchase seeds from market";
+                p3.innerText = "Second: click a plot to create a task";
+                p4.innerText = "Third: click the sun to start your work";
+                p5.innerText = "Final: time is up harvest now";
+            
+               
+                okButton.onclick = () => {
+                    Utility.toggleMenu(this, "showInfo"); 
+                    okButton.onclick = null; 
+                };
+            };
+            
             const saveAndExit = () => {
                 homeClose();
                 //this.farm.saveFarmState();
@@ -215,6 +240,39 @@ export default class FarmScene extends Phaser.Scene {
             homeGuideButton.addEventListener('click', showGuide);
             saveExitButton.addEventListener('click', saveAndExit);
             deleteAccountButton.addEventListener('click', deleteAccount);
+
+
+             // guidance
+            // let currentImageIndex = 0;
+            // const images = ['step12', 'step34'];
+            // const prevButton = document.getElementById('prev-image');
+            // const nextButton = document.getElementById('next-image');
+        
+           
+            // function displayGuide() {
+            //     document.getElementById('quick-guide').style.display = 'block'; 
+            //     updateImageDisplay();
+            // }
+        
+            // document.getElementById('next-image').addEventListener('click', function() {
+            //     if (currentImageIndex < images.length - 1) {
+            //         currentImageIndex++;
+            //         updateImageDisplay();
+            //     }
+            // });
+        
+            // document.getElementById('prev-image').addEventListener('click', function() {
+            //     if (currentImageIndex > 0) {
+            //         currentImageIndex--;
+            //         updateImageDisplay();
+            //     }
+            // });
+        
+            // function updateImageDisplay() {
+            //     document.getElementById('guide-image').src = images[currentImageIndex];
+            //     prevButton.style.display = currentImageIndex === 0 ? 'none' : 'inline'; // 当在第一张图片时隐藏“Previous”按钮
+            //     nextButton.style.display = currentImageIndex === images.length - 1 ? 'none' : 'inline'; // 当在最后一张图片时隐藏“Next”按钮
+            // }
         });
 
         let settingsButton = document.getElementById("settings-icon-container");

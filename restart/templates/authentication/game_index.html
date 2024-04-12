@@ -466,6 +466,30 @@
         </dialog>
     </div>
 
+    
+
+    <!-- Quick Guide Menu Popup -->
+<!-- <div class="menu-container quick-guide-menu" style="display: none;">
+    <dialog class="menu quick-guide-menu" style="display: inline-flex; flex-direction: column;">
+        <div class="menu-top-container">
+            <button type="button" class="menu-top-spacer">X</button>
+            <h1>Quick Guide</h1>
+            <button class="exit-button" id="quick-guide-exit-button">X</button>
+        </div>
+        <div id="quick-guide-content" style="flex: 1; overflow: auto; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <p>Welcome to the Quick Guide!</p>
+            <p>Here are some quick tips:</p>
+            <ul>
+                <li>Tip 1: Do this</li>
+                <li>Tip 2: Do that</li>
+            </ul>
+            <img src="/static/assets/step_12.png" alt="Step 12" style="width: 100%; max-width: 600px;">
+            <!-- Add more images or text as needed -->
+        </div>
+    </dialog>
+</div> -->
+
+
     <!--Confirmation Popup Screen-->
     <div class="menu-container confirmation" style="display: none;">
         <dialog class="menu confirmation" style="display: flex; flex-direction: column; height: 35vh;">
@@ -490,6 +514,24 @@
                 <div style = "flex-basis: 100%; height: 0;"></div>
                 <div id="alertWindow-buttons-container" style="clear:both">
                     <button type="button" id="okButton">OK</button>
+                </div>
+            </div>
+        </dialog>
+    </div>
+
+
+
+    <div class="menu-container infoWindow" style="display: none;">
+        <dialog class="menu infoWindow" style="display: flex; flex-direction: column; height: 80vh;">
+            <div id="infoWindow-container" style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
+                <p id="infoWindow-message" style="float:none; text-align: center;"></p>
+                <p id="infoWindow-note1" style="float:none; text-align: center;"></p>
+                <p id="infoWindow-note2" style="float:none; text-align: center;"></p>
+                <p id="infoWindow-note3" style="float:none; text-align: center;"></p>
+                <p id="infoWindow-note4" style="float:none; text-align: center;"></p>
+                <div style = "flex-basis: 100%; height: 0;"></div>
+                <div id="infoWindow-buttons-container" style="clear:both">
+                    <button type="button" id="okButton-info">OK</button>
                 </div>
             </div>
         </dialog>

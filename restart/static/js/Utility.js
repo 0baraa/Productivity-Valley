@@ -102,6 +102,10 @@ export default class Utility {
                 dialogContainer = document.querySelector('.menu-container.alertWindow');
                 dialog = document.querySelector('.menu.alertWindow');
                 break;
+            case "showInfo":
+                dialogContainer = document.querySelector('.menu-container.infoWindow');
+                dialog = document.querySelector('.menu.infoWindow');
+                break;
         }
 
         
