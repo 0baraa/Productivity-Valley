@@ -283,6 +283,20 @@ class UserDecorationsView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+    def delete(self, request):
+            type = request.data.get('type', None)
+            usernameId = request.data.get('usernameId', None)
+
+            if type is None or usernameId is None:
+                return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                plot = UserDecorations.objects.get(type=type, usernameId=usernameId)
+                plot.delete()
+                return Response({"message": f"Task with name {type} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            except UserDecorations.DoesNotExist:
+                return Response({"error": f"Task with name {type} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class UserPlotsView(APIView):
     def get(self, request):
         userDecorations = UserPlots.objects.all()
@@ -303,10 +317,10 @@ class UserPlotsView(APIView):
             if plotId is None or usernameId is None:
                 return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
             try:
-                plot = UserPlots.objects.get(plotId=plotId, usernameId=usernameId)
+                plot = UserDecorations.objects.get(plotId=plotId, usernameId=usernameId)
                 plot.delete()
                 return Response({"message": f"Task with name {plotId} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-            except UserPlots.DoesNotExist:
+            except UserDecorations.DoesNotExist:
                 return Response({"error": f"Task with name {plotId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
             except Exception as e:
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -355,6 +369,20 @@ class UserFurnitureView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request):
+            type = request.data.get('type', None)
+            usernameId = request.data.get('usernameId', None)
+
+            if type is None or usernameId is None:
+                return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                plot = UserFurniture.objects.get(type=type, usernameId=usernameId)
+                plot.delete()
+                return Response({"message": f"Task with name {type} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            except UserFurniture.DoesNotExist:
+                return Response({"error": f"Task with name {type} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class UserSettingsView(APIView):
     def get(self, request):
         userDecorations = UserSettings.objects.all()

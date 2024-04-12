@@ -87,6 +87,31 @@ class UserData {
                 console.error('Error adding decoration for user:', error);
             });
     }
+    deleteUserDecoration(usernameId, type) {    //works
+        const url = `http://localhost:8000/user-decorations/`;      
+        const requestData = {
+            usernameId: usernameId,
+            type: type
+        };
+        console.log(requestData)  
+        const requestOptions = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        };
+        return fetch(url, requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('User crop deleted successfully');
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+            });
+    }
     fetchUserFurniture(usernameId){   //works
         const url = `http://localhost:8000/user-furniture/?usernameId=${usernameId}`;
 
@@ -108,6 +133,31 @@ class UserData {
             })
             .catch(error => {
                 console.error('Error adding decoration for user:', error);
+            });
+    }
+    deleteUserFurniture(usernameId, type) {    //works
+        const url = `http://localhost:8000/user-furniture/`
+        const requestData = {
+            usernameId: usernameId,
+            type: type
+        };
+        console.log(requestData)  
+        const requestOptions = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        };
+        return fetch(url, requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('User crop deleted successfully');
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
             });
     }
     fetchUserCrops(usernameId){    //works
@@ -465,13 +515,15 @@ const newUserTask = {
 const userData = new UserData();
 //userData.addUserPlot(newUserPlot)
 //userData.fetchUserPlots('johnDoe')
-userData.deleteUserPlots('johndoe', 0)
+//userData.deleteUserPlots('johndoe', 0)
 //userData.addUserTask(newUserTask)
 //userData.fetchUserTasks('johndoe')
 //userData.deleteUserTask('johndoe', '5')
 //userData.fetchUserData('johndoe')
 //userData.addUserDecoration(newUserDec)
 //userData.fetchUserDecorations('johndoe')
+//userData.deleteUserDecoration('johndoe', 'gnome')
+userData.deleteUserFurniture('johndoe', 'table')
 //userData.addUserFurniture(newUserfurn)
 //userData.fetchUserFurniture(newUserfurn)
 //userData.addUserSettings(newUserSettings)
