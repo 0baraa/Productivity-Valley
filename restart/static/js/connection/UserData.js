@@ -153,6 +153,110 @@ class UserData {
                 console.error('Error deleting user:', error);
             });
     }
+    fetchUserTasks(usernameId){    //works
+        const url = `http://localhost:8000/tasks/?usernameId=${usernameId}`;
+
+        return axios.get(url)
+            .then(response => {
+                console.log(response.data)
+                return response.data;
+            })
+            .catch(error => {
+                console.error('Error fetching user crops:', error);
+                throw error;
+            });
+    }
+    addUserTask(data) {     //works
+        const url = 'http://localhost:8000/tasks/';
+        axios.post(url, data)
+        .then(response => {
+            console.log('Task added successfully:', response.data);
+        })
+        .catch(error => {
+            if (error.response && error.response.data) {
+                console.error('Validation error:', error.response.data);
+            } else {
+                console.error('Error adding task:', error);
+            }
+        });
+    }
+    deleteUserTask(usernameId, plotId) {    //works
+        const url = `http://localhost:8000/tasks/`;   
+        const requestData = {
+            usernameId: usernameId,
+            plotId: plotId
+        };
+        console.log(requestData)  
+        const requestOptions = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        };
+        return fetch(url, requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('User crop deleted successfully');
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+            });
+    }
+    fetchUserPlots(usernameId){    //works
+        const url = `http://localhost:8000/user-plots/?usernameId=${usernameId}`;
+
+        return axios.get(url)
+            .then(response => {
+                console.log(response.data)
+                return response.data;
+            })
+            .catch(error => {
+                console.error('Error fetching user crops:', error);
+                throw error;
+            });
+    }
+    addUserPlot(data) {     //works
+        const url = 'http://localhost:8000/user-plots/';
+        axios.post(url, data)
+        .then(response => {
+            console.log('Task added successfully:', response.data);
+        })
+        .catch(error => {
+            if (error.response && error.response.data) {
+                console.error('Validation error:', error.response.data);
+            } else {
+                console.error('Error adding task:', error);
+            }
+        });
+    }
+    deleteUserPlots(usernameId, plotId) {    //works
+        const url = `http://localhost:8000/user-plots/`;   
+        const requestData = {
+            usernameId: usernameId,
+            plotId: plotId
+        };
+        console.log(requestData)  
+        const requestOptions = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        };
+        return fetch(url, requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('User crop deleted successfully');
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+            });
+    }
     fetchUserSettings(usernameId){    //works
         const url = `http://localhost:8000/user-settings/?usernameId=${usernameId}`;
 
@@ -221,7 +325,7 @@ class UserData {
             console.error('Error updating money:', error);
         });
     }
-    updateHouse(usernameId, houseStatus) {      //works
+    updateHouse(usernameId, farmHouseLevel) {      //works
         const url = `http://localhost:8000/users/change-house/`;
     
         const requestData = {
@@ -241,31 +345,6 @@ class UserData {
                 throw new Error('Network response was not ok');
             }
             console.log('House status updated successfully');
-        })
-        .catch(error => {
-            console.error('Error updating money:', error);
-        });
-    }
-    updatePlots(usernameId, plots) {      //works
-        const url = `http://localhost:8000/users/change-plots/`;
-    
-        const requestData = {
-            usernameId: usernameId,
-            plots: plots
-        };
-        console.log(requestData)
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            console.log('Plots updated successfully');
         })
         .catch(error => {
             console.error('Error updating money:', error);
@@ -317,6 +396,16 @@ const newUserDec = {
     y: 0,
     placed: false
 };
+const newUserPlot = {
+    usernameId: 'johndoe',
+    plotId: 0,
+    crop: 0,
+    growthStage: 0,
+    growthStep: 0,
+    x: 0,
+    y: 0,
+    placed: false
+};
 const newUserCrop = {
     usernameId: 'johndoe',
     tomato: 0,
@@ -344,14 +433,49 @@ const newUserSettings = {
     fontStyle: 'comic sans',
     fontSize: 10
 };
+const newUserTask = {
+    taskName: 'maths',
+    usernameId: 'johndoe',
+    completed: false,
+    plotId: 5,
+    pomodoros: 5,
+    pomodorosCompleted: 2,
+    elapsedTime: 1.5,
+    subTask1: 'hmwk',
+    subTaskCompleted1: false,
+    subTask1: null,
+    subTaskCompleted1: null,
+    subTask1: null,
+    subTaskCompleted1: null,
+    subTask1: null,
+    subTaskCompleted1: null,
+    subTask1: null,
+    subTaskCompleted1: null,
+    subTask1: null,
+    subTaskCompleted1: null,
+    subTask1: null,
+    subTaskCompleted1: null,
+    subTask1: null,
+    subTaskCompleted1: null,
+    subTask1: null,
+    subTaskCompleted1: null,
+    subTask1: null,
+    subTaskCompleted1: null,
+};
 const userData = new UserData();
-userData.fetchUserData('johndoe')
+//userData.addUserPlot(newUserPlot)
+//userData.fetchUserPlots('johnDoe')
+userData.deleteUserPlots('johndoe', 0)
+//userData.addUserTask(newUserTask)
+//userData.fetchUserTasks('johndoe')
+//userData.deleteUserTask('johndoe', '5')
+//userData.fetchUserData('johndoe')
 //userData.addUserDecoration(newUserDec)
-userData.fetchUserDecorations('johndoe')
+//userData.fetchUserDecorations('johndoe')
 //userData.addUserFurniture(newUserfurn)
-userData.fetchUserFurniture(newUserfurn)
+//userData.fetchUserFurniture(newUserfurn)
 //userData.addUserSettings(newUserSettings)
-userData.fetchUserSettings('johndoe')
+//userData.fetchUserSettings('johndoe')
 //userData.fetchData()
 //userData.updateHouse('johndoe', 2)
 //userData.addUserDate(newUserDate)

@@ -121,13 +121,17 @@ export default class Utility {
         let userCrops = user.fetchUserCrops(currentUsername)
         let userDecs = user.fetchUserDecorations(currentUsername)
         let userFurniture = user.fetchUserFurniture(currentUsername)
+        let tasks = user.fetchUserTasks(currentUsername)
+        let userPlots = user.fetchUserPlots(currentUsername)
         let userSettings = user.fetchUserSettings(currentUsername)
 
         return {
             userData: userData,
             seedsOwned: userCrops,
-            userDecorations: userDecs,
-            userFurniture: userFurniture,
+            plots:userPlots,
+            tasks:tasks,
+            furniture: userFurniture,
+            decorations: userDecs,
             userSettings: userSettings
         };
     
