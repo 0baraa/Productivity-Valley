@@ -69,7 +69,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
             this.scene.launch('ChartScene');
         });
 
-        this.door = this.add.sprite(322, 573, 'door1');
+        this.door = this.add.sprite(322, 570, 'door1');
         this.door.setScale(0.5);
         this.door.setInteractive();
         Utility.addTintOnHover(this.door);
