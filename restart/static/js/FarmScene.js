@@ -2452,6 +2452,7 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
         if(this.level !== 1) {
             let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
             insideFarmhouseScene.toggleHideScene(this.scene);
+            insideFarmhouseScene.toggleHideSubtasks();
         }
         else {
             Utility.toggleMenu(this.scene, "upgradeHouseMenu");

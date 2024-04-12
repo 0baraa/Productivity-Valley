@@ -87,7 +87,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         this.door.on('pointerdown', () => {
             let farmScene = this.scene.get('FarmScene');
             this.toggleHideScene(farmScene);
-
+            this.toggleHideSubtasks();
         });
 
         this.children.each(child => child.setVisible(false));
@@ -107,6 +107,16 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
                 this.toggleInverseColour("black");
                 this.hidden = !this.hidden;
             }
+        }
+    }
+
+    toggleHideSubtasks() {
+        let subtasks = document.getElementById("wrapperContainer");
+        if(subtasks.style.display == "none") {
+            subtasks.style.display = "block";
+        }
+        else {
+            subtasks.style.display = "none";
         }
     }
 
