@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Users(models.Model):    #table for users
@@ -66,10 +65,10 @@ class UserDates(models.Model):
 #     name = models.CharField(max_length=30, unique = True, primary_key=True)
 #     price = models.PositiveIntegerField(default=0)
 
-# class Crops(models.Model):   #table for crops
-#     name = models.CharField(max_length=30, unique = True, primary_key=True)
-#     price = models.PositiveIntegerField(default=0)
-#     worth = models.PositiveIntegerField(default=0)
+class Crops(models.Model):   #table for crops
+    name = models.CharField(max_length=30, unique = True, primary_key=True)
+    price = models.PositiveIntegerField(default=0)
+    worth = models.PositiveIntegerField(default=0)
 
 class UserDecorations(models.Model):    #table for users' decorations
     usernameId = models.ForeignKey(Users, on_delete=models.CASCADE, to_field='usernameId')

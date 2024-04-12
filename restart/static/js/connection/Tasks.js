@@ -49,78 +49,24 @@ class TasksData {     //works
                 console.error('Error deleting user:', error);
             });
     }
-    completeTask(username, taskName) {      //works
-        const url = `http://localhost:8000/tasks/complete-task/`;
-    
-        const requestData = {
-            username: username,
-            taskName: taskName
-        };
-        console.log(requestData)
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            console.log('Task Completed successfully');
-        })
-        .catch(error => {
-            console.error('Error completing task:', error);
-        });
-    }
-    updateTask(username, taskName, taskStatus) {      //works
-        const url = `http://localhost:8000/tasks/update-task/`;
-    
-        const requestData = {
-            username: username,
-            taskName: taskName,
-            taskStatus: taskStatus
-        };
-        console.log(requestData)
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            console.log('Task Status updated successfully');
-        })
-        .catch(error => {
-            console.error('Error updating task:', error);
-        });
-    }
 }
 const newUserTask = {
     taskName: 'Code',
     projectName: 'Team Project',
     username: 'johndoe',
     plotNumber: 4,
-    pomodorros: 5,
-    cropType: 'Pumpkins'
+    pomodorros: 5
 };
 
 const tasks = new TasksData();
-tasks.updateTask('johndoe', 'Code', '100')
-// tasks.completeTask('johndoe', 'Code')
-// tasks.createTask(apiUrl, newUserTask)
-// tasks.fetchUserTasks(newUserTask.username)
-//     .then(data => {
-//         console.log("Tasks:", data); // Add logging here to check the fetched data
-//     })
-//     .catch(error => {
-//         console.error("Error fetching tasks:", error); // Handle any errors
-//     });
+tasks.createTask(apiUrl, newUserTask)
+tasks.fetchUserTasks(newUserTask.username)
+    .then(data => {
+        console.log("Tasks:", data); // Add logging here to check the fetched data
+    })
+    .catch(error => {
+        console.error("Error fetching tasks:", error); // Handle any errors
+    });
 // tasks.deleteUserTask(apiUrl, newUserTask.username, newUserTask.taskName)
 //     .then(() => {
 //         console.log('User deleted successfully');

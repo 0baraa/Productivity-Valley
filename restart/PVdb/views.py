@@ -1,4 +1,5 @@
 from django.db.models.functions import TruncDay
+from django.db.models.functions import TruncDay
 from django.shortcuts import render
 from rest_framework.views import APIView
 from .models import *
@@ -9,6 +10,7 @@ from django.db.models import F, Sum
 from django.utils import timezone
 from datetime import timedelta
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.shortcuts import get_object_or_404
 
 
@@ -58,8 +60,6 @@ class UsersView(APIView):
                   "plots":output.plots}
                   for output in Users.objects.all()]
         return Response(output)
-
-
     def post (self, request):
         serializer = UsersSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -329,7 +329,7 @@ class UserCropsView(APIView):
         userCrops = UserCrop.objects.all()
         serializer = UsersCropsSerializer(userCrops, many=True)
         return Response(serializer.data)
-    
+
     def post(self, request):
         user = request.data.get('usernameId')
         try:

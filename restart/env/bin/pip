@@ -1,4 +1,4 @@
-#!/Applications/XAMPP/xamppfiles/htdocs/w4_team_project/restart/env/bin/python
+#!/Users/josephjackson/Downloads/restart/env/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys

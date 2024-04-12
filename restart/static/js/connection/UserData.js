@@ -1,10 +1,15 @@
 // import axios from 'axios';
-const axios = require('axios');
+// const axios = require('axios');
+axios.defaults.withCredentials = true;
 
 
-class UserData {     
-    fetchData() {         //works
-        const url = `http://localhost:8000/users/`;
+const apiUrl = 'http://localhost:8000/users/';
+const apiUrlalt = 'http://localhost:8000/user-decorations/';
+const apiUrlalt1 = 'http://localhost:8000/user-crops/';
+
+
+class UserData {     //works
+    fetchData(url) {
         return fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -13,7 +18,7 @@ class UserData {
                 return response.json();
             })
             .then(data => {
-                console.log('Data fetched successfully:', data);
+                //console.log('Data fetched successfully:', data);
                 return data;
             })
             .catch(error => {
@@ -173,8 +178,7 @@ class UserData {
                 throw error;
             });
     }
-    addUserCrop(data) {     //works
-        const url = 'http://localhost:8000/user-crops/';
+    addUserCrop(url, data) {     //works
         axios.post(url, data)
             .then(response => {
                 console.log('Crop added successfully:', response.data);
@@ -357,7 +361,7 @@ class UserData {
             usernameId: usernameId,
             coins: coins
         };
-        console.log(requestData)
+    
         fetch(url, {
             method: 'POST',
             headers: {
@@ -541,7 +545,7 @@ userData.deleteUserFurniture('johndoe', 'table')
 //     .then(() => {
 //         console.log('User deleted successfully');
 //         // Fetch data after successful deletion
-//         userData.fetchData()
+//         userData.fetchData(apiUrl)
 //             .then(data => {
 //                 console.log('Data fetched successfully:', data);
 //             })

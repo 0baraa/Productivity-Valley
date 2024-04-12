@@ -23,7 +23,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         loadStatic('grandfatherClock', 'assets/house/furniture/grandfather-clock.png');
         loadStatic('kitchenSink', 'assets/house/furniture/kitchen-sink.png');
         loadStatic('lamp', 'assets/house/furniture/lamp.png');
-        loadStatic('lampOn', 'assets/house/furniture/lamp-on.png');
+        loadStatic('lamp-on', 'assets/house/furniture/lamp-on.png');
         loadStatic('table', 'assets/house/furniture/table.png');
         loadStatic('bathtub', 'assets/house/furniture/bathtub.png');
         loadStatic('toilet', 'assets/house/furniture/toilet.png');
@@ -69,7 +69,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
             this.scene.launch('ChartScene');
         });
 
-        this.door = this.add.sprite(322, 573, 'door1');
+        this.door = this.add.sprite(322, 570, 'door1');
         this.door.setScale(0.5);
         this.door.setInteractive();
         Utility.addTintOnHover(this.door);
@@ -83,18 +83,63 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
 
         });
 
-        let FarmScene = this.scene.get('FarmScene');
-        this.farm = FarmScene.farm;
-        this.farm.createFurniture(this);
-
-
         //Swtich to farm scene when door is clicked
         this.door.on('pointerdown', () => {
-            if(!Utility.isEditMode()) {
-                this.scene.stop();
-                //Re-enable input for farm scene
-                this.scene.get('FarmScene').input.enabled = true;
-            }
+            let farmScene = this.scene.get('FarmScene');
+            this.toggleHideScene(farmScene);
+            this.toggleHideSubtasks();
         });
-}
+
+        this.children.each(child => child.setVisible(false));
+        this.hidden = true;
+    }
+
+    toggleHideScene(farmScene) {
+        if(!Utility.isEditMode()) {
+            farmScene.input.enabled = !farmScene.input.enabled;
+            if(this.hidden) {
+                this.children.each(child => child.setVisible(true));
+                this.toggleInverseColour("white");
+                this.hidden = !this.hidden;
+            }
+            else {
+                this.children.each(child => child.setVisible(false));
+                this.toggleInverseColour("black");
+                this.hidden = !this.hidden;
+            }
+        }
+    }
+
+    toggleHideSubtasks() {
+        let subtasks = document.getElementById("wrapperContainer");
+        let subtasksDiv = document.getElementById('subtasksDiv');
+
+        // Try to find an input inside subtasksDiv
+        let childInput = subtasksDiv.querySelector('input');
+
+        // Check if a child input was found
+        if (childInput !== null) {
+            if(subtasks.style.display == "none") {
+                subtasks.style.display = "block";
+            }
+            else {
+                subtasks.style.display = "none";
+            }
+        }
+    }
+
+    toggleInverseColour(colour) {
+        if(colour == "white") {
+            let images = document.querySelectorAll("#edit-buttons-container .edit img, .top-left-container img, .coins-container p");
+            for(let image of images) {
+                image.classList.add("inverted-colour");
+            }
+        }
+        else if(colour == "black") {
+            let images = document.querySelectorAll("#edit-buttons-container .edit img, .top-left-container img, .coins-container p");
+            for(let image of images) {
+                image.classList.remove("inverted-colour");
+            }
+        }
+    }
 }
