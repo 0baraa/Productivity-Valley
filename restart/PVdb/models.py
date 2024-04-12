@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator
 
 
 class Users(models.Model):    #table for users
@@ -61,9 +62,9 @@ class UserDates(models.Model):
     timeSpent = models.PositiveIntegerField(default=0)  #total time spent on tasks on a given day
     class Meta:
         unique_together = [['usernameId', 'date']]
-# class Decorations(models.Model):    #table for decorations
-#     name = models.CharField(max_length=30, unique = True, primary_key=True)
-#     price = models.PositiveIntegerField(default=0)
+class Decorations(models.Model):    #table for decorations
+    name = models.CharField(max_length=30, unique = True, primary_key=True)
+    price = models.PositiveIntegerField(default=0)
 
 class Crops(models.Model):   #table for crops
     name = models.CharField(max_length=30, unique = True, primary_key=True)

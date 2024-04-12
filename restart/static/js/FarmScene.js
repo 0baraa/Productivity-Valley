@@ -1,5 +1,5 @@
 import Utility from "./Utility.js";
-import UserData from "/connection/UserData.js"
+import UserData from "./connection/UserData.js"
 
 export default class FarmScene extends Phaser.Scene {
     constructor() {
@@ -1579,7 +1579,7 @@ class PlayerFarm {
 
         let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
 
-        let data = Utility.getUserData();
+        let data = this.getUserData();
         this.userName = data.userData.usernameId;
         this.loadOwnedSeeds(data.seedsOwned);
         this.createPlots(data);
@@ -1590,6 +1590,34 @@ class PlayerFarm {
         this.showCoins(data.userData.coins);
 
     }
+
+    
+    getUserData() {
+        // Called in create method of FarmScene
+        // Fetches user data from the backend
+        // Then formats data in appropriate way
+        // This data is used to create a PlayerFarm object, which is then displayed
+        const user = new UserData()
+        console.log(currentUsername)
+        let userData = user.fetchUserData(currentUsername)
+        let userCrops = user.fetchUserCrops(currentUsername)
+        let userDecs = user.fetchUserDecorations(currentUsername)
+        let userFurniture = user.fetchUserFurniture(currentUsername)
+        let tasks = user.fetchUserTasks(currentUsername)
+        let userPlots = user.fetchUserPlots(currentUsername)
+        let userSettings = user.fetchUserSettings(currentUsername)
+
+        return {
+            userData: userData,
+            seedsOwned: userCrops,
+            plots:userPlots,
+            tasks:tasks,
+            furniture: userFurniture,
+            decorations: userDecs,
+            userSettings: userSettings
+        };
+    }
+
     loadOwnedSeeds(seedsOwned) {
         this.seedsOwned = seedsOwned;
     }
