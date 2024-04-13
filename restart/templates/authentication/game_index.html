@@ -10,6 +10,8 @@
     <link rel="icon" href="{% static 'assets/sun.ico' %}" type="image/x-icon">
     <script type="text/javascript">
         var STATIC_URL = "{% static '' %}";
+        var currentUsername = "{{ username }}"; 
+        console.log("username: " + currentUsername);
     </script>
     <script src="{% static 'js/libs/phaser.js' %}"></script>
 
@@ -516,9 +518,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script type="text/javascript">
-        var currentUsername = "{{ username }}"; 
-    </script>
+
 
 </body>
 </html>

@@ -93,8 +93,8 @@ export default class FarmScene extends Phaser.Scene {
         loadStatic('play-button', 'assets/clock/play-button.png');
         loadStatic('pause-button', 'assets/clock/pause-button.png');
         loadStatic('skip-button', 'assets/clock/skip-button.png');
-
-        this.data = AccessUserData.getAllUserData();
+        console.log(currentUsername);
+        this.data = AccessUserData.getAllUserData(currentUsername);
 
     }
 

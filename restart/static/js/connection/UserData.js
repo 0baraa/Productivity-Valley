@@ -17,15 +17,18 @@ const userSettTable = "/user-settings/";
 
 export default class UserData {     //works
     static urlStarter = "http://localhost:8000";
-    static usersTable = "/users/";
-    static userDecTable = "/user-decorations/";
-    static userCropTable = "/user-crops/";
-    static userTaskTable = "/tasks/";
-    static userPlotTable = "/user-plots/";
-    static userSettTable = "/user-settings/";
+    static usersTable = "users/";
+    static userDecTable = "user-decorations/";
+    static userFurnTable = "user-furniture/";
+    static userCropTable = "user-crops/";
+    static userTaskTable = "tasks/";
+    static userPlotTable = "user-plots/";
+    static userSettTable = "user-settings/";
     
 
     static fetchData(url) {
+
+
         return fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -42,19 +45,33 @@ export default class UserData {     //works
                 throw error;
             });
         }
-    static fetchUserData(usernameId) {
-        const url = `${usersTable}?usernameId=${usernameId}`;
+    static async fetchUserData(userId) {
+        const url = `http://localhost:8000/users/?usernameId=${userId}`;
+        console.log(userId);
+        data = await axios.get('/users/', {
+            params: {
+                usernameId: userId
+            }
+        }).then(response => {
+            return response.data;
+        }).catch(error => {
+            console.error('Error fetching user data');
+            return null;
+            throw error;
+        });
+        console.log(data);
+        return data;
 
-        return axios.get(url)
-            .then(response => {
-                console.log(response.data)
-                return response.data;
-            })
-            .catch(error => {
-                console.error('Error fetching user decorations:', error);
-                return null;
-                throw error;
-            });
+        // return axios.get(url)
+        //     .then(response => {
+        //         console.log(response.data)
+        //         return response.data;
+        //     })
+        //     .catch(error => {
+        //         console.error('Error fetching user decorations:', error);
+        //         return null;
+        //         throw error;
+        //     });
     }
     static createUser(data) {      //works
         const url = `${usersTable}`;

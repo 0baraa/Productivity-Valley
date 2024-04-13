@@ -1,7 +1,7 @@
 import UserData from "./UserData.js";
 
 export default class AccessUserData {
-    static async getAllUserData() {
+    static async getAllUserData(currentUsername) {
         // Called in create method of FarmScene
         // Fetches user data from the backend
         // Then formats data in appropriate way
