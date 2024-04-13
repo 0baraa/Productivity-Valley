@@ -763,7 +763,7 @@ export default class FarmScene extends Phaser.Scene {
         for (let i = 0; i < this.butterflies.length; i++) {
             this.butterflies[i].updateY();
         }
-        if (this.skip == 3) {
+        if (this.skip == 2) {
             this.skip = 0;
             for (let j = 0; j < this.clouds.length; j++) {
                 this.clouds[j].moveX();
@@ -817,6 +817,7 @@ export default class FarmScene extends Phaser.Scene {
 
     openTaskMenu(editing) {
         if (!editing) {
+            Utility.setPlotReady(false)
             let cropChoice = document.getElementById("cropChoice");
             let seedsOwned = Object.values(this.farm.saveseedsOwned());
             let taskable = false;
@@ -1141,12 +1142,27 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.scene.events.on('showTime', this.showTime, this);
         this.scene.events.on('hideTime', this.hideTime, this);
 
+        this.scene.events.on('hideButtons', this.reset, this);
+
+        this.scene.events.on('pomodoroStarted', this.startPomodoro, this);
         // Start the timer
         console.log("workFlag: ", this.pomodoro.workFlag);
         // if (this.autoStartTimer){
         //     this.startTimer();
         // }
         this.startTimer();
+    }
+
+    reset(){
+        this.hideTime();
+        this.fillCircle.destroy();
+        this.clear();
+    }
+
+    startPomodoro(){
+        if (this.timer1 && this.Pomodoro.playButton.setVisible(false)){
+            this.Pomodoro.playButton.setVisible(true);
+        }
     }
 
     skipTimer() {
@@ -1320,12 +1336,14 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.updateTimeSettings();
         this.noOfPomodoros = noOfPomodoros;
         
-        this.createButtons();
+        this.setupPomodoro();
         //this.createHitArea();
 
-        //this.playButton.setVisible(true);
-
         this.scene.events.on('timerCompleted', this.autoStart, this);
+
+        this.scene.events.on('plotSelected', this.onVisibility, this);
+        this.scene.events.on('hideButtons', this.offVisibility, this);
+        //     this.playButton.setVisible(true);
 
         this.graphics = this.scene.add.graphics();
 
@@ -1333,8 +1351,17 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.add(this.graphics);
     }
 
+    onVisibility(){
+        this.playButton.setVisible(true);
+    }
+
+    offVisibility(){
+        this.playButton.setVisible(false);
+    }
+
     setupPomodoro() {
         this.createButtons();
+        this.playButton.setVisible(false);
     }
 
     updateTimeSettings() {
@@ -1365,7 +1392,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         // create play button image
         this.playButton = this.scene.add.image(this.x + 160, this.y*2 - 10, 'play-button').setScale(.23);
         this.playButton.setDepth(1);
-        // this.playButton.setVisible(false);
+        // this.playButton.setVisible(true);
         this.playButton.setInteractive();
         // Utility.addTintOnHover(this.playButton);
 
@@ -1440,12 +1467,14 @@ class Pomodoro extends Phaser.GameObjects.Container {
             console.log('work flag', this.workFlag)
             this.skipTimer();
         });
-
-        //  no plot selected, set visibility to false
-        // if (this.selector.plotSelected == null){
-        //     this.playButton.setVisible(false);
-        // } else {
+        
+        //  has to be updated every time
+        // if (Utility.plotReady()){
+        //     console.log("plot found");
         //     this.playButton.setVisible(true);
+        // } else {
+        //     console.log("plot not found");
+        //     this.playButton.setVisible(false);
         // }
     }
 
@@ -2115,6 +2144,13 @@ class Plot extends Phaser.GameObjects.Container {
         this.scene.selector.setPosition(this.x, this.y);
         this.scene.selector.plotSelected = this.id;
         this.scene.selector.setVisible(true);
+        
+        if (this.occupied == true){
+            this.scene.events.emit('plotSelected');
+        }
+        else {
+            this.scene.events.emit('hideButtons');
+        }
     }
 
     setupCrops(cropType) {
