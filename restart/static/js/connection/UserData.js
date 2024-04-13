@@ -7,8 +7,24 @@ const apiUrl = 'http://localhost:8000/users/';
 const apiUrlalt = 'http://localhost:8000/user-decorations/';
 const apiUrlalt1 = 'http://localhost:8000/user-crops/';
 
+const urlStarter = "http://localhost:8000";
+const usersTable = "/users/";
+const userDecTable = "/user-decorations/";
+const userCropTable = "/user-crops/";
+const userTaskTable = "/tasks/";
+const userPlotTable = "/user-plots/";
+const userSettTable = "/user-settings/";
 
 export default class UserData {     //works
+    static urlStarter = "http://localhost:8000";
+    static usersTable = "/users/";
+    static userDecTable = "/user-decorations/";
+    static userCropTable = "/user-crops/";
+    static userTaskTable = "/tasks/";
+    static userPlotTable = "/user-plots/";
+    static userSettTable = "/user-settings/";
+    
+
     static fetchData(url) {
         return fetch(url)
             .then(response => {
@@ -27,7 +43,7 @@ export default class UserData {     //works
             });
         }
     static fetchUserData(usernameId) {
-        const url = `http://localhost:8000/users/?usernameId=${usernameId}`;
+        const url = `${usersTable}?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -36,11 +52,12 @@ export default class UserData {     //works
             })
             .catch(error => {
                 console.error('Error fetching user decorations:', error);
+                return null;
                 throw error;
             });
     }
     static createUser(data) {      //works
-        const url = `http://localhost:8000/users/`;
+        const url = `${usersTable}`;
         axios.post(url, data)
             .then(response => {
                 console.log('User created successfully:', response.data);
@@ -50,7 +67,7 @@ export default class UserData {     //works
             });
     }
     static deleteUser(usernameId) {    //works
-        const url = `http://localhost:8000/users/`;     
+        const url = `${usersTable}`;     
         const requestOptions = {
             method: 'DELETE',
             headers: {
@@ -70,7 +87,7 @@ export default class UserData {     //works
             });
     }
     static fetchUserDecorations(usernameId){   //works
-        const url = `http://localhost:8000/user-decorations/?usernameId=${usernameId}`;
+        const url = `${userDecTable}?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -79,11 +96,12 @@ export default class UserData {     //works
             })
             .catch(error => {
                 console.error('Error fetching user decorations:', error);
+                return null;
                 throw error;
             });
     }
     static addUserDecoration(data) {   //works
-        const url = 'http://localhost:8000/user-decorations/';
+        const url = `${userDecTable}`;
         axios.post(url, data)
             .then(response => {
                 console.log('Decoration added successfully:', response.data);
@@ -93,7 +111,7 @@ export default class UserData {     //works
             });
     }
     static deleteUserDecoration(usernameId, type) {    //works
-        const url = `http://localhost:8000/user-decorations/`;      
+        const url = `${userDecTable}`;      
         const requestData = {
             usernameId: usernameId,
             type: type
@@ -118,7 +136,7 @@ export default class UserData {     //works
             });
     }
     static fetchUserFurniture(usernameId){   //works
-        const url = `http://localhost:8000/user-furniture/?usernameId=${usernameId}`;
+        const url = `/user-furniture/?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -127,11 +145,12 @@ export default class UserData {     //works
             })
             .catch(error => {
                 console.error('Error fetching user decorations:', error);
+                return null;
                 throw error;
             });
     }
     static addUserFurniture(data) {   //works
-        const url = 'http://localhost:8000/user-furniture/';
+        const url = `/user-furniture/`;
         axios.post(url, data)
             .then(response => {
                 console.log('Decoration added successfully:', response.data);
@@ -141,7 +160,7 @@ export default class UserData {     //works
             });
     }
     static deleteUserFurniture(usernameId, type) {    //works
-        const url = `http://localhost:8000/user-furniture/`
+        const url = `/user-furniture/`
         const requestData = {
             usernameId: usernameId,
             type: type
@@ -166,7 +185,7 @@ export default class UserData {     //works
             });
     }
     static fetchUserCrops(usernameId){    //works
-        const url = `http://localhost:8000/user-crops/?usernameId=${usernameId}`;
+        const url = `${userCropTable}?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -175,6 +194,7 @@ export default class UserData {     //works
             })
             .catch(error => {
                 console.error('Error fetching user crops:', error);
+                return null;
                 throw error;
             });
     }
@@ -184,11 +204,11 @@ export default class UserData {     //works
                 console.log('Crop added successfully:', response.data);
             })
             .catch(error => {
-                console.error('Error adding decoration for user:', error);
+                console.error('Error adding crop for user:', error);
             });
     }
     static deleteUserCrop(usernameId) {    //works
-        const url = `http://localhost:8000/user-crops/`;     
+        const url = `${userCropTable}`;     
         const requestOptions = {
             method: 'DELETE',
             headers: {
@@ -204,11 +224,11 @@ export default class UserData {     //works
                 console.log('User crop deleted successfully');
             })
             .catch(error => {
-                console.error('Error deleting user:', error);
+                console.error('Error deleting user crop:', error);
             });
     }
     static fetchUserTasks(usernameId){    //works
-        const url = `http://localhost:8000/tasks/?usernameId=${usernameId}`;
+        const url = `${userTaskTable}?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -217,11 +237,12 @@ export default class UserData {     //works
             })
             .catch(error => {
                 console.error('Error fetching user crops:', error);
+                return null;
                 throw error;
             });
     }
     static addUserTask(data) {     //works
-        const url = 'http://localhost:8000/tasks/';
+        const url = '${userTaskTable}';
         axios.post(url, data)
         .then(response => {
             console.log('Task added successfully:', response.data);
@@ -235,7 +256,7 @@ export default class UserData {     //works
         });
     }
     static deleteUserTask(usernameId, plotId) {    //works
-        const url = `http://localhost:8000/tasks/`;   
+        const url = `${userTaskTable}`;   
         const requestData = {
             usernameId: usernameId,
             plotId: plotId
@@ -260,7 +281,7 @@ export default class UserData {     //works
             });
     }
     static fetchUserPlots(usernameId){    //works
-        const url = `http://localhost:8000/user-plots/?usernameId=${usernameId}`;
+        const url = `${userPlotTable}?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -269,11 +290,12 @@ export default class UserData {     //works
             })
             .catch(error => {
                 console.error('Error fetching user crops:', error);
+                return null;
                 throw error;
             });
     }
     static addUserPlot(data) {     //works
-        const url = 'http://localhost:8000/user-plots/';
+        const url = `${userPlotTable}`;
         axios.post(url, data)
         .then(response => {
             console.log('Task added successfully:', response.data);
@@ -286,8 +308,8 @@ export default class UserData {     //works
             }
         });
     }
-    static deleteUserPlots(usernameId, plotId) {    //works
-        const url = `http://localhost:8000/user-plots/`;   
+    static deleteUserPlot(usernameId, plotId) {    //works
+        const url = `${userPlotTable}`;   
         const requestData = {
             usernameId: usernameId,
             plotId: plotId
@@ -312,7 +334,7 @@ export default class UserData {     //works
             });
     }
     static fetchUserSettings(usernameId){    //works
-        const url = `http://localhost:8000/user-settings/?usernameId=${usernameId}`;
+        const url = `${userSettTable}?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -321,11 +343,12 @@ export default class UserData {     //works
             })
             .catch(error => {
                 console.error('Error fetching user crops:', error);
+                return null;
                 throw error;
             });
     }
     static addUserSettings(data) {     //works
-        const url = 'http://localhost:8000/user-settings/';
+        const url = `${userSettTable}`;
         axios.post(url, data)
             .then(response => {
                 console.log('Crop added successfully:', response.data);
@@ -335,7 +358,7 @@ export default class UserData {     //works
             });
     }
     static deleteUserSettings(usernameId) {    //works
-        const url = `http://localhost:8000/user-settings/`;     
+        const url = `${userSettTable}`;     
         const requestOptions = {
             method: 'DELETE',
             headers: {
@@ -355,7 +378,7 @@ export default class UserData {     //works
             });
     }
     static updateUserMoney(usernameId, coins) {      //works
-        const url = `http://localhost:8000/users/change-money/`;
+        const url = `${usersTable}change-money/`;
     
         const requestData = {
             usernameId: usernameId,
@@ -379,12 +402,14 @@ export default class UserData {     //works
             console.error('Error updating money:', error);
         });
     }
-    static updateHouse(usernameId, farmHouseLevel) {      //works
-        const url = `http://localhost:8000/users/change-house/`;
+    static updateHouse(usernameId, farmHouseLevel, xIn, yIn) {      //works
+        const url = `${usersTable}change-house/`;
     
         const requestData = {
             usernameId: usernameId,
-            farmHouseLevel:farmHouseLevel
+            farmHouseLevel:farmHouseLevel,
+            x: xIn,
+            y: yIn
         };
         console.log(requestData)
         fetch(url, {
@@ -405,7 +430,7 @@ export default class UserData {     //works
         });
     }
     static getuserDates(usernameId) {
-        const url = `http://localhost:8000/user-dates/?usernameId=${usernameId}`;
+        const url = `/user-dates/?usernameId=${usernameId}`;
 
         return axios.get(url)
             .then(response => {
@@ -418,7 +443,7 @@ export default class UserData {     //works
             });
     }
     static addUserDate(data) {
-        const url = 'http://localhost:8000/user-dates/'
+        const url = `/user-dates/`
         axios.post(url, data)
         .then(response => {
             console.log('Date added successfully:', response.data);
