@@ -22,8 +22,8 @@ export default class AccessUserData {
         
         let userSeeds = await UserData.fetchUserCrops(currentUsername)
         console.log(userSeeds);
-        if (userSeeds == null || userSeeds.length == 0) {
-            console.log("no seeds found");
+        if (userSeeds == null || Object.keys(userSeeds).length === 0) {
+            console.log("no seeds found, creating some");
             userSeeds = {usernameId: currentUsername, sunflower: -1, carrot: -1, pumpkin: -1, tulip: -1, tomato: -1}
             UserData.addUserCrop(userSeeds);
         }
@@ -48,7 +48,8 @@ export default class AccessUserData {
         }
         
         let userSettings = await UserData.fetchUserSettings(currentUsername)
-        if (userSettings == null) {
+        if (userSettings == null || Object.keys(userSettings).length === 0) {
+            console.log("no userSettings, creating their settings")
             userSettings = {
                 usernameId: currentUsername,
                 workTime : 25,
@@ -82,12 +83,16 @@ export default class AccessUserData {
         await UserData.deleteUserCrop(seeds.usernameId);
         UserData.addUserCrop(seeds);
     }
-    static async amendUserPlots(plotList) {
+    static async updateAllUserPlots(plotList) {
         for (let i = 0; i < plotList.length; i++) {
-            await UserData.deleteUserPlot(currentUsername, plotList[i].plotId);
-            plotList[i].usernameId = currentUsername;
-            UserData.addUserPlot(plotList[i]);
+            this.changeUserPlot(plotList[i]);
         }
+    }
+
+    static async updateUserPlot(plot) {
+        await UserData.deleteUserPlot(currentUsername, plot.plotId);
+        plot.usernameId = currentUsername;
+        UserData.addUserPlot(plot);
     }
 
     static async amendUserTasks(taskList) {
