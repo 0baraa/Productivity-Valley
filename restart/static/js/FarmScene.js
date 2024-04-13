@@ -2366,16 +2366,21 @@ class Plot extends Phaser.GameObjects.Container {
     }
 
     calculateCoins(crop) {
+        let multiplier = 1;
+        let completed = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].completed;
+        if(completed) {
+            multiplier = 1.2;
+        }
         let elapsedTime = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].elapsedTime;
         switch(crop) {
             case "sunflower":
-                return Math.floor(elapsedTime * 100);
+                return Math.floor(elapsedTime * 100 * multiplier);
             case "carrot":
-                return  Math.floor(elapsedTime * 100 * 1.2);
+                return  Math.floor(elapsedTime * 100 * 1.2) * multiplier;
             case "tulip":
-                return  Math.floor(elapsedTime * 100 * 1.4);
+                return  Math.floor(elapsedTime * 100 * 1.4 * multiplier);
             case "pumpkin":
-                return  Math.floor(elapsedTime * 100 * 1.6);
+                return  Math.floor(elapsedTime * 100 * 1.6 * multiplier);
         }
     }
     
