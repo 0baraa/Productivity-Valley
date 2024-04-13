@@ -10,6 +10,11 @@ class Users(models.Model):    #table for users
     x = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(640)])
     y = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(1200)])
 
+    ##Please Remove
+    email = models.EmailField(unique=True)
+    plots = models.PositiveIntegerField(default=0)
+
+
 class UserPlots(models.Model):
     usernameId = models.ForeignKey(Users, on_delete=models.CASCADE, to_field='usernameId', default=False)
     plotId = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(7)], primary_key=True)

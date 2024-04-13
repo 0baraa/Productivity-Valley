@@ -126,7 +126,9 @@ export default class UserData {     //works
     }
     static addUserDecoration(data) {   //works
         const url = `${userDecTable}`;
-        axios.post(url, data)
+        axios.post(url, data, {
+            headers: {'X-CSRFToken': csrftoken},
+        })
             .then(response => {
                 console.log('Decoration added successfully:', response.data);
             })
@@ -178,7 +180,9 @@ export default class UserData {     //works
     }
     static addUserFurniture(data) {   //works
         const url = `/user-furniture/`;
-        axios.post(url, data)
+        axios.post(url, data, {
+            headers: {'X-CSRFToken': csrftoken},
+        })
             .then(response => {
                 console.log('Decoration added successfully:', response.data);
             })
@@ -229,7 +233,9 @@ export default class UserData {     //works
         return data;
     }
     static addUserCrop(url, data) {     //works
-        axios.post(url, data)
+        axios.post(url, data, {
+            headers: {'X-CSRFToken': csrftoken},
+        })
             .then(response => {
                 console.log('Crop added successfully:', response.data);
             })
@@ -275,7 +281,9 @@ export default class UserData {     //works
     }
     static addUserTask(data) {     //works
         const url = '${userTaskTable}';
-        axios.post(url, data)
+        axios.post(url, data, {
+            headers: {'X-CSRFToken': csrftoken},
+        })
         .then(response => {
             console.log('Task added successfully:', response.data);
         })
@@ -330,7 +338,9 @@ export default class UserData {     //works
     }
     static addUserPlot(data) {     //works
         const url = `${userPlotTable}`;
-        axios.post(url, data)
+        axios.post(url, data, {
+            headers: {'X-CSRFToken': csrftoken},
+        })
         .then(response => {
             console.log('Task added successfully:', response.data);
         })
@@ -385,7 +395,9 @@ export default class UserData {     //works
     }
     static addUserSettings(data) {     //works
         const url = `${userSettTable}`;
-        axios.post(url, data)
+        axios.post(url, data, {
+            headers: {'X-CSRFToken': csrftoken},
+        })
             .then(response => {
                 console.log('Crop added successfully:', response.data);
             })

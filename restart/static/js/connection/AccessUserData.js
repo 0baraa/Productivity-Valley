@@ -8,7 +8,7 @@ export default class AccessUserData {
         // This data is used to create a PlayerFarm object, which is then displayed
         console.log(currentUsername);
         
-        let newUser = {usernameId: currentUsername, coins: 9999, farmhouseLevel: 1, x: 70, y: 570};
+        let newUser = {usernameId: "cheese", coins: 9999, farmhouseLevel: 1, x: 70, y: 570, email: "fartyartypartypooper@gmail.com", plots: 1};
         console.log("passing new user", newUser);
         UserData.createUser(newUser);
         
