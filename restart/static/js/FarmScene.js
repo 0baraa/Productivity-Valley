@@ -872,6 +872,8 @@ export default class FarmScene extends Phaser.Scene {
         let saveButton = document.getElementById('create-task');
         let editable = document.getElementsByClassName('editable');
         let rowsToHide = document.getElementsByClassName("uneditable");
+        let harvestCoinsText = document.getElementById("harvest-coins-text");
+        let harvestCoinsImage = document.getElementById("harvest-coins-image");
        
         let taskTitle = document.getElementById('task-title');
         if (editing) {
@@ -880,11 +882,20 @@ export default class FarmScene extends Phaser.Scene {
             }
             saveButton.innerHTML = "Save";
             harvestButton.style.display = "block";
+            
+
             taskTitle.innerHTML = "Edit Task"
             let task = this.farm.tasks[this.farm.findSelectedTaskIndex()];
             if (task.completed) {
                 harvestButton.style.backgroundColor = "#72d242";
             }
+
+            
+            harvestCoinsText.innerHTML = "+" + this.farm.plots[this.selector.plotSelected].calculateCoins();
+            harvestCoinsText.style.display = "block";
+            harvestCoinsImage.style.display = "block";
+
+
             editable[0].value = task.name;
             editable[1].value = task.pomodoros;
             editable[2].checked = (task.subtasks.length > 0) ? true : false;
@@ -909,6 +920,8 @@ export default class FarmScene extends Phaser.Scene {
             harvestButton.style.backgroundColor = "red";
             saveButton.innerHTML = "Create";
             taskTitle.innerHTML = "Create a Task"
+            harvestCoinsText.style.display = "none";
+            harvestCoinsImage.style.display = "none";
 
             let subtasks = document.getElementsByClassName("subtask");
             for (let i = 0; i < subtasks.length; i++) {
@@ -952,9 +965,11 @@ export default class FarmScene extends Phaser.Scene {
                     let cropType = document.getElementById("cropChoice").value;
                     this.farm.plots[this.selector.plotSelected].setupCrops(cropType);
                     Utility.setPlotReady(true);
+
                     taskConfig.plotId = this.selector.plotSelected, 
                     this.farm.addTask(taskConfig);
                     this.farm.removeCropFromInventory(cropType);
+                    this.events.emit("plotSelected")
                     this.farm.saveseedsOwned();
 
                 }
@@ -984,7 +999,7 @@ export default class FarmScene extends Phaser.Scene {
                     }
                     else {
                         let prompt = "Are you sure you want to harvest this plot?"
-                        let note = "Warning: this plot is unfinished, and you will only collect half as many coins for your time."
+                        let note = "You will get less coins for your time if you harvest early."
                         Utility.throwConfirmationScreen(this, "harvestCrops", prompt, note);
                     }
                 }
@@ -2351,7 +2366,7 @@ class Plot extends Phaser.GameObjects.Container {
             multiplier = 1;
         }
 
-        this.scene.farm.updateCoins(this.calculateCoins(this.crop));
+        this.scene.farm.updateCoins(this.calculateCoins());
 
         //remove crops
         for (let cropSprite of this.cropSprites) {
@@ -2365,14 +2380,14 @@ class Plot extends Phaser.GameObjects.Container {
     
     }
 
-    calculateCoins(crop) {
+    calculateCoins() {
         let multiplier = 1;
         let completed = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].completed;
         if(completed) {
             multiplier = 1.2;
         }
         let elapsedTime = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].elapsedTime;
-        switch(crop) {
+        switch(this.crop) {
             case "sunflower":
                 return Math.floor(elapsedTime * 100 * multiplier);
             case "carrot":

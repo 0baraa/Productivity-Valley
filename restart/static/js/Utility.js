@@ -141,6 +141,7 @@ export default class Utility {
             if (event.srcElement.id == "accept-confirmation") {
                 if (action == "harvestCrops") {
                     scene.events.emit(action);
+                    this.events.emit("plotSelected")
                 }
                 else if (action = "deleteAccount") {
                     //this.deleteAccount();
