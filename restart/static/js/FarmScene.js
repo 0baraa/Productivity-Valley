@@ -199,9 +199,9 @@ export default class FarmScene extends Phaser.Scene {
         const screenWidth = this.sys.game.config.width;
         const screenHeight = this.sys.game.config.height;
         
-        const pomodoroY = screenHeight * 0.2;
-        this.sunFlares = this.add.sprite(320, pomodoroY+239, 'sun-flares').setDepth(-1);
-        this.pomodoro = new Pomodoro(this, 160, pomodoroY, 75);
+        const pomodoroY = screenHeight * 0.207;
+        this.sunFlares = this.add.sprite(320, pomodoroY+245, 'sun-flares').setDepth(-2);
+        this.pomodoro = new Pomodoro(this, 160, pomodoroY, 75).setDepth(-2);
         
         let homeButton = document.getElementById("home-icon-container");
         homeButton.addEventListener('click', () => {
@@ -1086,6 +1086,7 @@ class Selector extends Phaser.GameObjects.Sprite {
 class SectorCircle extends Phaser.GameObjects.Graphics {
     constructor(scene, x, y, radius, startAngle, endAngle, color) {
         super(scene);
+        this.setDepth(-2);
         scene.add.existing(this);
 
         this.x = x;
@@ -1169,6 +1170,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
     }
 
     reset(){
+        console.log("in reset");
         this.hideTime();
         this.fillCircle.destroy();
         this.clear();
@@ -1401,6 +1403,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.graphics.arc(this.x, this.y, this.radius - 30, 0, Phaser.Math.PI2);
         this.graphics.closePath();
         this.graphics.fillPath();
+        this.graphics.setDepth(-3);
     }
 
     createButtons() {
@@ -1526,7 +1529,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.timer1.destroy();
             this.timer1.timeString.destroy();
         }
-        this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, elapsedTime, 0, this, this.pauseFlag, 0xffa500);
+        this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, elapsedTime, 0, this, this.pauseFlag, 0xffa500).setDepth(-2);
         this.scene.events.emit("timerPaused");
         this.pauseFlag = true;
         this.workFlag = true;
@@ -2164,7 +2167,7 @@ class Plot extends Phaser.GameObjects.Container {
         this.scene.selector.plotSelected = this.id;
         this.scene.selector.setVisible(true);
         
-        if (this.occupied == true){
+        if (this.occupied && !this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].completed){
             this.scene.events.emit('plotSelected');
         }
         else {
@@ -2377,7 +2380,8 @@ class Plot extends Phaser.GameObjects.Container {
         this.growthStep = 0;
         this.cropSprites = [];
         this.occupied = false;
-    
+
+        this.scene.events.emit('hideButtons');
     }
 
     calculateCoins() {
