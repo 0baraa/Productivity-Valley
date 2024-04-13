@@ -199,7 +199,7 @@ export default class FarmScene extends Phaser.Scene {
         const screenWidth = this.sys.game.config.width;
         const screenHeight = this.sys.game.config.height;
         
-        const pomodoroY = screenHeight * 0.207;
+        const pomodoroY = screenHeight * 0.2045;
         this.sunFlares = this.add.sprite(320, pomodoroY+245, 'sun-flares').setDepth(-2);
         this.pomodoro = new Pomodoro(this, 160, pomodoroY, 75).setDepth(-2);
         
@@ -872,8 +872,6 @@ export default class FarmScene extends Phaser.Scene {
         let saveButton = document.getElementById('create-task');
         let editable = document.getElementsByClassName('editable');
         let rowsToHide = document.getElementsByClassName("uneditable");
-        let harvestCoinsText = document.getElementById("harvest-coins-text");
-        let harvestCoinsImage = document.getElementById("harvest-coins-image");
        
         let taskTitle = document.getElementById('task-title');
         if (editing) {
@@ -882,20 +880,11 @@ export default class FarmScene extends Phaser.Scene {
             }
             saveButton.innerHTML = "Save";
             harvestButton.style.display = "block";
-            
-
             taskTitle.innerHTML = "Edit Task"
             let task = this.farm.tasks[this.farm.findSelectedTaskIndex()];
             if (task.completed) {
                 harvestButton.style.backgroundColor = "#72d242";
             }
-
-            
-            harvestCoinsText.innerHTML = "+" + this.farm.plots[this.selector.plotSelected].calculateCoins();
-            harvestCoinsText.style.display = "block";
-            harvestCoinsImage.style.display = "block";
-
-
             editable[0].value = task.name;
             editable[1].value = task.pomodoros;
             editable[2].checked = (task.subtasks.length > 0) ? true : false;
@@ -920,8 +909,6 @@ export default class FarmScene extends Phaser.Scene {
             harvestButton.style.backgroundColor = "red";
             saveButton.innerHTML = "Create";
             taskTitle.innerHTML = "Create a Task"
-            harvestCoinsText.style.display = "none";
-            harvestCoinsImage.style.display = "none";
 
             let subtasks = document.getElementsByClassName("subtask");
             for (let i = 0; i < subtasks.length; i++) {
@@ -965,11 +952,9 @@ export default class FarmScene extends Phaser.Scene {
                     let cropType = document.getElementById("cropChoice").value;
                     this.farm.plots[this.selector.plotSelected].setupCrops(cropType);
                     Utility.setPlotReady(true);
-
                     taskConfig.plotId = this.selector.plotSelected, 
                     this.farm.addTask(taskConfig);
                     this.farm.removeCropFromInventory(cropType);
-                    this.events.emit("plotSelected")
                     this.farm.saveseedsOwned();
 
                 }
@@ -999,7 +984,7 @@ export default class FarmScene extends Phaser.Scene {
                     }
                     else {
                         let prompt = "Are you sure you want to harvest this plot?"
-                        let note = "You will get less coins for your time if you harvest early."
+                        let note = "Warning: this plot is unfinished, and you will only collect half as many coins for your time."
                         Utility.throwConfirmationScreen(this, "harvestCrops", prompt, note);
                     }
                 }
@@ -1135,7 +1120,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.autoStartTimer = this.autoStartTimer;
 
         // Generate the text
-        this.timeString = scene.add.text(this.x + 127, this.y*2 + 15, '', { color: '#000000', fontSize: '14px'});
+        this.timeString = scene.add.text(this.x + 127, this.y*2 + 10, '', { color: '#000000', fontSize: '14px'});
         this.timeString.setDepth(1);
 
         // Add the text to the scene
@@ -2369,7 +2354,7 @@ class Plot extends Phaser.GameObjects.Container {
             multiplier = 1;
         }
 
-        this.scene.farm.updateCoins(this.calculateCoins());
+        this.scene.farm.updateCoins(this.calculateCoins(this.crop));
 
         //remove crops
         for (let cropSprite of this.cropSprites) {
@@ -2384,14 +2369,14 @@ class Plot extends Phaser.GameObjects.Container {
         this.scene.events.emit('hideButtons');
     }
 
-    calculateCoins() {
+    calculateCoins(crop) {
         let multiplier = 1;
         let completed = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].completed;
         if(completed) {
             multiplier = 1.2;
         }
         let elapsedTime = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].elapsedTime;
-        switch(this.crop) {
+        switch(crop) {
             case "sunflower":
                 return Math.floor(elapsedTime * 100 * multiplier);
             case "carrot":
