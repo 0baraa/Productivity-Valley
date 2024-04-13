@@ -29,6 +29,8 @@ path('user-decorations/', UserDecorationsView.as_view(), name='user_decorations'
 path('user-crops/', UserCropsView.as_view(), name='user_crops'),
 path('user-furniture/', UserFurnitureView.as_view(), name='user_furniture'),
 path('tasks/', TasksView.as_view(), name='tasks'),
+path('user-plots/', UserPlotsView.as_view(), name ='user_plots'),
+path('user-settings/', UserSettingsView.as_view(), name='user_settings'),
 path('user-dates/', UserDatesView.as_view(), name='user_dates'),
 path('pomodoro_stats/<str:username>/', PomodoroStatsView.as_view(), name='pomodoro_stats'),
 ]

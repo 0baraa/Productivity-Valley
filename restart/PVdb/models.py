@@ -5,12 +5,10 @@ from django.core.validators import MaxValueValidator
 
 class Users(models.Model):    #table for users
     usernameId = models.CharField(max_length=50, unique=True, primary_key=True)
-    email = models.EmailField(unique=True)
     coins = models.PositiveIntegerField(default=0)
     farmHouseLevel = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(10)])
     x = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(640)])
     y = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(1200)])
-    plots = models.PositiveIntegerField(default=0)
 
 class UserPlots(models.Model):
     usernameId = models.ForeignKey(Users, on_delete=models.CASCADE, to_field='usernameId', default=False)
@@ -21,6 +19,9 @@ class UserPlots(models.Model):
     x = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(640)])
     y = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(1200)])
     placed = models.BooleanField(default=False)
+    class Meta:
+        # Define composite primary key using unique_together
+        unique_together = [['plotId', 'usernameId']]
 
 class Tasks(models.Model):   #table for tasks
     taskName = models.CharField(max_length=30)

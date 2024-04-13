@@ -11,8 +11,10 @@
     <script type="text/javascript">
         var STATIC_URL = "{% static '' %}";
         var currentUsername = "{{ username }}"; 
+        var csrftoken = '{{ csrf_token }}';
         console.log("username: " + currentUsername);
     </script>
+    
     <script src="{% static 'js/libs/phaser.js' %}"></script>
 
 {#    <script type="module" src="{% static 'js/libs/phaser.js' %}"></script>#}

@@ -35,6 +35,7 @@ export default class FarmScene extends Phaser.Scene {
 
     preload() {
         // 辅助函数，自动添加 STATIC_URL 前缀
+        this.gatherData();
         const loadStatic = (key, file) => this.load.image(key, STATIC_URL + file);
 
         // 对于特殊资源类型，如 bitmapFont 或 spritesheet，可以创建专门的辅助函数或直接使用 STATIC_URL
@@ -94,8 +95,13 @@ export default class FarmScene extends Phaser.Scene {
         loadStatic('pause-button', 'assets/clock/pause-button.png');
         loadStatic('skip-button', 'assets/clock/skip-button.png');
         console.log(currentUsername);
-        this.data = AccessUserData.getAllUserData(currentUsername);
+    }
 
+    async gatherData() {
+        await AccessUserData.getAllUserData(currentUsername).then((result) => {
+            print("resulting dataaaa" , result);
+            this.awaitData(result);
+        });
     }
 
     
@@ -734,11 +740,11 @@ export default class FarmScene extends Phaser.Scene {
         // Launch the FarmhouseScene (which is hidden at first)
             this.scene.launch('InsideFarmhouseScene');
         // Get the InsideFarmhouseScene instance
-        let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
+        this.insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
         // wait for scene to load then close it
-        console.log(this.data);
-        insideFarmhouseScene.load.on('complete', () => {
-            this.farm = new PlayerFarm(this, this.data);
+        this.insideFarmhouseScene.load.on('complete', () => {
+            this.ready = true;
+            
         });
 
         
@@ -752,6 +758,17 @@ export default class FarmScene extends Phaser.Scene {
         this.events.on('harvestCrops', this.harvestPlot, this);
         this.events.on('creatingTask', this.createTaskMenu, this);
         this.events.on('editingTask', this.editTaskMenu, this);
+    }
+
+    awaitData(data) {
+        if (this.ready) {
+            this.farm = new PlayerFarm(this, data);
+        } else {
+            this.insideFarmhouseScene.load.on('complete', () => {
+                this.ready = true;
+                this.farm = new PlayerFarm(this, data);
+            });
+        } 
     }
 
     updateSelector() {
@@ -1583,9 +1600,9 @@ class PlayerFarm {
 
         let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
 
-        console.log(data.value);
+        console.log(data);
         
-        this.userName = data.userData.usernameId;
+        this.userName = currentUsername;
         this.loadOwnedSeeds(data.seedsOwned);
         this.createPlots(data);
         this.createTasks(data);

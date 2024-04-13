@@ -8,18 +8,22 @@ export default class AccessUserData {
         // This data is used to create a PlayerFarm object, which is then displayed
         console.log(currentUsername);
         
-        let newUser = {usernameId: currentUsername, farmhouseLevel: 1, x: 70, y: 570};
+        let newUser = {usernameId: currentUsername, coins: 9999, farmhouseLevel: 1, x: 70, y: 570};
+        console.log("passing new user", newUser);
         UserData.createUser(newUser);
         
         let userData = await UserData.fetchUserData(currentUsername)
-        if (userData == null) {
+        console.log(userData);
+        if (!userData || userData.length == 0) {
             console.log("no user found creating new one")
-            userData = {usernameId: currentUsername, farmhouseLevel: 1, x: 70, y: 570};
+            userData = {usernameId: currentUsername, coins: 0, farmhouseLevel: 1, x: 70, y: 570};
             UserData.createUser(userData);
         }
         
         let userSeeds = await UserData.fetchUserCrops(currentUsername)
-        if (userSeeds == null) {
+        console.log(userSeeds);
+        if (userSeeds == null || userSeeds.length == 0) {
+            console.log("no seeds found");
             userSeeds = {usernameId: currentUsername, sunflower: -1, carrot: -1, pumpkin: -1, tulip: -1, tomato: -1}
             UserData.addUserCrop(userSeeds);
         }
@@ -37,8 +41,9 @@ export default class AccessUserData {
         
 
         let userPlots = await UserData.fetchUserPlots(currentUsername)
-        if (userPlots == null) {
-            userPlots = [{usernameId: currentUsername, plotId: 0, crop: "nothing", growthStage: 0, growthStep: 24, x: 176, y: 616, placed: true}]
+        if (userPlots == null || userPlots.length == 0) {
+            console.log("plots are empty, creating a new plot for user \n\n");
+            userPlots = [{ plotId: 0, crop: "nothing", growthStage: 0, growthStep: 24, x: 320, y: 616, placed: true}]
             UserData.addUserPlot(userPlots[0])
         }
         
@@ -55,12 +60,12 @@ export default class AccessUserData {
             };
             UserData.addUserSettings(userSettings);
         }
-
+        console.log()
         return {
             userData: userData,
             seedsOwned: userSeeds,
-            plots:userPlots,
-            tasks:tasks,
+            plots: userPlots,
+            tasks: tasks,
             furniture: userFurniture,
             decorations: userDecs,
             userSettings: userSettings

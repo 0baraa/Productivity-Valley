@@ -13,6 +13,12 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import get_object_or_404
 
+#might not be necessary
+from django.views.decorators.csrf import csrf_exempt
+
+#debugging
+import json
+
 
 class PomodoroStatsView(APIView):
     def get(self, request, username):
@@ -49,6 +55,7 @@ class PomodoroStatsView(APIView):
         # response_data = data
         return JsonResponse(response_data, safe=False)
 
+
 class UsersView(APIView):
     def get(self, request):
         print("\n\n\n\nthis is the request: \n\n\n\n",request.GET.get('usernameId'))
@@ -63,10 +70,13 @@ class UsersView(APIView):
                   "plots":output.plots}
                   for output in Users.objects.filter(usernameId = request.GET.get('usernameId'))]
         return Response(output)
+    #@csrf_exempt
     def post (self, request):
         print("\n\n\n\n\n\n\n\n\n notice me senpai\n\n\n\n\n\n\n\n\n")
-        print("\n\n\n this is request data to post \n\n\n")
-        serializer = UsersSerializer(data=request.POST)
+        print("\n\n\n this is request data to post \n")
+        #print(request, "\n", data, "\n\n")
+
+        serializer = UsersSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
@@ -82,6 +92,7 @@ class UsersView(APIView):
             return Response({"error": f"User with username {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class MoneyView(APIView):
 
      def post(self, request):

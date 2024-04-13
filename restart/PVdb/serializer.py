@@ -4,7 +4,7 @@ from .models import *
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ['usernameID', 'email', 'coins', 'farmhouseLevel', 'x', 'y', 'plots']
+        fields = ['usernameID', 'coins', 'farmhouseLevel', 'x', 'y']
 
 class UserPlotsSerializer(serializers.ModelSerializer):
     class Meta:

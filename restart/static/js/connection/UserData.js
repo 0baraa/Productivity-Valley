@@ -76,7 +76,10 @@ export default class UserData {     //works
     }
     static async createUser(data) {      //works
         const url = `${usersTable}`;
-        axios.post(usersTable, data)
+        console.log("user data:", data);
+        axios.post(usersTable, data, {
+            headers: {'X-CSRFToken': csrftoken},
+        })
             .then(response => {
                 console.log('User created successfully:', response.data);
             })
@@ -91,7 +94,7 @@ export default class UserData {     //works
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ usernameId: usernameId })
+            body: JSON.stringify({ usernameId: usernameId }) 
         };
         return fetch(url, requestOptions)
             .then(response => {
@@ -104,19 +107,22 @@ export default class UserData {     //works
                 console.error('Error deleting user:', error);
             });
     }
-    static fetchUserDecorations(usernameId){   //works
+    static async fetchUserDecorations(usernameId){   //works
         const url = `${userDecTable}?usernameId=${usernameId}`;
 
-        return axios.get(url)
-            .then(response => {
-                console.log(response.data)
-                return response.data;
-            })
-            .catch(error => {
-                console.error('Error fetching user decorations:', error);
-                return null;
-                throw error;
-            });
+        data = await axios.get('/user-decorations/', {
+            params: {
+                usernameId: usernameId
+            }
+        }).then(response => {
+            console.log("successful access od data Users")
+            return response.data;
+        }).catch(error => {
+            console.error('Error fetching user decorations');
+            return null;
+            throw error;
+        })
+        return data;
     }
     static addUserDecoration(data) {   //works
         const url = `${userDecTable}`;
@@ -147,25 +153,28 @@ export default class UserData {     //works
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                console.log('User crop deleted successfully');
+                console.log('User decoration deleted successfully');
             })
             .catch(error => {
-                console.error('Error deleting user:', error);
+                console.error('Error deleting user decoration:', error);
             });
     }
-    static fetchUserFurniture(usernameId){   //works
+    static async fetchUserFurniture(usernameId){   //works
         const url = `/user-furniture/?usernameId=${usernameId}`;
 
-        return axios.get(url)
-            .then(response => {
-                console.log(response.data)
-                return response.data;
-            })
-            .catch(error => {
-                console.error('Error fetching user decorations:', error);
-                return null;
-                throw error;
-            });
+        data = await axios.get('/user-furniture/', {
+            params: {
+                usernameId: usernameId
+            }
+        }).then(response => {
+            console.log("successful access od data Users")
+            return response.data;
+        }).catch(error => {
+            console.error('Error fetching user furniture');
+            return null;
+            throw error;
+        })
+        return data;
     }
     static addUserFurniture(data) {   //works
         const url = `/user-furniture/`;
@@ -202,19 +211,22 @@ export default class UserData {     //works
                 console.error('Error deleting user:', error);
             });
     }
-    static fetchUserCrops(usernameId){    //works
+    static async fetchUserCrops(usernameId){    //works
         const url = `${userCropTable}?usernameId=${usernameId}`;
 
-        return axios.get(url)
-            .then(response => {
-                console.log(response.data)
-                return response.data;
-            })
-            .catch(error => {
-                console.error('Error fetching user crops:', error);
-                return null;
-                throw error;
-            });
+        data = await axios.get('/user-crops/', {
+            params: {
+                usernameId: usernameId
+            }
+        }).then(response => {
+            console.log("successful access od data user crops : ", usernameId)
+            return response.data;
+        }).catch(error => {
+            console.error('Error fetching user crops');
+            return null;
+            throw error;
+        })
+        return data;
     }
     static addUserCrop(url, data) {     //works
         axios.post(url, data)
@@ -245,19 +257,21 @@ export default class UserData {     //works
                 console.error('Error deleting user crop:', error);
             });
     }
-    static fetchUserTasks(usernameId){    //works
+    static async fetchUserTasks(usernameId){    //works
         const url = `${userTaskTable}?usernameId=${usernameId}`;
 
-        return axios.get(url)
-            .then(response => {
-                console.log(response.data)
-                return response.data;
-            })
-            .catch(error => {
-                console.error('Error fetching user crops:', error);
-                return null;
-                throw error;
-            });
+        return await axios.get('/tasks/', {
+            params: {
+                usernameId: usernameId
+            }
+        }).then(response => {
+            console.log("successful access od data Users")
+            return response.data;
+        }).catch(error => {
+            console.error('Error fetching user tasks');
+            return null;
+            throw error;
+        })
     }
     static addUserTask(data) {     //works
         const url = '${userTaskTable}';
@@ -295,22 +309,24 @@ export default class UserData {     //works
                 console.log('User crop deleted successfully');
             })
             .catch(error => {
-                console.error('Error deleting user:', error);
+                console.error('Error deleting user task:', error);
             });
     }
-    static fetchUserPlots(usernameId){    //works
+    static async fetchUserPlots(usernameId){    //works
         const url = `${userPlotTable}?usernameId=${usernameId}`;
 
-        return axios.get(url)
-            .then(response => {
-                console.log(response.data)
-                return response.data;
-            })
-            .catch(error => {
-                console.error('Error fetching user crops:', error);
-                return null;
-                throw error;
-            });
+        return await axios.get('/user-plots/', {
+            params: {
+                usernameId: usernameId
+            }
+        }).then(response => {
+            console.log("successful access od data Users")
+            return response.data;
+        }).catch(error => {
+            console.error('Error fetching user plots');
+            return null;
+            throw error;
+        })
     }
     static addUserPlot(data) {     //works
         const url = `${userPlotTable}`;
@@ -322,7 +338,7 @@ export default class UserData {     //works
             if (error.response && error.response.data) {
                 console.error('Validation error:', error.response.data);
             } else {
-                console.error('Error adding task:', error);
+                console.error('Error adding plot :', error);
             }
         });
     }
@@ -345,25 +361,27 @@ export default class UserData {     //works
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                console.log('User crop deleted successfully');
+                console.log('User plot  deleted successfully');
             })
             .catch(error => {
                 console.error('Error deleting user:', error);
             });
     }
-    static fetchUserSettings(usernameId){    //works
+    static async fetchUserSettings(usernameId){    //works
         const url = `${userSettTable}?usernameId=${usernameId}`;
 
-        return axios.get(url)
-            .then(response => {
-                console.log(response.data)
-                return response.data;
-            })
-            .catch(error => {
-                console.error('Error fetching user crops:', error);
-                return null;
-                throw error;
-            });
+        return await axios.get('/users-settings/', {
+            params: {
+                usernameId: usernameId
+            }
+        }).then(response => {
+            console.log("successful access od data Users")
+            return response.data;
+        }).catch(error => {
+            console.error('Error fetching user settings');
+            return null;
+            throw error;
+        })
     }
     static addUserSettings(data) {     //works
         const url = `${userSettTable}`;
@@ -372,7 +390,7 @@ export default class UserData {     //works
                 console.log('Crop added successfully:', response.data);
             })
             .catch(error => {
-                console.error('Error adding decoration for user:', error);
+                console.error('Error adding settings for user:', error);
             });
     }
     static deleteUserSettings(usernameId) {    //works
@@ -392,7 +410,7 @@ export default class UserData {     //works
                 console.log('User crop deleted successfully');
             })
             .catch(error => {
-                console.error('Error deleting user:', error);
+                console.error('Error deleting user settings:', error);
             });
     }
     static updateUserMoney(usernameId, coins) {      //works
@@ -447,18 +465,21 @@ export default class UserData {     //works
             console.error('Error updating money:', error);
         });
     }
-    static getuserDates(usernameId) {
+    static async getuserDates(usernameId) {
         const url = `/user-dates/?usernameId=${usernameId}`;
 
-        return axios.get(url)
-            .then(response => {
-                console.log(response.data)
-                return response.data;
-            })
-            .catch(error => {
-                console.error('Error fetching user dates:', error);
-                throw error;
-            });
+        return await axios.get('/user-dates/', {
+            params: {
+                usernameId: usernameId
+            }
+        }).then(response => {
+            console.log("successful access od data Users")
+            return response.data;
+        }).catch(error => {
+            console.error('Error fetching user data');
+            return null;
+            throw error;
+        })
     }
     static addUserDate(data) {
         const url = `/user-dates/`
