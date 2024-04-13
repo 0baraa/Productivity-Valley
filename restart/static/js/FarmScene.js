@@ -1940,6 +1940,10 @@ class Task {
         console.log(this.subtasksCompleted);
         
     }
+
+    updateElapsedTime(interval) { //in milliseconds
+        this.elapsedTime +=  interval / 3600000;
+    }
 }
 
 class Animal extends Phaser.GameObjects.Sprite{
@@ -2192,7 +2196,10 @@ class Plot extends Phaser.GameObjects.Container {
         console.log(interval ,steps, this.scene.pomodoro.noOfPomodoros + 1);
 
         //repeating function to grow crops individually
-        this.tick = setInterval(() => {this.progressCrops(); }, interval);
+        this.tick = setInterval(() => {
+            this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].updateElapsedTime(interval);
+            this.progressCrops(); 
+        }, interval);
     }
 
     progressCrops() {
@@ -2308,20 +2315,8 @@ class Plot extends Phaser.GameObjects.Container {
             multiplier = 1;
         }
 
-        switch (this.crop) {
-            case "sunflower":
-                this.scene.farm.coins += 10 * 1.2 * this.size * this.size; 
-                // scene.coinsText.setText('Coins: ' + scene.farm.coins);
-                break;
-            case "carrot":
-                this.scene.farm.coins += 10 * 1.5 * this.size * this.size;
-                // scene.coinsText.setText('Coins: ' + scene.farm.coins);
-                break;
-            case "tulip":
-                this.scene.farm.coins += 5 * this.size * this.size;
-            case "pumpkin":
-                this.scene.farm.coins += 10 * 2 * this.size * this.size;
-        }
+        this.scene.farm.updateCoins(this.calculateCoins(this.crop));
+
         //remove crops
         for (let cropSprite of this.cropSprites) {
             cropSprite.destroy();
@@ -2332,6 +2327,20 @@ class Plot extends Phaser.GameObjects.Container {
         this.cropSprites = [];
         this.occupied = false;
     
+    }
+
+    calculateCoins(crop) {
+        let elapsedTime = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].elapsedTime;
+        switch(crop) {
+            case "sunflower":
+                return Math.floor(elapsedTime * 100);
+            case "carrot":
+                return  Math.floor(elapsedTime * 100 * 1.2);
+            case "tulip":
+                return  Math.floor(elapsedTime * 100 * 1.4);
+            case "pumpkin":
+                return  Math.floor(elapsedTime * 100 * 1.6);
+        }
     }
     
 }
