@@ -9,6 +9,8 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
     preload() {
         const loadStatic = (key, file) => this.load.image(key, STATIC_URL + file);
 
+        // Credit to https://penzilla.itch.io/top-down-retro-interior for furniture assets
+
         loadStatic('insideFarmhouseBackground', 'assets/farmhouse-background.png');
         loadStatic('door1', 'assets/house/doors/house-door.png');
         loadStatic('wall1', 'assets/house/walls/wall1.png');
