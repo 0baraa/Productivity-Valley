@@ -1155,6 +1155,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
     }
 
     reset(){
+        console.log("in reset");
         this.hideTime();
         this.fillCircle.destroy();
         this.clear();
@@ -2151,7 +2152,7 @@ class Plot extends Phaser.GameObjects.Container {
         this.scene.selector.plotSelected = this.id;
         this.scene.selector.setVisible(true);
         
-        if (this.occupied == true){
+        if (this.occupied && !this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].completed){
             this.scene.events.emit('plotSelected');
         }
         else {
