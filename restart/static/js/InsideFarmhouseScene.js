@@ -118,7 +118,7 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         let childInput = subtasksDiv.querySelector('input');
 
         // Check if a child input was found
-        if (childInput !== null) {
+        if (childInput !== null && !Utility.isEditMode()) {
             if(subtasks.style.display == "none") {
                 subtasks.style.display = "block";
             }
