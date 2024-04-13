@@ -1099,7 +1099,7 @@ class SectorCircle extends Phaser.GameObjects.Graphics {
 }
 
 class AnalogTimer extends Phaser.GameObjects.Graphics {
-    constructor(scene, x, y, radius, totalTimeInSeconds, elapsedTime, repeatDurationInSeconds, pomodoro, pauseFlag, color) {
+    constructor(scene, x, y, radius, totalTimeInSeconds, elapsedTime, repeatDurationInSeconds, pomodoro, pauseFlag, color, autoStartTimer) {
         super(scene);
         scene.add.existing(this);
 
@@ -1115,6 +1115,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.pomodoro = pomodoro;
         this.pauseFlag = pauseFlag;
         this.color = color;
+        this.autoStartTimer = this.autoStartTimer;
 
         // Generate the text
         this.timeString = scene.add.text(this.x + 127, this.y*2 + 15, '', { color: '#000000', fontSize: '14px'});
@@ -1132,9 +1133,6 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         // Create the timer face
         this.createTimerFace();
 
-        // Start the timer
-        this.startTimer();
-
         // Listen to events from pomodoro
         this.scene.events.on('timerPaused', this.pauseTimer, this);
         this.scene.events.on('timerResumed', this.resumeTimer, this);
@@ -1143,6 +1141,12 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.scene.events.on('showTime', this.showTime, this);
         this.scene.events.on('hideTime', this.hideTime, this);
 
+        // Start the timer
+        console.log("workFlag: ", this.pomodoro.workFlag);
+        // if (this.autoStartTimer){
+        //     this.startTimer();
+        // }
+        this.startTimer();
     }
 
     skipTimer() {
@@ -1194,14 +1198,23 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
             callbackScope: this,
             loop: true
         });
+        if (!this.autoStartTimer){
+            this.timerEvent.paused = true;
+        }
     }
 
     pauseTimer() {
-        this.timerEvent.paused = true;
+        if (this.timerEvent){
+            this.timerEvent.paused = true;
+            console.log("timer paused");
+        }
     }
 
     resumeTimer() {
-        this.timerEvent.paused = false;
+        if (this.timerEvent){
+            this.timerEvent.paused = false;
+            console.log("timer resumed");
+        }
     }
 
     updateTimeString() {
@@ -1352,7 +1365,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         // create play button image
         this.playButton = this.scene.add.image(this.x + 160, this.y*2 - 10, 'play-button').setScale(.23);
         this.playButton.setDepth(1);
-        this.playButton.setVisible(true);
+        // this.playButton.setVisible(false);
         this.playButton.setInteractive();
         // Utility.addTintOnHover(this.playButton);
 
@@ -1376,9 +1389,10 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.pauseButton.setVisible(true);
             this.skipButton.setVisible(true);
 
-            // console.log("test");
+            this.timer1.paused = false;
 
-            console.log(this.workFlag);
+            console.log("test");
+
             if (this.timer1 && Utility.plotReady && !Utility.isEditMode()){
                 if (this.timer1.remainingTime == 0){
                     this.skipTimer();
@@ -1401,13 +1415,14 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.pauseButton.setVisible(false);
             this.skipButton.setVisible(false);
 
-            // console.log('pause button clicked');
-            // this.scene.events.emit('timerPaused');
-            // if (this.workFlag) {
-            //     this.scene.events.emit('pomodoroPaused');
-            //     Utility.setWorkingState(false);
-            // }
-            // this.pauseFlag = true;
+            console.log('pause button clicked');
+            this.scene.events.emit('timerPaused');
+            if (this.workFlag) {
+                this.scene.events.emit('pomodoroPaused');
+                this.timer1.paused = true;
+                Utility.setWorkingState(false);
+            }
+            this.pauseFlag = true;
         });
 
         this.skipButton.on('pointerdown', () => {
@@ -1415,15 +1430,23 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.pauseButton.setVisible(false);
             this.skipButton.setVisible(false);
 
-            // console.log('skip button clicked');
-            // this.scene.events.emit('timerSkipped');
-            // if (this.workFlag) {
-            //     this.scene.events.emit('pomodoroSkipped');
-            //     Utility.setWorkingState(false);
-            // }
-            // console.log('work flag', this.workFlag)
-            // this.skipTimer();
+            console.log('skip button clicked');
+            this.scene.events.emit('timerSkipped');
+            if (this.workFlag) {
+                this.scene.events.emit('pomodoroSkipped');
+                this.timer1.paused = true;
+                Utility.setWorkingState(false);
+            }
+            console.log('work flag', this.workFlag)
+            this.skipTimer();
         });
+
+        //  no plot selected, set visibility to false
+        // if (this.selector.plotSelected == null){
+        //     this.playButton.setVisible(false);
+        // } else {
+        //     this.playButton.setVisible(true);
+        // }
     }
 
     autoStart() {
@@ -1487,10 +1510,6 @@ class Pomodoro extends Phaser.GameObjects.Container {
     }
 
     skipTimer() {
-        this.playButton.setVisible(true);
-        this.pauseButton.setVisible(false);
-        this.skipButton.setVisible(false);
-
         if (this.timer1){
             this.timer1.destroy();
         }
@@ -1498,28 +1517,29 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].pomodorosCompleted ++;
         }
         this.workFlag = !this.workFlag;
-        if (this.workFlag) {
+        if (this.workFlag) {  // if transitioning to work
             if (this.noOfPomodoros != 0) {
                 Utility.setWorkingState(true);
                 this.noOfPomodoros--;
+
                 console.log("pomodoro started");
-                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, 0, this, this.pauseFlag, 0xffa500);
+                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, 0, this, this.pauseFlag, 0xffa500, this.autoStartPomodoro);
                 this.scene.events.emit('pomodoroStarted');
             } else {
-                this.playButton.setVisible(destroy);
-                this.pauseButton.setVisible(destroy);
-                this.skipButton.setVisible(destroy);
+                this.playButton.setVisible(false);
+                this.pauseButton.setVisible(false);
+                this.skipButton.setVisible(false);
                 Utility.setWorkingState(false);
                 this.scene.events.emit('taskCompleted');
             }
-        } else {
+        } else {  // if transitioning to break
             Utility.setWorkingState(false);
             this.longBreakInterval--;
             if (this.longBreakInterval == 0) {
                 this.longBreakInterval = this.initBreakInterval;
-                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.longBreakTime, 0, 0, this, this.pauseFlag, 0x228B22);
+                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.longBreakTime, 0, 0, this, this.pauseFlag, 0x228B22, this.autoStartBreak);
             } else {
-                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, 0, 0, this, this.pauseFlag, 0x7CFC00);
+                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, 0, 0, this, this.pauseFlag, 0x7CFC00, this.autoStartBreak);
             }
         }
     }
