@@ -8,7 +8,8 @@ export default class AccessUserData {
         // This data is used to create a PlayerFarm object, which is then displayed
         console.log(currentUsername);
         
-        
+        let newUser = {usernameId: currentUsername, farmhouseLevel: 1, x: 70, y: 570};
+        UserData.createUser(newUser);
         
         let userData = await UserData.fetchUserData(currentUsername)
         if (userData == null) {

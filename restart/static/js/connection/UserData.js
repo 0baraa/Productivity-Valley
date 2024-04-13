@@ -53,6 +53,7 @@ export default class UserData {     //works
                 usernameId: userId
             }
         }).then(response => {
+            console.log("successful access od data Users")
             return response.data;
         }).catch(error => {
             console.error('Error fetching user data');
@@ -73,9 +74,9 @@ export default class UserData {     //works
         //         throw error;
         //     });
     }
-    static createUser(data) {      //works
+    static async createUser(data) {      //works
         const url = `${usersTable}`;
-        axios.post(url, data)
+        axios.post(usersTable, data)
             .then(response => {
                 console.log('User created successfully:', response.data);
             })

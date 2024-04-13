@@ -51,6 +51,9 @@ class PomodoroStatsView(APIView):
 
 class UsersView(APIView):
     def get(self, request):
+        print("\n\n\n\nthis is the request: \n\n\n\n",request.GET.get('usernameId'))
+        #userId = request.GET.get.('usernameId')
+        #data = Users.objects.filter(usernameId = userId).values()
         output = [{"usernameId":output.usernameId,
                   "email":output.email,
                   "coins":output.coins,
@@ -58,10 +61,12 @@ class UsersView(APIView):
                   "x":output.x,
                   "y":output.y,
                   "plots":output.plots}
-                  for output in Users.objects.all()]
+                  for output in Users.objects.filter(usernameId = request.GET.get('usernameId'))]
         return Response(output)
     def post (self, request):
-        serializer = UsersSerializer(data=request.data)
+        print("\n\n\n\n\n\n\n\n\n notice me senpai\n\n\n\n\n\n\n\n\n")
+        print("\n\n\n this is request data to post \n\n\n")
+        serializer = UsersSerializer(data=request.POST)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
@@ -78,6 +83,7 @@ class UsersView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 class MoneyView(APIView):
+
      def post(self, request):
         usernameId = request.data.get('usernameId', None)
         coins = request.data.get('coins', None)
