@@ -20,8 +20,8 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         loadStatic('chair', 'assets/house/furniture/chair.png');
         loadStatic('couch', 'assets/house/furniture/couch.png');
         loadStatic('fridge', 'assets/house/furniture/fridge.png');
-        loadStatic('grandfatherClock', 'assets/house/furniture/grandfather-clock.png');
-        loadStatic('kitchenSink', 'assets/house/furniture/kitchen-sink.png');
+        loadStatic('grandfather-clock', 'assets/house/furniture/grandfather-clock.png');
+        loadStatic('kitchen-sink', 'assets/house/furniture/kitchen-sink.png');
         loadStatic('lamp', 'assets/house/furniture/lamp.png');
         loadStatic('lamp-on', 'assets/house/furniture/lamp-on.png');
         loadStatic('table', 'assets/house/furniture/table.png');
