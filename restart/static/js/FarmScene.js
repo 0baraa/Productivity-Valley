@@ -1120,7 +1120,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.autoStartTimer = this.autoStartTimer;
 
         // Generate the text
-        this.timeString = scene.add.text(this.x + 127, this.y*2 + 15, '', { color: '#000000', fontSize: '14px'});
+        this.timeString = scene.add.text(this.x + 127, this.y*2 + 8, '', { color: '#000000', fontSize: '14px'});
         this.timeString.setDepth(1);
 
         // Add the text to the scene
