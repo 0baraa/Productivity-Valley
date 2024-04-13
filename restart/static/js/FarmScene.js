@@ -1071,6 +1071,7 @@ class Selector extends Phaser.GameObjects.Sprite {
 class SectorCircle extends Phaser.GameObjects.Graphics {
     constructor(scene, x, y, radius, startAngle, endAngle, color) {
         super(scene);
+        this.setDepth(-2);
         scene.add.existing(this);
 
         this.x = x;
@@ -1129,7 +1130,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
         this.timeString.setVisible(true);
 
-        this.fillCircle = new SectorCircle(scene, this.x, this.y, radius, -90, -90, this.color).setDepth(-2);
+        this.fillCircle = new SectorCircle(scene, this.x, this.y, radius, -90, -90, this.color);
 
         // Create the timer face
         this.createTimerFace();
