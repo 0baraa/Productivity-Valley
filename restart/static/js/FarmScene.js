@@ -99,7 +99,7 @@ export default class FarmScene extends Phaser.Scene {
 
     async gatherData() {
         await AccessUserData.getAllUserData(currentUsername).then((result) => {
-            print("resulting dataaaa" , result);
+            console.log("resulting dataaaa" , result);
             this.awaitData(result);
         });
     }
