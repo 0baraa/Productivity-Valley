@@ -1601,15 +1601,16 @@ class PlayerFarm {
         let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
 
         console.log(data);
+        console.log(data.userFarm);
         
         this.userName = currentUsername;
         this.loadOwnedSeeds(data.seedsOwned);
         this.createPlots(data);
         this.createTasks(data);
         this.createDecorations(data);
-        this.createFarmhouse(data.userData);
+        this.createFarmhouse(data.userFarm);
         this.createFurniture(insideFarmhouseScene, data);
-        this.showCoins(data.userData.coins);
+        this.showCoins(data.userFarm.coins);
 
     }
 
@@ -1685,7 +1686,7 @@ class PlayerFarm {
     }
 
     createFarmhouse(data) {
-        this.farmhouse = new Farmhouse({scene: this.scene, x: data.x, y: data.y, level: data.farmhouseLevel, texture: 'level' + data.farmhouseLevel + 'farmhouse'});
+        this.farmhouse = new Farmhouse({scene: this.scene, x: data.x, y: data.y, level: data.farmHouseLevel, texture: 'level' + data.farmHouseLevel + 'farmhouse'});
     }
     getCoins(){
         return this.coins;

@@ -4,25 +4,25 @@ from django.core.validators import MaxValueValidator
 
 
 class Users(models.Model):    #table for users
-    usernameId = models.CharField(max_length=50, unique=True, primary_key=True)
+    usernameId = models.CharField(max_length=150, unique=True, primary_key=True)
     coins = models.PositiveIntegerField(default=0)
     farmHouseLevel = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(10)])
     x = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(640)])
     y = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(1200)])
 
     ##Please Remove
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, default="blank")
     plots = models.PositiveIntegerField(default=0)
 
 
 class UserPlots(models.Model):
     usernameId = models.ForeignKey(Users, on_delete=models.CASCADE, to_field='usernameId', default=False)
     plotId = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(7)], primary_key=True)
-    crop = models.CharField(default=None, max_length=12)
+    crop = models.CharField(default="nothing", max_length=12)
     growthStage = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(10)])
     growthStep = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(36)])
-    x = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(640)])
-    y = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(1200)])
+    x = models.PositiveIntegerField(default=-1000, validators=[MaxValueValidator(640)])
+    y = models.PositiveIntegerField(default=-1000, validators=[MaxValueValidator(1200)])
     placed = models.BooleanField(default=False)
     class Meta:
         # Define composite primary key using unique_together

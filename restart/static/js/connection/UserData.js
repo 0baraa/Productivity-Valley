@@ -508,7 +508,7 @@ export default class UserData {     //works
 
 let data = {
     "userData": 
-        {"usernameId": currentUsername, "coins": 0, "farmhouseLevel": 1, "x": 70, "y": 570},
+        {"usernameId": currentUsername, "coins": 0, "farmHouseLevel": 1, "x": 70, "y": 570},
     "seedsOwned": {
         tomato: -1,
         sunflower: -1,

@@ -6,48 +6,53 @@ export default class AccessUserData {
         // Fetches user data from the backend
         // Then formats data in appropriate way
         // This data is used to create a PlayerFarm object, which is then displayed
-        console.log(currentUsername);
         
-        let newUser = {usernameId: "cheese", coins: 9999, farmhouseLevel: 1, x: 70, y: 570, email: "fartyartypartypooper@gmail.com", plots: 1};
-        console.log("passing new user", newUser);
-        UserData.createUser(newUser);
+        // let newUser = {usernameID: currentUsername, coins: 9999, farmHouseLevel: 1, x: 70, y: 570, email: "fartyartypartypooper@gmail.com", plots: 1};
+        // console.log("passing new user", newUser);
+        // UserData.createUser(newUser);
         
         let userData = await UserData.fetchUserData(currentUsername)
         console.log(userData);
+        let userSeeds;
+        let userDecs;
+        let userFurniture;
+        let tasks;
+        let userPlots;
+        let userSettings;
         if (!userData || userData.length == 0) {
-            console.log("no user found creating new one")
-            userData = {usernameId: currentUsername, coins: 0, farmhouseLevel: 1, x: 70, y: 570};
+            console.log("no user found creating new one");
+            userData = {usernameId: currentUsername, coins: 0, farmHouseLevel: 1, x: 70, y: 570};
             UserData.createUser(userData);
-        }
-        
-        let userSeeds = await UserData.fetchUserCrops(currentUsername)
-        console.log(userSeeds);
-        if (userSeeds == null || Object.keys(userSeeds).length === 0) {
-            console.log("no seeds found, creating some");
-            userSeeds = {usernameId: currentUsername, sunflower: -1, carrot: -1, pumpkin: -1, tulip: -1, tomato: -1}
-            UserData.addUserCrop(userSeeds);
-        }
-        
-        
-        let userDecs = await UserData.fetchUserDecorations(currentUsername)
-        if (userDecs == null) {userDecs = [];}
-        
-        
-        let userFurniture = await UserData.fetchUserFurniture(currentUsername)
-        if (userFurniture == null) {userFurniture = [];}
-        
-        let tasks = await UserData.fetchUserTasks(currentUsername)
-        if (tasks == null) {tasks = []}
-        
-
-        let userPlots = await UserData.fetchUserPlots(currentUsername)
-        if (userPlots == null || userPlots.length == 0) {
+            console.log("creating a seed");
+            UserData.addUserCrop({usernameId: currentUsername});
             console.log("plots are empty, creating a new plot for user \n\n");
-            userPlots = [{ plotId: 0, crop: "nothing", growthStage: 0, growthStep: 24, x: 320, y: 616, placed: true}]
-            UserData.addUserPlot(userPlots[0])
+            userPlots = [{usernameId: currentUsername, plotId: 0, x: 320, y: 616, placed: true}];
+            UserData.addUserPlot(userPlots[0]);
+            UserData.addUserSettings({usernameId: currentUsername});
         }
-        
-        let userSettings = await UserData.fetchUserSettings(currentUsername)
+        else {
+            userSeeds = await UserData.fetchUserCrops(currentUsername)
+            console.log(userSeeds);
+            userDecs = await UserData.fetchUserDecorations(currentUsername)
+            console.log(userDecs);
+            userFurniture = await UserData.fetchUserFurniture(currentUsername)
+            console.log(userFurniture);
+            tasks = await UserData.fetchUserTasks(currentUsername)
+            console.log(tasks);
+            userPlots = await UserData.fetchUserPlots(currentUsername)
+            console.log(userPlots);
+            userSettings = await UserData.fetchUserSettings(currentUsername)
+            console.log(userSettings);
+            
+            
+        }
+        if (userSeeds == null || Object.keys(userSeeds).length === 0) {
+            userSeeds = {sunflower: -1, carrot: -1, pumpkin: -1, tulip: -1, tomato: -1};}
+        if (tasks == null) {tasks = []}
+        if (userPlots == null || userPlots.length == 0) {
+            userPlots = [{plotId: 0, crop: "nothing", growthStage: 0, growthStep: 0, x: 320, y: 616, placed: true}];}
+        if (userDecs == null) {userDecs = [];}
+        if (userFurniture == null) {userFurniture = [];}
         if (userSettings == null || Object.keys(userSettings).length === 0) {
             console.log("no userSettings, creating their settings")
             userSettings = {
@@ -59,25 +64,24 @@ export default class AccessUserData {
                 autoStartBreak : true,
                 autoStartPomodoro : false,
             };
-            UserData.addUserSettings(userSettings);
         }
-        console.log()
+        
         return {
-            userData: userData,
+            userFarm: userData[0],
             seedsOwned: userSeeds,
             plots: userPlots,
             tasks: tasks,
             furniture: userFurniture,
             decorations: userDecs,
             userSettings: userSettings
-        };
+        }
     }
 
     static amendCoins(usernameId, coins) {
         UserData.updateUserMoney(usernameId, coins);
     }
     static amendHouseState(usernameId, farmState) {
-        UserData.updateHouse(usernameId, farmState.farmhouseLevel, farmState.x, farmState.y);
+        UserData.updateHouse(usernameId, farmState.farmHouseLevel, farmState.x, farmState.y);
     }
     static async amendUserSeeds(seeds) {
         await UserData.deleteUserCrop(seeds.usernameId);
