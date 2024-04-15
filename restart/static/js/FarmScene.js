@@ -823,17 +823,28 @@ export default class FarmScene extends Phaser.Scene {
         if (!editing) {
             Utility.setPlotReady(false)
             let cropChoice = document.getElementById("cropChoice");
-            let seedsOwned = Object.values(this.farm.saveseedsOwned());
+            let seedsOwned = Object.entries(this.farm.saveseedsOwned());
             let taskable = false;
+            let neverBought = true;
+            
+
             for (let i = 0; i < seedsOwned.length; i++) {
-                if (seedsOwned[i] >= 0) {
+                if (seedsOwned[i][1] > 0) {
                     cropChoice.options[i].style.display = "display";
                     taskable = true;
-                } else {
+                    neverBought = false
+
+                } else if (seedsOwned[i][1] == 0) {
+                    neverBought = false;
                     cropChoice.options[i].style.display = "none";
                 }
+                else (cropChoice.options[i].style.display = "none");
             }
-            if (!taskable && this.farm.coins >= 50) {
+            let price = 50
+            if (neverBought) {
+                price = 150
+            }
+            if (!taskable && this.farm.coins >= price) {
                 this.openAlertWindow("You have no seeds!", "You can buy some from the Market.")
                 return;
             } else if (!taskable) {
