@@ -10,6 +10,7 @@ const apiUrlalt1 = 'http://localhost:8000/user-crops/';
 const urlStarter = "http://localhost:8000";
 const usersTable = "/users/";
 const userDecTable = "/user-decorations/";
+const userFurnTable = "user-furniture/";
 const userCropTable = "/user-crops/";
 const userTaskTable = "/tasks/";
 const userPlotTable = "/user-plots/";
@@ -27,8 +28,6 @@ export default class UserData {     //works
     
 
     static fetchData(url) {
-
-
         return fetch(url)
             .then(response => {
                 if (!response.ok) {
@@ -77,6 +76,7 @@ export default class UserData {     //works
     static async createUser(data) {      //works
         const url = `${usersTable}`;
         console.log("user data:", data);
+        
         axios.post(usersTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
@@ -88,25 +88,25 @@ export default class UserData {     //works
             });
     }
     static deleteUser(usernameId) {    //works
-        const url = `${usersTable}`;     
-        const requestOptions = {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ usernameId: usernameId }) 
-        };
-        return fetch(url, requestOptions)
+        axios.delete(usersTable, {
+            headers: {'X-CSRFToken': csrftoken},
+            data: {usernameId: usernameId}
+            //usernameId: usernameId
+            //headers: {'X-CSRFToken': csrftoken}
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 console.log('User deleted successfully');
-            })
+        })
             .catch(error => {
                 console.error('Error deleting user:', error);
             });
     }
+
+
+
     static async fetchUserDecorations(usernameId){   //works
         const url = `${userDecTable}?usernameId=${usernameId}`;
 
@@ -137,20 +137,11 @@ export default class UserData {     //works
             });
     }
     static deleteUserDecoration(usernameId, type) {    //works
-        const url = `${userDecTable}`;      
-        const requestData = {
-            usernameId: usernameId,
-            type: type
-        };
-        console.log(requestData)  
-        const requestOptions = {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-        };
-        return fetch(url, requestOptions)
+        axios.delete(userDecTable, {
+            headers: {'X-CSRFToken': csrftoken},
+            data: {usernameId: usernameId,
+                   type: type}
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -161,10 +152,13 @@ export default class UserData {     //works
                 console.error('Error deleting user decoration:', error);
             });
     }
+
+
+
     static async fetchUserFurniture(usernameId){   //works
         const url = `/user-furniture/?usernameId=${usernameId}`;
 
-        data = await axios.get('/user-furniture/', {
+        data = await axios.get(userFurnTable, {
             params: {
                 usernameId: usernameId
             }
@@ -180,7 +174,7 @@ export default class UserData {     //works
     }
     static addUserFurniture(data) {   //works
         const url = `/user-furniture/`;
-        axios.post(url, data, {
+        axios.post(userFurnTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
             .then(response => {
@@ -191,20 +185,11 @@ export default class UserData {     //works
             });
     }
     static deleteUserFurniture(usernameId, type) {    //works
-        const url = `/user-furniture/`
-        const requestData = {
-            usernameId: usernameId,
-            type: type
-        };
-        console.log(requestData)  
-        const requestOptions = {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-        };
-        return fetch(url, requestOptions)
+        axios.delete(userFurnTable, {
+            headers: {'X-CSRFToken': csrftoken},
+            data: {usernameId: usernameId,
+                   type: type}
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -215,10 +200,13 @@ export default class UserData {     //works
                 console.error('Error deleting user:', error);
             });
     }
+
+
+
     static async fetchUserCrops(usernameId){    //works
         const url = `${userCropTable}?usernameId=${usernameId}`;
 
-        data = await axios.get('/user-crops/', {
+        data = await axios.get(userCropTable, {
             params: {
                 usernameId: usernameId
             }
@@ -232,8 +220,8 @@ export default class UserData {     //works
         })
         return data;
     }
-    static addUserCrop(url, data) {     //works
-        axios.post(url, data, {
+    static addUserCrop(data) {     //works
+        axios.post(userCropTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
             .then(response => {
@@ -244,15 +232,10 @@ export default class UserData {     //works
             });
     }
     static deleteUserCrop(usernameId) {    //works
-        const url = `${userCropTable}`;     
-        const requestOptions = {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ usernameId: usernameId })
-        };
-        return fetch(url, requestOptions)
+        axios.delete(userCropTable, {
+            headers: {'X-CSRFToken': csrftoken},
+            data: {usernameId: usernameId,}
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -263,8 +246,10 @@ export default class UserData {     //works
                 console.error('Error deleting user crop:', error);
             });
     }
+
+
+
     static async fetchUserTasks(usernameId){    //works
-        const url = `${userTaskTable}?usernameId=${usernameId}`;
 
         return await axios.get('/tasks/', {
             params: {
@@ -280,8 +265,7 @@ export default class UserData {     //works
         })
     }
     static addUserTask(data) {     //works
-        const url = '${userTaskTable}';
-        axios.post(url, data, {
+        axios.post(userTaskTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
         .then(response => {
@@ -296,20 +280,11 @@ export default class UserData {     //works
         });
     }
     static deleteUserTask(usernameId, plotId) {    //works
-        const url = `${userTaskTable}`;   
-        const requestData = {
-            usernameId: usernameId,
-            plotId: plotId
-        };
-        console.log(requestData)  
-        const requestOptions = {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-        };
-        return fetch(url, requestOptions)
+        axios.delete(userTaskTable, {
+            headers: {'X-CSRFToken': csrftoken},
+            data: {usernameId: usernameId,
+                   plotId: plotId}
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -320,10 +295,12 @@ export default class UserData {     //works
                 console.error('Error deleting user task:', error);
             });
     }
-    static async fetchUserPlots(usernameId){    //works
-        const url = `${userPlotTable}?usernameId=${usernameId}`;
 
-        return await axios.get('/user-plots/', {
+
+
+    static async fetchUserPlots(usernameId){    //works
+
+        return await axios.get(userPlotTable, {
             params: {
                 usernameId: usernameId
             }
@@ -338,7 +315,7 @@ export default class UserData {     //works
     }
     static addUserPlot(data) {     //works
         const url = `${userPlotTable}`;
-        axios.post(url, data, {
+        axios.post(userPlotTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
         .then(response => {
@@ -353,20 +330,11 @@ export default class UserData {     //works
         });
     }
     static deleteUserPlot(usernameId, plotId) {    //works
-        const url = `${userPlotTable}`;   
-        const requestData = {
-            usernameId: usernameId,
-            plotId: plotId
-        };
-        console.log(requestData)  
-        const requestOptions = {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-        };
-        return fetch(url, requestOptions)
+        axios.delete(userPlotTable, {
+            headers: {'X-CSRFToken': csrftoken},
+            data: {usernameId: usernameId,
+                   plotId: plotId}
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -377,12 +345,14 @@ export default class UserData {     //works
                 console.error('Error deleting user:', error);
             });
     }
-    static async fetchUserSettings(usernameId){    //works
-        const url = `${userSettTable}?usernameId=${usernameId}`;
 
-        return await axios.get('/users-settings/', {
+
+
+    static async fetchUserSettings(usernameId){    //works
+
+        return await axios.get(userSettTable, {
             params: {
-                usernameId: usernameId
+                usernameId_id: usernameId
             }
         }).then(response => {
             console.log("successful access od data Users")
@@ -395,7 +365,7 @@ export default class UserData {     //works
     }
     static addUserSettings(data) {     //works
         const url = `${userSettTable}`;
-        axios.post(url, data, {
+        axios.post(userSettTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
             .then(response => {
@@ -406,15 +376,10 @@ export default class UserData {     //works
             });
     }
     static deleteUserSettings(usernameId) {    //works
-        const url = `${userSettTable}`;     
-        const requestOptions = {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ usernameId: usernameId })
-        };
-        return fetch(url, requestOptions)
+        axios.delete(userSettTable, {
+            headers: {'X-CSRFToken': csrftoken},
+            data: {usernameId: usernameId}
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -425,6 +390,9 @@ export default class UserData {     //works
                 console.error('Error deleting user settings:', error);
             });
     }
+
+
+
     static updateUserMoney(usernameId, coins) {      //works
         const url = `${usersTable}change-money/`;
     
@@ -433,10 +401,11 @@ export default class UserData {     //works
             coins: coins
         };
     
-        fetch(url, {
+        fetch(url, {    
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                headers: {'X-CSRFToken': csrftoken},
             },
             body: JSON.stringify(requestData)
         })
@@ -450,6 +419,7 @@ export default class UserData {     //works
             console.error('Error updating money:', error);
         });
     }
+
     static updateHouse(usernameId, farmHouseLevel, xIn, yIn) {      //works
         const url = `${usersTable}change-house/`;
     
@@ -463,7 +433,8 @@ export default class UserData {     //works
         fetch(url, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                headers: {'X-CSRFToken': csrftoken},
             },
             body: JSON.stringify(requestData)
         })
@@ -477,6 +448,9 @@ export default class UserData {     //works
             console.error('Error updating money:', error);
         });
     }
+
+
+
     static async getuserDates(usernameId) {
         const url = `/user-dates/?usernameId=${usernameId}`;
 

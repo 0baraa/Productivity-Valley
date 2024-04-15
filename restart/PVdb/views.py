@@ -81,6 +81,8 @@ class UsersView(APIView):
             serializer.save()
             return Response(serializer.data)
     def delete(self, request):
+        print(" delete request::::::::::::::::::::",request)
+        print(request.data)
         usernameId = request.data.get('usernameId', None)
         if usernameId is None:
             return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
@@ -113,11 +115,15 @@ class HouseView(APIView):
      def post(self, request):
         usernameId = request.data.get('usernameId', None)
         farmHouseLevel = request.data.get('farmHouseLevel', None)
+        farm_x = request.data.get('x', 70)
+        farm_y = request.data.get('y', 570)
         if usernameId is None:
             return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             user = Users.objects.get(usernameId=usernameId)
             user.farmHouseLevel = farmHouseLevel
+            user.x = farm_x
+            user.y = farm_y
             user.save()
             return Response({"message": f"Money updated successfully for user {usernameId}"}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:

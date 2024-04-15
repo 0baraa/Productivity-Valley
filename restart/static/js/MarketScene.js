@@ -427,6 +427,7 @@ class Shop extends Phaser.GameObjects.Sprite {
         this.farm.addSeedToInventory(crop);
         //this.removeItemListeners();
         this.updateAffordability();
+        this.farm.saveSeedsOwned();
     }
 }
 

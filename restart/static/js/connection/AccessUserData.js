@@ -10,7 +10,6 @@ export default class AccessUserData {
         // let newUser = {usernameID: currentUsername, coins: 9999, farmHouseLevel: 1, x: 70, y: 570, email: "fartyartypartypooper@gmail.com", plots: 1};
         // console.log("passing new user", newUser);
         // UserData.createUser(newUser);
-        
         let userData = await UserData.fetchUserData(currentUsername)
         console.log(userData);
         let userSeeds;
@@ -28,7 +27,7 @@ export default class AccessUserData {
             console.log("plots are empty, creating a new plot for user \n\n");
             userPlots = [{usernameId: currentUsername, plotId: 0, x: 320, y: 616, placed: true}];
             UserData.addUserPlot(userPlots[0]);
-            UserData.addUserSettings({usernameId: currentUsername});
+            UserData.addUserSettings({usernameId_id: currentUsername});
         }
         else {
             userSeeds = await UserData.fetchUserCrops(currentUsername)
@@ -56,7 +55,7 @@ export default class AccessUserData {
         if (userSettings == null || Object.keys(userSettings).length === 0) {
             console.log("no userSettings, creating their settings")
             userSettings = {
-                usernameId: currentUsername,
+                usernameId_id: currentUsername,
                 workTime : 25,
                 shortBreakTime : 5,
                 longBreakTime : 15,
@@ -77,6 +76,8 @@ export default class AccessUserData {
         }
     }
 
+    //changing data:
+
     static amendCoins(usernameId, coins) {
         UserData.updateUserMoney(usernameId, coins);
     }
@@ -85,29 +86,36 @@ export default class AccessUserData {
     }
     static async amendUserSeeds(seeds) {
         await UserData.deleteUserCrop(seeds.usernameId);
+        seeds.usernameId = currentUsername
         UserData.addUserCrop(seeds);
     }
     static async updateAllUserPlots(plotList) {
         for (let i = 0; i < plotList.length; i++) {
-            this.changeUserPlot(plotList[i]);
+            this.updateSinglePlot(plotList[i]);
         }
     }
 
-    static async updateUserPlot(plot) {
+    static async updateSinglePlot(plot) {
         await UserData.deleteUserPlot(currentUsername, plot.plotId);
         plot.usernameId = currentUsername;
         UserData.addUserPlot(plot);
     }
 
-    static async amendUserTasks(taskList) {
+
+
+    static async updateAllUserTasks(taskList) {
         for (let i = 0; i < taskList.length; i++) {
-            await UserData.deleteUsertask(currentUsername, taskList[i].plotId);
-            taskList[i].usernameId = currentUsername;
-            UserData.addUserTask(taskList[i]);
+            this.updateSingleTask(taskList[i])
         }
     }
 
-    static async amendUserDecorations(decorationList) {
+    static async updateSingleTask(task) {
+        await UserData.deleteUserTask(currentUsername, task.plotId)
+        task.usernameId = currentUsername;
+        UserData.addUserTask(task)
+    }
+
+    static async updateAllUserDecorations(decorationList) {
         for (let i = 0; i < decorationList.length; i++) {
             await UserData.deleteUserPlot(currentUsername, decorationList[i].type);
             decorationList[i].usernameId = currentUsername;
@@ -115,7 +123,7 @@ export default class AccessUserData {
         }
     }
 
-    static async amendUserFurniture(furnitureList) {
+    static async updateAllUserFurniture(furnitureList) {
         for (let i = 0; i < furnitureList.length; i++) {
             await UserData.deleteUserPlot(currentUsername, furnitureList[i].type);
             furnitureList[i].usernameId = currentUsername;
@@ -124,11 +132,14 @@ export default class AccessUserData {
     }
 
 
-    static async amendUserSettings(settings) {
+    static async updateUserSettings(settings) {
         await UserData.deleteUserSettings(currentUsername);
         settings.usernameId = currentUsername;
         UserData.addUserSettings(settings);
     }
+
+
+
 
     static completelyDeleteUser(usernameId, playerState) {
         UserData.deleteUser(usernameId);

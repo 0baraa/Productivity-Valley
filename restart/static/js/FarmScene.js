@@ -1744,28 +1744,33 @@ class PlayerFarm {
         }
     }
 
-    saveseedsOwned() {
+    saveSeedsOwned() {
         if (this.userName == null) {return;}
+        AccessUserData.amendUserSeeds(this.seedsOwned)
         return this.seedsOwned;
     }
 
+    savePlot(plot) {
+        if (this.userName == null) {return;}
+        let data = {
+            plotId: plot.id,
+            crop: plot.crop,
+            growthStage: plot.growthStage,
+            growthStep: plot.growthStep,
+            x: plot.x,
+            y: plot.y,
+            placed: plot.placed
+        }
+        AccessUserData.updateSinglePlot(data)
+    }
+
+
     savePlots() {
         if (this.userName == null) {return;}
-        let plotsData = [];
         for (let plot in this.plots) {
-            let data = {
-                usernameId: this.userName,
-                plotId: plot.id,
-                crop: plot.crop,
-                growthStage: plot.growthStage,
-                growthStep: plot.growthStep,
-                x: plot.x,
-                y: plot.y,
-                placed: plot.placed
-            }
-            plotsData.push(data);
+            this.savePlot(plot);
         }
-        return plotsData;
+        
     }
     saveTasks() {
         if (this.userName == null) {return;}
