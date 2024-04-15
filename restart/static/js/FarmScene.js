@@ -1981,6 +1981,7 @@ class Task {
         this.subtasks = config.subtasks || this.subtasks;
         this.subtasksCompleted = config.subtasksCompleted || this.subtasksCompleted;
         this.completed = config.completed || this.completed;
+        this.updateTaskScreen();
     }
 
     updateTaskScreen() {
