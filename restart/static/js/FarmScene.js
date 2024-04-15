@@ -76,6 +76,7 @@ export default class FarmScene extends Phaser.Scene {
         loadStatic('snowy-rock', 'assets/decorations/snowy-rock.png');
         loadStatic('snowy-rocks', 'assets/decorations/snowy-rocks.png');
         loadStatic('stump', 'assets/decorations/stump.png');
+        loadStatic('scarecrow2', 'assets/decorations/scarecrow2.png');
 
 
         loadStatic('cloud1', 'assets/clouds/cloud1.png');
@@ -229,7 +230,6 @@ export default class FarmScene extends Phaser.Scene {
             const settingsClose = (event) => {
                 settingsForm.removeEventListener('submit', settingsClose);
                 settingsExitButton.removeEventListener('click', settingsClose);
-                settingsInfoButton.removeEventListener('click', showInfo);
                 //showInfo needs to be added to Utility.js
                 Utility.toggleMenu(this, "settingsMenu");
                 if (event.type == "submit") {
