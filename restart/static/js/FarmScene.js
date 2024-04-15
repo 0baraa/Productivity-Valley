@@ -972,6 +972,7 @@ export default class FarmScene extends Phaser.Scene {
                                   subtasks: subtasksData }
                 if (editing) {
                     this.farm.editTask(taskConfig);
+                    this.events.emit("taskEdited");
                 }
                 else {
                     let cropType = document.getElementById("cropChoice").value;
@@ -981,6 +982,7 @@ export default class FarmScene extends Phaser.Scene {
                     this.farm.addTask(taskConfig);
                     this.farm.removeCropFromInventory(cropType);
                     this.farm.saveseedsOwned();
+                    this.events.emit("taskCreated");
 
                 }
                 console.log(this.farm.tasks, taskConfig);
@@ -1377,10 +1379,21 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.scene.events.on('hideButtons', this.offVisibility, this);
         //     this.playButton.setVisible(true);
 
+        this.scene.events.on('taskCreated', this.createTimer, this);
+
         this.graphics = this.scene.add.graphics();
 
         this.drawBackCircle();
         this.add(this.graphics);
+    }
+
+    createTimer(){
+        if (this.timer1){
+            this.timer1.clear();
+            this.timer1.fillCircle.destroy();
+        }
+        this.playButton.setVisible(true);
+        this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, 0, this, this.pauseFlag, 0xffa500, this.autoStartPomodoro);
     }
 
     onVisibility(){
