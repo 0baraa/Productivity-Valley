@@ -986,16 +986,18 @@ export default class FarmScene extends Phaser.Scene {
                     rowsToHide[i].style.display = "table-row";
                 }
                 //harvest task handler;
-                let finished = this.farm.tasks[this.selector.plotSelected].completed;
-                if (event.srcElement.id == "harvest-task"){
-                    if (finished) {
-                        //if plot is finished just harvest
-                        this.events.emit("harvestCrops");
-                    }
-                    else {
-                        let prompt = "Are you sure you want to harvest this plot?"
-                        let note = "Warning: this plot is unfinished, and you will only collect half as many coins for your time."
-                        Utility.throwConfirmationScreen(this, "harvestCrops", prompt, note);
+                if (this.farm.tasks[this.selector.plotSelected]){
+                    let finished = this.farm.tasks[this.selector.plotSelected].completed;
+                    if (event.srcElement.id == "harvest-task"){
+                        if (finished) {
+                            //if plot is finished just harvest
+                            this.events.emit("harvestCrops");
+                        }
+                        else {
+                            let prompt = "Are you sure you want to harvest this plot?"
+                            let note = "Warning: this plot is unfinished, and you will only collect half as many coins for your time."
+                            Utility.throwConfirmationScreen(this, "harvestCrops", prompt, note);
+                        }
                     }
                 }
             }
@@ -1174,6 +1176,8 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
     startPomodoro(){
         if (this.timer1 && this.Pomodoro.playButton.setVisible(false)){
             this.Pomodoro.playButton.setVisible(true);
+        } else {
+            this.Pomodoro.playButton.setVisible(false);
         }
     }
 
@@ -1429,7 +1433,9 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.pauseButton.setVisible(true);
             this.skipButton.setVisible(true);
 
-            this.timer1.paused = false;
+            if (this.timer1){
+                this.timer1.paused = false;
+            }
 
             console.log("test");
 
@@ -1524,11 +1530,22 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.timer1.destroy();
             this.timer1.timeString.destroy();
         }
-        this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, elapsedTime, 0, this, this.pauseFlag, 0xffa500).setDepth(-2);
+        console.log("load timer");
+
+        if (this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].completed){ // if completed
+            this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, 0, 0, 0, this, this, 0xffa500, false);
+            this.timer1.timeString.destroy();
+            this.playButton.setVisible(false);
+        } else {
+            this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, elapsedTime, 0, this, this.pauseFlag, 0xffa500).setDepth(-2);
+            this.playButton.setVisible(true);
+        }
         this.scene.events.emit("timerPaused");
         this.pauseFlag = true;
         this.workFlag = true;
-        this.timer1.updateCircle();
+        if(this.timer1){
+            this.timer1.updateCircle();
+        }
     }
 
     loadTask() {
@@ -1539,7 +1556,6 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
         this.noOfPomodoros = task.pomodoros - task.pomodorosCompleted;
         let percentageComplete = (plot.growthStage * plot.cropSprites.length + plot.growthStep) / (plot.maxFrame * plot.cropSprites.length);
-        let pomodoros = task.pomodoros * percentageComplete;
         let totalTimeElapsed = this.workTime * task.pomodoros * percentageComplete;
         console.log(totalTimeElapsed);
         if (totalTimeElapsed != 0) {
