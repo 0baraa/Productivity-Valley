@@ -880,7 +880,7 @@ export default class FarmScene extends Phaser.Scene {
                 harvestButton.style.backgroundColor = "#72d242";
             }
 
-            harvestCoinsText.innerHTML = "+" + this.farm.plots[this.selector.plotSelected].calculateCoins();
+            harvestCoinsText.innerHTML = "+ " + this.farm.plots[this.selector.plotSelected].calculateCoins() + " ";
             harvestCoinsText.style.display = "block";
             harvestCoinsImage.style.display = "block";
 
