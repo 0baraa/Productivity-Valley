@@ -76,6 +76,7 @@ export default class FarmScene extends Phaser.Scene {
         loadStatic('snowy-rock', 'assets/decorations/snowy-rock.png');
         loadStatic('snowy-rocks', 'assets/decorations/snowy-rocks.png');
         loadStatic('stump', 'assets/decorations/stump.png');
+        loadStatic('scarecrow2', 'assets/decorations/scarecrow2.png');
 
 
         loadStatic('cloud1', 'assets/clouds/cloud1.png');
@@ -229,7 +230,6 @@ export default class FarmScene extends Phaser.Scene {
             const settingsClose = (event) => {
                 settingsForm.removeEventListener('submit', settingsClose);
                 settingsExitButton.removeEventListener('click', settingsClose);
-                settingsInfoButton.removeEventListener('click', showInfo);
                 //showInfo needs to be added to Utility.js
                 Utility.toggleMenu(this, "settingsMenu");
                 if (event.type == "submit") {
@@ -237,6 +237,38 @@ export default class FarmScene extends Phaser.Scene {
                     //Utility.sendSettingsData();
                     //update pomodoro timer settings;
                     this.pomodoro.updateTimeSettings();
+
+
+                    
+                    let fontStyle = document.getElementById("fontStyle").value;
+                    let elements = document.querySelectorAll('button, input, select');
+
+                    if (fontStyle == "standard") {
+                        document.body.style.fontFamily = "Helvetica, sans-serif";
+                        for (let i = 0; i < elements.length; i++) {
+                            elements[i].style.fontFamily = "Helvetica, sans-serif";
+                        }
+                        
+                    } else if (fontStyle == "pixel") {
+                        document.body.style.fontFamily = "pixel-font, Helvetica, sans-serif";
+                        for (let i = 0; i < elements.length; i++) {
+                            elements[i].style.fontFamily = "pixel-font, Helvetica, sans-serif";
+                        }
+                    }
+                    else {
+                        document.body.style.fontFamily = "open-dyslexic, Helvetica, sans-serif";
+                        for (let i = 0; i < elements.length; i++) {
+                            elements[i].style.fontFamily = "open-dyslexic, Helvetica, sans-serif";
+                        }
+                    }
+
+                    let fontSize = document.getElementById("fontSize").value;
+                    if(fontSize == "large") {
+                        document.documentElement.style.setProperty('--scale-factor', '1.3');
+                    }
+                    else {
+                        document.documentElement.style.setProperty('--scale-factor', '1');
+                    }
 
                 }
             }
@@ -880,7 +912,7 @@ export default class FarmScene extends Phaser.Scene {
                 harvestButton.style.backgroundColor = "#72d242";
             }
 
-            harvestCoinsText.innerHTML = "+" + this.farm.plots[this.selector.plotSelected].calculateCoins();
+            harvestCoinsText.innerHTML = "+ " + this.farm.plots[this.selector.plotSelected].calculateCoins() + " ";
             harvestCoinsText.style.display = "block";
             harvestCoinsImage.style.display = "block";
 

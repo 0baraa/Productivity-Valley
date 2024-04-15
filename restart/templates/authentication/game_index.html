@@ -346,15 +346,9 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="checkbox" id="autoHideTime" name="autoHideTime">
-                                <label for="autoHideTime">Auto Hide Time when Starting Pomodoro</label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
                                 <label for="fontStyle">Font Style:</label>
                                 <select id="fontStyle" name="fontStyle">
-                                    <option value="pixelArt">Pixel (Default)</option>
+                                    <option value="pixel">Pixel (Default)</option>
                                     <option value="standard">Standard</option>
                                     <option value="dyslexic">Dyslexic</option>
                                 </select><br>
@@ -364,8 +358,7 @@
                             <td>
                                 <label for="fontSize">Font Size:</label>
                                 <select id="fontSize" name="fontSize">
-                                    <option value="small">Small</option>
-                                    <option value="medium">Medium (Default)</option>
+                                    <option value="normal">Normal (Default)</option>
                                     <option value="large">Large</option>
                                 </select><br>
                             </td>
@@ -448,7 +441,7 @@
 
     <!--Confirmation Popup Screen-->
     <div class="menu-container confirmation" style="display: none;">
-        <dialog class="menu confirmation" style="display: flex; flex-direction: column; height: 35vh;">
+        <dialog class="menu confirmation" style="display: flex; flex-direction: column; height: calc(50vh * var(--scale-factor));">
             <div id="confirmation-container" style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
                 <p id="confirmation-message" style="float:none; text-align: center"></p>
                 <br>
@@ -472,9 +465,9 @@
             <button id="house-upgrade-button">Upgrade</button>
         </dialog>
     </div>
-
+    
     <div class="menu-container alertWindow" style="display: none;">
-        <dialog class="menu alertWindow" style="display: flex; flex-direction: column; height: 35vh;">
+        <dialog class="menu alertWindow" style="display: flex; flex-direction: column; height: calc(50vh * var(--scale-factor));">
             <div id="alertWindow-container" style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
                 <p id="alertWindow-message" style="float:none; text-align: center;"></p>
                 <p id="alertWindow-note" style="float:none; text-align: center;"></p>

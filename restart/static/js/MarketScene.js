@@ -54,6 +54,7 @@ export default class MarketScene extends Phaser.Scene {
         this.allDecorations = [
             { type: 'snowman', price: 100 },
             { type: 'gnome', price: 100 },
+            { type: 'scarecrow2', price: 100 },
             { type: 'autumn-tree', price: 200},
             { type: 'dirt-rock', price: 100},
             { type: 'dirt-rocks', price: 200},
@@ -70,6 +71,7 @@ export default class MarketScene extends Phaser.Scene {
             { type: 'snowy-rock', price: 100},
             { type: 'snowy-rocks', price: 200},
             { type: 'stump', price: 200}
+
 
         ];
 
