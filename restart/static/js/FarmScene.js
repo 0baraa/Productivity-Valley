@@ -44,6 +44,8 @@ export default class FarmScene extends Phaser.Scene {
         // 使用辅助函数加载资源
         loadBitmapFont('pixelFont', 'fonts/pixeloperatorbitmap.png', 'fonts/pixeloperatorbitmap.xml');
         loadStatic('farmBackground', 'assets/farm-background.png');
+        loadStatic('sky', 'assets/sky.png');
+        loadStatic('farmground', 'assets/farmground.png');
         loadStatic('mountains', 'assets/mountains.png');
         loadStatic('fence', 'assets/fence.png');
         loadStatic('level1farmhouse', 'assets/house/level1farmhouse.png');
@@ -97,7 +99,8 @@ export default class FarmScene extends Phaser.Scene {
 
 
     create() {
-        this.add.image(320, 550, 'farmBackground').setDepth(-2);
+        // this.add.image(320, 550, 'farmBackground').setDepth(-2);
+        this.add.image(320, 550, 'sky').setDepth(-5);
 
         this.add.image(570, 460, 'mountains-large').setScale(2).setAlpha(0);
         this.add.image(320, 520, 'mountains').setDepth(-1);
@@ -120,6 +123,7 @@ export default class FarmScene extends Phaser.Scene {
             loop: true
         });
 
+        this.add.image(320, 550, 'farmground');
         this.add.image(320, 550, 'fence');
 
 
@@ -200,7 +204,7 @@ export default class FarmScene extends Phaser.Scene {
         const screenHeight = this.sys.game.config.height;
         
         const pomodoroY = screenHeight * 0.2045;
-        this.sunFlares = this.add.sprite(320, pomodoroY+245, 'sun-flares').setDepth(-2);
+        this.sunFlares = this.add.sprite(320, pomodoroY+245, 'sun-flares').setDepth(-4);
         this.pomodoro = new Pomodoro(this, 160, pomodoroY, 75).setDepth(-2);
         
         let homeButton = document.getElementById("home-icon-container");
@@ -1134,6 +1138,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         // Generate the text
         this.timeString = scene.add.text(this.x + 127, this.y*2 + 10, '', { color: '#000000', fontSize: '14px'});
         this.timeString.setDepth(1);
+        this.timeString.autoRound = false;
 
         // Add the text to the scene
         this.scene.add.existing(this.timeString);
@@ -2406,7 +2411,7 @@ class Plot extends Phaser.GameObjects.Container {
             case "sunflower":
                 return Math.floor(elapsedTime * 100 * multiplier);
             case "carrot":
-                return  Math.floor(elapsedTime * 100 * 1.2) * multiplier;
+                return  Math.floor(elapsedTime * 100 * 1.2 * multiplier);
             case "tulip":
                 return  Math.floor(elapsedTime * 100 * 1.4 * multiplier);
             case "pumpkin":
