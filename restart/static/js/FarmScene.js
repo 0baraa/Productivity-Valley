@@ -988,7 +988,7 @@ export default class FarmScene extends Phaser.Scene {
                         }
                         else {
                             let prompt = "Are you sure you want to harvest this plot?"
-                            let note = "Warning: this plot is unfinished, and you will only collect half as many coins for your time."
+                            let note = "Warning: this plot is unfinished, and you will not collect the task completion bonus"
                             Utility.throwConfirmationScreen(this, "harvestCrops", prompt, note);
                         }
                     }
