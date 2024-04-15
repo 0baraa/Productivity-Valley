@@ -1551,8 +1551,8 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.playButton.setVisible(false);
         } else {
             this.playButton.setVisible(true);
-            if (task1.inBreak){
-                console.log("in break");
+            if (task1.inShortBreak){
+                console.log("in short break");
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, elapsedTime, 0, this, this.pauseFlag, 0x7CFC00);
                 Utility.setWorkingState(false);
             } else {
@@ -1578,7 +1578,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         let percentageComplete = (plot.growthStage * plot.cropSprites.length + plot.growthStep) / (plot.maxFrame * plot.cropSprites.length);
         let totalTimeElapsed = this.workTime * task.pomodoros * percentageComplete;
         console.log(totalTimeElapsed);
-        if (totalTimeElapsed != 0 && !task.inBreak) {
+        if (totalTimeElapsed != 0 && task.timerState == 0) {
             this.noOfPomodoros--;
             let timerElapsed = Math.floor(totalTimeElapsed - this.workTime * task.pomodorosCompleted);
 
@@ -1611,12 +1611,12 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
                 console.log("pomodoro started");
                 
-                task.inBreak = false;
+                task.timerState = 0;
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, 0, this, this.pauseFlag, 0xffa500, this.autoStartPomodoro);
                 this.scene.events.emit('pomodoroStarted');
                 
             } else {
-                task.inBreak = false;
+                task.timerState = 1;
                 this.playButton.setVisible(false);
                 this.pauseButton.setVisible(false);
                 this.skipButton.setVisible(false);
@@ -1624,13 +1624,14 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 this.scene.events.emit('taskCompleted');
             }
         } else {  // if transitioning to break
-            task.inBreak = true;
             Utility.setWorkingState(false);
             this.longBreakInterval--;
             if (this.longBreakInterval == 0) {
+                task.timerState = 2;
                 this.longBreakInterval = this.initBreakInterval;
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.longBreakTime, 0, 0, this, this.pauseFlag, 0x228B22, this.autoStartBreak);
             } else {
+                task.timerState = 1;
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, 0, 0, this, this.pauseFlag, 0x7CFC00, this.autoStartBreak);
             }
         }
@@ -1927,7 +1928,8 @@ class Task {
         this.subtasks = config.subtasks || [];
         this.subtasksCompleted = config.subtasksCompleted  || [];
         this.completed = config.completed || false;
-        this.inBreak = config.inBreak || false;
+        this.timerState = config.timerState || 0; // 0 : working, 1: short break, 2 : long break
+        this.time = config.time || []; // in seconds
 
         if (this.noOfPomodors <= this.pomodorosCompleted) {
             this.completed = true;
@@ -2001,9 +2003,15 @@ class Task {
         this.elapsedTime +=  interval / 3600000;
     }
 
-    toggleInBreak(){
-        this.inBreak = !this.inBreak;
+    updateTime(currentTime){ // in milliseconds
+        this.time[this.plotId] = currentTime
     }
+
+    getTime(){
+        let time = this.time[this.plotId];
+        return time;
+    }
+
 }
 
 class Animal extends Phaser.GameObjects.Sprite{
@@ -2611,7 +2619,7 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
             insideFarmhouseScene.toggleHideScene(this.scene);
             insideFarmhouseScene.toggleHideSubtasks();
         }
-        else if(!Utility.isEditMode()){
+        else {
             Utility.toggleMenu(this.scene, "upgradeHouseMenu");
         }
     }
