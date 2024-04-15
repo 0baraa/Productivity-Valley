@@ -1132,6 +1132,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         // Generate the text
         this.timeString = scene.add.text(this.x + 127, this.y*2 + 10, '', { color: '#000000', fontSize: '14px'});
         this.timeString.setDepth(1);
+        this.timeString.autoRound = false;
 
         // Add the text to the scene
         this.scene.add.existing(this.timeString);
@@ -2390,7 +2391,7 @@ class Plot extends Phaser.GameObjects.Container {
             case "sunflower":
                 return Math.floor(elapsedTime * 100 * multiplier);
             case "carrot":
-                return  Math.floor(elapsedTime * 100 * 1.2) * multiplier;
+                return  Math.floor(elapsedTime * 100 * 1.2 * multiplier);
             case "tulip":
                 return  Math.floor(elapsedTime * 100 * 1.4 * multiplier);
             case "pumpkin":
