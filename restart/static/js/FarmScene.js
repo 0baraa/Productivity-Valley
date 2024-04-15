@@ -2611,7 +2611,7 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
             insideFarmhouseScene.toggleHideScene(this.scene);
             insideFarmhouseScene.toggleHideSubtasks();
         }
-        else {
+        else if(!Utility.isEditMode()){
             Utility.toggleMenu(this.scene, "upgradeHouseMenu");
         }
     }
