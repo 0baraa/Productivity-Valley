@@ -210,34 +210,10 @@ export default class FarmScene extends Phaser.Scene {
         let homeButton = document.getElementById("home-icon-container");
         homeButton.addEventListener('click', () => {
             Utility.toggleMenu(this, "homeMenu");
-            let homeExitButton = document.getElementById('home-exit-button');
-            let homeGuideButton = document.getElementById('quick-guide');
-            let saveExitButton = document.getElementById('exit-game')
-            let deleteAccountButton = document.getElementById('delete-account');
-            const homeClose = () => {
-                homeExitButton.removeEventListener('click', homeClose);
-                homeGuideButton.removeEventListener('click', showGuide);
-                saveExitButton.removeEventListener('click', saveAndExit);
-                deleteAccountButton.removeEventListener('click', deleteAccount);
-                Utility.toggleMenu(this, "homeMenu");
-            }
-            const showGuide = () => {
-                homeClose();
-                Utility.showInfo(this, "homeGuide");
-            }
-            const saveAndExit = () => {
-                homeClose();
-                //this.farm.saveFarmState();
-                Utility.chuckUserOut();
-            }
-            const deleteAccount = () => {
-                homeClose();
-                Utility.throwConfirmationScreen(this, "deleteAccount", "Are you sure you want to delete your account?", "This will permanently delete all your data on our servers. (you can make a new account if you wish)");
-            }
-            homeExitButton.addEventListener('click', homeClose);
-            homeGuideButton.addEventListener('click', showGuide);
-            saveExitButton.addEventListener('click', saveAndExit);
-            deleteAccountButton.addEventListener('click', deleteAccount);
+        });
+        let homeExitButton = document.getElementById("home-exit-button");
+        homeExitButton.addEventListener('click', () => {
+            Utility.toggleMenu(this, "homeMenu");
         });
 
         let settingsButton = document.getElementById("settings-icon-container");
