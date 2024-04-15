@@ -6,12 +6,16 @@
 * {
     box-sizing: border-box;
     image-rendering: pixelated;
-    font-family: Helvetica, sans-serif;
 }
 
 body {
     margin: 0;
     overflow: hidden;
+    font-family: pixel-font, Helvetica, sans-serif;
+}
+
+button, input, select {
+    font-family: pixel-font, Helvetica, sans-serif;
 }
 
 p {
@@ -24,7 +28,6 @@ h1 {
     font-size: calc(3vw * var(--scale-factor));
     margin-top: 3px;
     margin-bottom: 3px;
-    font-family: pixel-script;
 }
 
 form {
