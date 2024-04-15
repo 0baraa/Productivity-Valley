@@ -392,8 +392,8 @@
     <!--Top left-->
     <div class="top-left-container">
         <div id="home-icon-container">
-{#            <img src="/assets/home.png" alt="Home Icon">#}
-            <img src="{% static 'assets/home.png' %}" alt="Home Icon">
+{#            <img src="/assets/question.png" alt="Question Icon">#}
+            <img src="{% static 'assets/question.png' %}" alt="Question Icon">
         </div>
         <div id="settings-icon-container">
 {#            <img src="/assets/settings.png" alt="Settings Icon">#}
@@ -434,35 +434,14 @@
     <!--Home Menu Popup-->
     <div class="menu-container home-menu" style="display: none; margin-top: 100px; margin-bottom: 100px;">
         <dialog class="menu home-menu" style="display: inline-flex; flex-direction: column; height: 450px;">
-            <div class="menu-top-container" style="align-self: flex-end;">
-                <button class="exit-button" id="home-exit-button">X</button>
+            <div class="menu-top-container">
+                <button type="button" class="menu-top-spacer">X</button>
+                <p>Tutorial</p>
+                <button type="button" class="exit-button" id="home-exit-button">X</button>
             </div>
-            <div style="justify-content: center; display: flex;">
-                <table id="home-menu-table">
-                    <tr>
-                        <td>
-                            <!--Show tutorial cards-->
-                            <div style="display: flex; justify-content: center;">
-                                <button id="quick-guide">Quick Guide</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div style="display: flex; justify-content: center;">
-                                <button id="exit-game">Save and Exit Game</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <!--Should delete account from the database-->
-                        <td>
-                            <div style="display: flex; justify-content: center;">
-                                <button id="delete-account">Delete Account</button>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
+            <div id="furniture-container"
+                style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
+                <p>Welcome to the tutorial!</p>
             </div>
         </dialog>
     </div>
