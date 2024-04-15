@@ -210,34 +210,10 @@ export default class FarmScene extends Phaser.Scene {
         let homeButton = document.getElementById("home-icon-container");
         homeButton.addEventListener('click', () => {
             Utility.toggleMenu(this, "homeMenu");
-            let homeExitButton = document.getElementById('home-exit-button');
-            let homeGuideButton = document.getElementById('quick-guide');
-            let saveExitButton = document.getElementById('exit-game')
-            let deleteAccountButton = document.getElementById('delete-account');
-            const homeClose = () => {
-                homeExitButton.removeEventListener('click', homeClose);
-                homeGuideButton.removeEventListener('click', showGuide);
-                saveExitButton.removeEventListener('click', saveAndExit);
-                deleteAccountButton.removeEventListener('click', deleteAccount);
-                Utility.toggleMenu(this, "homeMenu");
-            }
-            const showGuide = () => {
-                homeClose();
-                Utility.showInfo(this, "homeGuide");
-            }
-            const saveAndExit = () => {
-                homeClose();
-                //this.farm.saveFarmState();
-                Utility.chuckUserOut();
-            }
-            const deleteAccount = () => {
-                homeClose();
-                Utility.throwConfirmationScreen(this, "deleteAccount", "Are you sure you want to delete your account?", "This will permanently delete all your data on our servers. (you can make a new account if you wish)");
-            }
-            homeExitButton.addEventListener('click', homeClose);
-            homeGuideButton.addEventListener('click', showGuide);
-            saveExitButton.addEventListener('click', saveAndExit);
-            deleteAccountButton.addEventListener('click', deleteAccount);
+        });
+        let homeExitButton = document.getElementById("home-exit-button");
+        homeExitButton.addEventListener('click', () => {
+            Utility.toggleMenu(this, "homeMenu");
         });
 
         let settingsButton = document.getElementById("settings-icon-container");
@@ -823,17 +799,28 @@ export default class FarmScene extends Phaser.Scene {
         if (!editing) {
             Utility.setPlotReady(false)
             let cropChoice = document.getElementById("cropChoice");
-            let seedsOwned = Object.values(this.farm.saveseedsOwned());
+            let seedsOwned = Object.entries(this.farm.saveseedsOwned());
             let taskable = false;
+            let neverBought = true;
+            
+
             for (let i = 0; i < seedsOwned.length; i++) {
-                if (seedsOwned[i] >= 0) {
+                if (seedsOwned[i][1] > 0) {
                     cropChoice.options[i].style.display = "display";
                     taskable = true;
-                } else {
+                    neverBought = false
+
+                } else if (seedsOwned[i][1] == 0) {
+                    neverBought = false;
                     cropChoice.options[i].style.display = "none";
                 }
+                else (cropChoice.options[i].style.display = "none");
             }
-            if (!taskable && this.farm.coins >= 50) {
+            let price = 50
+            if (neverBought) {
+                price = 150
+            }
+            if (!taskable && this.farm.coins >= price) {
                 this.openAlertWindow("You have no seeds!", "You can buy some from the Market.")
                 return;
             } else if (!taskable) {
@@ -1962,6 +1949,7 @@ class Task {
         this.subtasks = config.subtasks || this.subtasks;
         this.subtasksCompleted = config.subtasksCompleted || this.subtasksCompleted;
         this.completed = config.completed || this.completed;
+        this.updateTaskScreen();
     }
 
     updateTaskScreen() {
