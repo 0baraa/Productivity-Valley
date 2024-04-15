@@ -10,24 +10,28 @@ export default class AccessUserData {
         // let newUser = {usernameID: currentUsername, coins: 9999, farmHouseLevel: 1, x: 70, y: 570, email: "fartyartypartypooper@gmail.com", plots: 1};
         // console.log("passing new user", newUser);
         // UserData.createUser(newUser);
-        let userData = await UserData.fetchUserFarm(currentUsername)
-        console.log(userData);
+        //await UserData.deleteUser('mrsandman')
+        let userFarm = await UserData.fetchUserFarm(currentUsername)
+        console.log(userFarm);
         let userSeeds;
         let userDecs;
         let userFurniture;
         let tasks;
         let userPlots;
         let userSettings;
-        if (!userData || userData.length == 0) {
+        if (!userFarm || userFarm.length == 0) {
             console.log("no user found creating new one");
-            userData = {usernameId: currentUsername, coins: 0, farmHouseLevel: 1, x: 70, y: 570};
-            UserData.createUser(userData);
-            console.log("creating a seed");
-            UserData.addUserSeeds({usernameId: currentUsername});
-            console.log("plots are empty, creating a new plot for user \n\n");
-            userPlots = [{usernameId: currentUsername, plotId: 0, x: 320, y: 616, placed: true}];
-            UserData.addUserPlot(userPlots[0]);
-            UserData.addUserSettings({usernameId_id: currentUsername});
+            userFarm = {usernameId: currentUsername, coins: 0, farmHouseLevel: 1, x: 70, y: 570};
+            return UserData.createUser({usernameId: currentUsername})
+            .then (bool => {
+                console.log(bool)
+                return this.loadDefaults(userFarm, null, null, null, null, null)
+            })
+            .catch(error => {
+                console.error("Error creating UserFarm: ", error)
+                alert("Could not find or create Data for you. You are in Guest Mode.")
+                return this.loadDefaults(404, null, null, null, null, null)
+            });
         }
         else {
             userSeeds = await UserData.fetchUserSeeds(currentUsername)
@@ -42,31 +46,46 @@ export default class AccessUserData {
             console.log(userPlots);
             userSettings = await UserData.fetchUserSettings(currentUsername)
             console.log(userSettings);
-            
-            
+            return this.loadDefaults(userFarm[0], userSeeds[0], tasks, userDecs, userFurniture, userPlots, userSettings[0])
+        }
+    }
+    static loadDefaults(userFarm, userSeeds, tasks, userDecs, userFurniture, userPlots, userSettings){
+        if (userFarm === 404) {
+            console.log("Hello Guest")
+            userFarm = {usernameId: "guest", coins: 999999, farmHouseLevel: 2, x: 70, y: 570}
+
+            //window.location.replace()
         }
         if (userSeeds == null || Object.keys(userSeeds).length === 0) {
-            userSeeds = {sunflower: -1, carrot: -1, pumpkin: -1, tulip: -1, tomato: -1};}
+            console.log("no seeds, using default")
+            userSeeds = {sunflower: -1, carrot: -1, pumpkin: -1, tulip: -1, tomato: -1};
+        }
         if (tasks == null) {tasks = []}
         if (userPlots == null || userPlots.length == 0) {
-            userPlots = [{plotId: 0, crop: "nothing", growthStage: 0, growthStep: 0, x: 320, y: 616, placed: true}];}
+            console.log("no plots, using default")
+            userPlots = [
+                {plotId: 0, crop: "nothing", growthStage: 0, growthStep: 0, x: 320, y: 616, placed: true}
+            ];}
         if (userDecs == null) {userDecs = [];}
         if (userFurniture == null) {userFurniture = [];}
         if (userSettings == null || Object.keys(userSettings).length === 0) {
-            console.log("no userSettings, creating their settings")
+            console.log("no userSettings, using default")
             userSettings = {
-                usernameId_id: currentUsername,
                 workTime : 25,
                 shortBreakTime : 5,
                 longBreakTime : 15,
                 longBreakInterval : 4,
                 autoStartBreak : true,
                 autoStartPomodoro : false,
+                font: 'pixelArt',
+                fontSize: 'normal'
             };
         }
+
+        console.log(userFarm, userPlots, userSettings, userSeeds)
         
         return {
-            userFarm: userData[0],
+            userFarm: userFarm,
             seedsOwned: userSeeds,
             plots: userPlots,
             tasks: tasks,
@@ -85,8 +104,8 @@ export default class AccessUserData {
         UserData.updateHouse(usernameId, farmState.farmHouseLevel, farmState.x, farmState.y);
     }
     static async amendUserSeeds(seeds) {
-        await UserData.deleteUserSeeds(seeds.usernameId);
-        seeds.usernameId = currentUsername
+        console.log(currentUsername)
+        //seeds.usernameId = `${currentUsername}`
         UserData.addUserSeeds(seeds);
     }
     static async updateAllUserPlots(plotList) {
@@ -96,8 +115,6 @@ export default class AccessUserData {
     }
 
     static async updateSinglePlot(plot) {
-        await UserData.deleteUserPlot(currentUsername, plot.plotId);
-        plot.usernameId = currentUsername;
         UserData.addUserPlot(plot);
     }
 
@@ -110,34 +127,31 @@ export default class AccessUserData {
     }
 
     static async updateSingleTask(task) {
-        await UserData.deleteUserTask(currentUsername, task.plotId)
-        task.usernameId = currentUsername;
         UserData.addUserTask(task)
     }
 
     static async updateAllUserDecorations(decorationList) {
         for (let i = 0; i < decorationList.length; i++) {
-            await UserData.deleteUserPlot(currentUsername, decorationList[i].type);
-            decorationList[i].usernameId = currentUsername;
-            UserData.addUserPlot(decorationList[i]);
+            UserData.addUserDecoration(decorationList[i]);
         }
+    }
+    static async updateSingleDecoration(decoration) {
+        UserData.addUserDecoration(decoration)
     }
 
     static async updateAllUserFurniture(furnitureList) {
         for (let i = 0; i < furnitureList.length; i++) {
-            await UserData.deleteUserPlot(currentUsername, furnitureList[i].type);
-            furnitureList[i].usernameId = currentUsername;
-            UserData.addUserPlot(furnitureList[i]);
+            UserData.addUserFurniture(furnitureList[i]);
         }
     }
 
-
-    static async updateUserSettings(settings) {
-        await UserData.deleteUserSettings(currentUsername);
-        settings.usernameId = currentUsername;
-        UserData.addUserSettings(settings);
+    static async updateSingleFurniture(furniture) {
+        UserData.addUserFurniture(furniture)
     }
 
+    static async updateUserSettings(settings) {
+        UserData.addUserSettings(settings);
+    }
 
 
 

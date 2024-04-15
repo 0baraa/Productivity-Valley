@@ -1,8 +1,11 @@
 from django.contrib import admin
-from .models import UserFarm, Tasks, Decorations, UserDecorations, UserSeeds
+from .models import UserFarm, Tasks, UserDecorations, UserSeeds, UserFurniture, UserSettings, UserPlots
 
-# admin.site.register(Users)
+admin.site.register(UserFarm)
 admin.site.register(Tasks)
-admin.site.register(Decorations)
+admin.site.register(UserFurniture)
 admin.site.register(UserDecorations)
 admin.site.register(UserSeeds)
+admin.site.register(UserSettings)
+admin.site.register(UserPlots)
+

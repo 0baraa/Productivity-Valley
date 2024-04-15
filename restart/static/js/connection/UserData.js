@@ -8,23 +8,16 @@ const apiUrlalt = 'http://localhost:8000/user-decorations/';
 const apiUrlalt1 = 'http://localhost:8000/user-crops/';
 
 const urlStarter = "http://localhost:8000";
-const usersTable = "/user-farm/";
+const userFarmTable = "/user-farm/";
 const userDecTable = "/user-decorations/";
-const userFurnTable = "user-furniture/";
+const userFurnTable = "/user-furniture/";
 const userSeedTable = "/user-seeds/";
 const userTaskTable = "/tasks/";
 const userPlotTable = "/user-plots/";
 const userSettTable = "/user-settings/";
+const userDatesTable = "/user-dates/";
 
 export default class UserData {     //works
-    static urlStarter = "http://localhost:8000";
-    static usersTable = "user-farm/";
-    static userDecTable = "user-decorations/";
-    static userFurnTable = "user-furniture/";
-    static userSeedTable = "user-seeds/";
-    static userTaskTable = "tasks/";
-    static userPlotTable = "user-plots/";
-    static userSettTable = "user-settings/";
     
 
     static fetchData(url) {
@@ -45,9 +38,8 @@ export default class UserData {     //works
             });
         }
     static async fetchUserFarm(userId) {
-        const url = `http://localhost:8000/users/?usernameId=${userId}`;
         console.log(userId);
-        data = await axios.get(usersTable, {
+        data = await axios.get(userFarmTable, {
             params: {
                 usernameId: userId
             }
@@ -74,28 +66,29 @@ export default class UserData {     //works
         //     });
     }
     static async createUser(data) {      //works
-        const url = `${usersTable}`;
         console.log("user data:", data);
         
-        axios.post(usersTable, data, {
+        return axios.post(userFarmTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
             .then(response => {
                 console.log('User created successfully:', response.data);
+                return true
             })
             .catch(error => {
                 console.error('Error creating user:', error);
+                return false;
             });
     }
     static deleteUser(usernameId) {    //works
-        axios.delete(usersTable, {
+        axios.delete(userFarmTable, {
             headers: {'X-CSRFToken': csrftoken},
             data: {usernameId: usernameId}
             //usernameId: usernameId
             //headers: {'X-CSRFToken': csrftoken}
         })
             .then(response => {
-                if (!response.ok) {
+                if (!response.status != 200) {
                     throw new Error('Network response was not ok');
                 }
                 console.log('User deleted successfully');
@@ -108,9 +101,8 @@ export default class UserData {     //works
 
 
     static async fetchUserDecorations(usernameId){   //works
-        const url = `${userDecTable}?usernameId=${usernameId}`;
 
-        data = await axios.get('/user-decorations/', {
+        data = await axios.get(userDecTable, {
             params: {
                 usernameId: usernameId
             }
@@ -125,8 +117,7 @@ export default class UserData {     //works
         return data;
     }
     static addUserDecoration(data) {   //works
-        const url = `${userDecTable}`;
-        axios.post(url, data, {
+        axios.post(userDecTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
             .then(response => {
@@ -156,7 +147,6 @@ export default class UserData {     //works
 
 
     static async fetchUserFurniture(usernameId){   //works
-        const url = `/user-furniture/?usernameId=${usernameId}`;
 
         data = await axios.get(userFurnTable, {
             params: {
@@ -173,7 +163,6 @@ export default class UserData {     //works
         return data;
     }
     static addUserFurniture(data) {   //works
-        const url = `/user-furniture/`;
         axios.post(userFurnTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
@@ -204,8 +193,6 @@ export default class UserData {     //works
 
 
     static async fetchUserSeeds(usernameId){    //works
-        const url = `${userCropTable}?usernameId=${usernameId}`;
-
         data = await axios.get(userSeedTable, {
             params: {
                 usernameId: usernameId
@@ -221,7 +208,8 @@ export default class UserData {     //works
         return data;
     }
     static addUserSeeds(data) {     //works
-        axios.post(userSeedsTable, data, {
+        console.log(data)
+        axios.post(userSeedTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
             .then(response => {
@@ -232,7 +220,7 @@ export default class UserData {     //works
             });
     }
     static deleteUserSeeds(usernameId) {    //works
-        axios.delete(userSeedsTable, {
+        axios.delete(userSeedTable, {
             headers: {'X-CSRFToken': csrftoken},
             data: {usernameId: usernameId,}
         })
@@ -251,7 +239,7 @@ export default class UserData {     //works
 
     static async fetchUserTasks(usernameId){    //works
 
-        return await axios.get('/tasks/', {
+        return axios.get(userTaskTable, {
             params: {
                 usernameId: usernameId
             }
@@ -314,12 +302,11 @@ export default class UserData {     //works
         })
     }
     static addUserPlot(data) {     //works
-        const url = `${userPlotTable}`;
         axios.post(userPlotTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
         .then(response => {
-            console.log('Task added successfully:', response.data);
+            console.log('Plot added successfully:', response.data);
         })
         .catch(error => {
             if (error.response && error.response.data) {
@@ -364,7 +351,7 @@ export default class UserData {     //works
         })
     }
     static addUserSettings(data) {     //works
-        const url = `${userSettTable}`;
+
         axios.post(userSettTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
@@ -394,7 +381,7 @@ export default class UserData {     //works
 
 
     static updateUserMoney(usernameId, coins) {      //works
-        const url = `${usersTable}change-money/`;
+        const url = `${userFarmTable}change-money/`;
     
         const requestData = {
             usernameId: usernameId,
@@ -421,7 +408,7 @@ export default class UserData {     //works
     }
 
     static updateHouse(usernameId, farmHouseLevel, xIn, yIn) {      //works
-        const url = `${usersTable}change-house/`;
+        const url = `${userFarmTable}change-house/`;
     
         const requestData = {
             usernameId: usernameId,
@@ -452,9 +439,8 @@ export default class UserData {     //works
 
 
     static async getuserDates(usernameId) {
-        const url = `/user-dates/?usernameId=${usernameId}`;
 
-        return await axios.get('/user-dates/', {
+        return await axios.get(userDatesTable, {
             params: {
                 usernameId: usernameId
             }
@@ -469,7 +455,7 @@ export default class UserData {     //works
     }
     static addUserDate(data) {
         const url = `/user-dates/`
-        axios.post(url, data)
+        axios.post(userDatesTable, data)
         .then(response => {
             console.log('Date added successfully:', response.data);
         })

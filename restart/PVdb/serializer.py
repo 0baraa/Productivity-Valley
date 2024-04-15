@@ -41,11 +41,11 @@ class UserFurnitureSerializer(serializers.ModelSerializer):
         model = UserFurniture
         fields = ['usernameId', 'type', 'x', 'y', 'placed']
 
-class UsersSeedsSerializer(serializers.ModelSerializer):
+class UserSeedsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSeeds
         fields = ['usernameId', 'tomato', 'sunflower', 'carrot', 'pumpkin', 'tulip']
 class UserSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSettings
-        fields = ['usernameId', 'pomTimer', 'shortBreak', 'longBreak', 'longBreakInterval', 'autoStartPom', 'autoStartBreak', 'autoHideTime', 'fontStyle', 'fontSize']
+        fields = ['usernameId', 'pomTimer', 'shortBreak', 'longBreak', 'longBreakInterval', 'autoStartPom', 'autoStartBreak', 'fontStyle', 'fontSize']
