@@ -11,21 +11,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RenameField(
-            model_name="tasks",
-            old_name="taskCompleted",
-            new_name="completed",
-        ),
-        migrations.RenameField(
-            model_name="tasks",
-            old_name="pomodorros",
-            new_name="pomodoros",
-        ),
-        migrations.RenameField(
-            model_name="tasks",
-            old_name="pomodorrosCompleted",
-            new_name="pomodorosCompleted",
-        ),
-        migrations.RenameField(
             model_name="userdecorations",
             old_name="decoration",
             new_name="type",

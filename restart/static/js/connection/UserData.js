@@ -8,20 +8,20 @@ const apiUrlalt = 'http://localhost:8000/user-decorations/';
 const apiUrlalt1 = 'http://localhost:8000/user-crops/';
 
 const urlStarter = "http://localhost:8000";
-const usersTable = "/users/";
+const usersTable = "/user-farm/";
 const userDecTable = "/user-decorations/";
 const userFurnTable = "user-furniture/";
-const userCropTable = "/user-crops/";
+const userSeedTable = "/user-seeds/";
 const userTaskTable = "/tasks/";
 const userPlotTable = "/user-plots/";
 const userSettTable = "/user-settings/";
 
 export default class UserData {     //works
     static urlStarter = "http://localhost:8000";
-    static usersTable = "users/";
+    static usersTable = "user-farm/";
     static userDecTable = "user-decorations/";
     static userFurnTable = "user-furniture/";
-    static userCropTable = "user-crops/";
+    static userSeedTable = "user-seeds/";
     static userTaskTable = "tasks/";
     static userPlotTable = "user-plots/";
     static userSettTable = "user-settings/";
@@ -44,10 +44,10 @@ export default class UserData {     //works
                 throw error;
             });
         }
-    static async fetchUserData(userId) {
+    static async fetchUserFarm(userId) {
         const url = `http://localhost:8000/users/?usernameId=${userId}`;
         console.log(userId);
-        data = await axios.get('/users/', {
+        data = await axios.get(usersTable, {
             params: {
                 usernameId: userId
             }
@@ -203,10 +203,10 @@ export default class UserData {     //works
 
 
 
-    static async fetchUserCrops(usernameId){    //works
+    static async fetchUserSeeds(usernameId){    //works
         const url = `${userCropTable}?usernameId=${usernameId}`;
 
-        data = await axios.get(userCropTable, {
+        data = await axios.get(userSeedTable, {
             params: {
                 usernameId: usernameId
             }
@@ -220,8 +220,8 @@ export default class UserData {     //works
         })
         return data;
     }
-    static addUserCrop(data) {     //works
-        axios.post(userCropTable, data, {
+    static addUserSeeds(data) {     //works
+        axios.post(userSeedsTable, data, {
             headers: {'X-CSRFToken': csrftoken},
         })
             .then(response => {
@@ -231,8 +231,8 @@ export default class UserData {     //works
                 console.error('Error adding crop for user:', error);
             });
     }
-    static deleteUserCrop(usernameId) {    //works
-        axios.delete(userCropTable, {
+    static deleteUserSeeds(usernameId) {    //works
+        axios.delete(userSeedsTable, {
             headers: {'X-CSRFToken': csrftoken},
             data: {usernameId: usernameId,}
         })

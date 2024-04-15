@@ -10,7 +10,7 @@ export default class AccessUserData {
         // let newUser = {usernameID: currentUsername, coins: 9999, farmHouseLevel: 1, x: 70, y: 570, email: "fartyartypartypooper@gmail.com", plots: 1};
         // console.log("passing new user", newUser);
         // UserData.createUser(newUser);
-        let userData = await UserData.fetchUserData(currentUsername)
+        let userData = await UserData.fetchUserFarm(currentUsername)
         console.log(userData);
         let userSeeds;
         let userDecs;
@@ -23,14 +23,14 @@ export default class AccessUserData {
             userData = {usernameId: currentUsername, coins: 0, farmHouseLevel: 1, x: 70, y: 570};
             UserData.createUser(userData);
             console.log("creating a seed");
-            UserData.addUserCrop({usernameId: currentUsername});
+            UserData.addUserSeeds({usernameId: currentUsername});
             console.log("plots are empty, creating a new plot for user \n\n");
             userPlots = [{usernameId: currentUsername, plotId: 0, x: 320, y: 616, placed: true}];
             UserData.addUserPlot(userPlots[0]);
             UserData.addUserSettings({usernameId_id: currentUsername});
         }
         else {
-            userSeeds = await UserData.fetchUserCrops(currentUsername)
+            userSeeds = await UserData.fetchUserSeeds(currentUsername)
             console.log(userSeeds);
             userDecs = await UserData.fetchUserDecorations(currentUsername)
             console.log(userDecs);
@@ -85,9 +85,9 @@ export default class AccessUserData {
         UserData.updateHouse(usernameId, farmState.farmHouseLevel, farmState.x, farmState.y);
     }
     static async amendUserSeeds(seeds) {
-        await UserData.deleteUserCrop(seeds.usernameId);
+        await UserData.deleteUserSeeds(seeds.usernameId);
         seeds.usernameId = currentUsername
-        UserData.addUserCrop(seeds);
+        UserData.addUserSeeds(seeds);
     }
     static async updateAllUserPlots(plotList) {
         for (let i = 0; i < plotList.length; i++) {
@@ -143,7 +143,7 @@ export default class AccessUserData {
 
     static completelyDeleteUser(usernameId, playerState) {
         UserData.deleteUser(usernameId);
-        UserData.deleteUserCrop(usernameId) 
+        UserData.deleteUserSeeds(usernameId) 
         for (let i = 0; i < playerState.plots.length; i++) {
             UserData.deleteUserPlot(usernameId, playerState.plots[i].plotId)
         }

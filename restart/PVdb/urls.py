@@ -18,15 +18,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from PVdb.views import *
-from .views import UsersView,PomodoroStatsView
+from .views import UserFarmView,PomodoroStatsView
 urlpatterns = [
 # path('admin/', admin.site.urls),
-path('users/', UsersView.as_view(), name='Users'),
-path('users/change-money/', UsersView.as_view(), name='change-money'),
-path('decorations', DecorationsView.as_view(), name='Decorations'),
-path('crops', CropsView.as_view(), name='Crops'),
+path('user-farm/', UserFarmView.as_view(), name='user_farm'),
+path('user-farm/change-money/', MoneyView().as_view(), name='user_money'),
+path('user-farm/change-house/', HouseView().as_view(), name='user_house'),
+# path('decorations', Decorations.as_view(), name='Decorations'),
+# path('crops', CropsView.as_view(), name='Crops'),
 path('user-decorations/', UserDecorationsView.as_view(), name='user_decorations'),
-path('user-crops/', UserCropsView.as_view(), name='user_crops'),
+path('user-seeds/', UserSeedsView.as_view(), name='user_crops'),
 path('user-furniture/', UserFurnitureView.as_view(), name='user_furniture'),
 path('tasks/', TasksView.as_view(), name='tasks'),
 path('user-plots/', UserPlotsView.as_view(), name ='user_plots'),

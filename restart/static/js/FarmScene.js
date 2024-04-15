@@ -975,7 +975,7 @@ export default class FarmScene extends Phaser.Scene {
                     taskConfig.plotId = this.selector.plotSelected, 
                     this.farm.addTask(taskConfig);
                     this.farm.removeCropFromInventory(cropType);
-                    this.farm.saveseedsOwned();
+                    this.farm.saveSeedsOwned();
 
                 }
                 console.log(this.farm.tasks, taskConfig);
@@ -1737,6 +1737,7 @@ class PlayerFarm {
         }
         this.seedsOwned[cropsIn] ++;
         console.log(this.seedsOwned);
+        this.saveSeedsOwned()
     }
     removeCropFromInventory(cropsIn) {
         if (this.seedsOwned[cropsIn] > 0) {
@@ -1784,6 +1785,8 @@ class PlayerFarm {
                 pomodoros: task.pomodoros,
                 pomodorosCompleted: task.pomodorosCompleted,
                 completed: task.completed,
+                timerState: task.timerState,
+                timerTime: task.time,
                 subTask1: null,
                 subTask1Completed: null,
                 subTask2: null,
@@ -2221,6 +2224,8 @@ class Plot extends Phaser.GameObjects.Container {
         }
         this.growSelectedCrop(this.findCrop()) //find and grow one of the crops
         this.stepGrowth();
+        this.scene.farm.savePlot(this)
+        this.scene.farm.saveTask(this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()])
         }
 
     findCrop() {

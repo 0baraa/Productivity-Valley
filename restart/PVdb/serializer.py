@@ -1,10 +1,10 @@
 from rest_framework import serializers
 from .models import *
 
-class UsersSerializer(serializers.ModelSerializer):
+class UserFarmSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Users
-        fields = ['usernameId', 'coins', 'farmHouseLevel', 'x', 'y',           'email','plots'] #please remove last two
+        model = UserFarm
+        fields = ['usernameId', 'coins', 'farmHouseLevel', 'x', 'y', 'email']
 
 class UserPlotsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,7 +14,7 @@ class UserPlotsSerializer(serializers.ModelSerializer):
 class TasksSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tasks
-        fields = ['taskName', 'usernameId', 'completed', 'plotId', 'pomodoros', 'pomodorosCompleted', 'elapsedTime', 'subTask1', 'subTaskCompleted1', 'subTask2', 'subTaskCompleted2', 'subTask3', 'subTaskCompleted3', 'subTask4', 'subTaskCompleted4', 'subTask5', 'subTaskCompleted5', 'subTask6', 'subTaskCompleted6', 'subTask7', 'subTaskCompleted7', 'subTask8', 'subTaskCompleted8', 'subTask9', 'subTaskCompleted9', 'subTask10', 'subTaskCompleted10', ]
+        fields = ['taskName', 'usernameId', 'completed', 'plotId', 'pomodoros', 'pomodorosCompleted', 'timerState', 'timerTime', 'elapsedTime', 'subTask1', 'subTaskCompleted1', 'subTask2', 'subTaskCompleted2', 'subTask3', 'subTaskCompleted3', 'subTask4', 'subTaskCompleted4', 'subTask5', 'subTaskCompleted5', 'subTask6', 'subTaskCompleted6', 'subTask7', 'subTaskCompleted7', 'subTask8', 'subTaskCompleted8', 'subTask9', 'subTaskCompleted9', 'subTask10', 'subTaskCompleted10', ]
 
 class UserDatesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,9 +41,9 @@ class UserFurnitureSerializer(serializers.ModelSerializer):
         model = UserFurniture
         fields = ['usernameId', 'type', 'x', 'y', 'placed']
 
-class UsersCropsSerializer(serializers.ModelSerializer):
+class UsersSeedsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserCrop
+        model = UserSeeds
         fields = ['usernameId', 'tomato', 'sunflower', 'carrot', 'pumpkin', 'tulip']
 class UserSettingsSerializer(serializers.ModelSerializer):
     class Meta:
