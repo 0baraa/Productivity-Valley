@@ -16,9 +16,9 @@ const userTaskTable = "/tasks/";
 const userPlotTable = "/user-plots/";
 const userSettTable = "/user-settings/";
 const userDatesTable = "/user-dates/";
+const csrftoken = document.getElementsByName("_token")[0].value
 
 export default class UserData {     //works
-    
 
     static fetchData(url) {
         return fetch(url)
@@ -38,13 +38,12 @@ export default class UserData {     //works
             });
         }
     static async fetchUserFarm(userId) {
-        console.log(userId);
         data = await axios.get(userFarmTable, {
             params: {
                 usernameId: userId
             }
         }).then(response => {
-            console.log("successful access od data Users")
+            console.log("successful access od data UsersFarm")
             return response.data;
         }).catch(error => {
             console.error('Error fetching user data');
@@ -107,7 +106,7 @@ export default class UserData {     //works
                 usernameId: usernameId
             }
         }).then(response => {
-            console.log("successful access od data Users")
+            console.log("successful access od data decorations")
             return response.data;
         }).catch(error => {
             console.error('Error fetching user decorations');
@@ -153,7 +152,7 @@ export default class UserData {     //works
                 usernameId: usernameId
             }
         }).then(response => {
-            console.log("successful access od data Users")
+            console.log("successful access od data furniture")
             return response.data;
         }).catch(error => {
             console.error('Error fetching user furniture');
@@ -198,10 +197,10 @@ export default class UserData {     //works
                 usernameId: usernameId
             }
         }).then(response => {
-            console.log("successful access od data user crops : ", usernameId)
+            console.log("successful access od data user seeds : ", usernameId)
             return response.data;
         }).catch(error => {
-            console.error('Error fetching user crops');
+            console.error('Error fetching user seeds');
             return null;
             throw error;
         })
@@ -244,7 +243,7 @@ export default class UserData {     //works
                 usernameId: usernameId
             }
         }).then(response => {
-            console.log("successful access od data Users")
+            console.log("successful access od data tasks")
             return response.data;
         }).catch(error => {
             console.error('Error fetching user tasks');
@@ -293,7 +292,7 @@ export default class UserData {     //works
                 usernameId: usernameId
             }
         }).then(response => {
-            console.log("successful access od data Users")
+            console.log("successful access od data plots")
             return response.data;
         }).catch(error => {
             console.error('Error fetching user plots');
@@ -342,7 +341,7 @@ export default class UserData {     //works
                 usernameId_id: usernameId
             }
         }).then(response => {
-            console.log("successful access od data Users")
+            console.log("successful access od data Users settings")
             return response.data;
         }).catch(error => {
             console.error('Error fetching user settings');

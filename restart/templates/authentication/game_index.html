@@ -8,10 +8,11 @@
     <title>Productivity Valley</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="icon" href="{% static 'assets/sun.ico' %}" type="image/x-icon">
+    <input type="hidden" name="_token" value="{{csrf_token}}"/>
+    
     <script type="text/javascript">
         var STATIC_URL = "{% static '' %}";
         var currentUsername = '{{ username }}'; 
-        var csrftoken = '{{ csrf_token }}';
         console.log("username: " + currentUsername);
     </script>
     

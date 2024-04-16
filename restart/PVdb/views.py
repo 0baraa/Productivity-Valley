@@ -50,7 +50,7 @@ class UserFarmView(APIView):
         #print(request, "\n", data, "\n\n")
 
         serializer = UserFarmSerializer(data=request.data)
-        username = data.request.get("usernameId")
+        username = request.data.get("usernameId")
         if serializer.is_valid(raise_exception=True):
             new_user = serializer.save()
             UserSeeds.objects.create(
@@ -61,15 +61,13 @@ class UserFarmView(APIView):
             )
             UserPlots.objects.create(
                 usernameId = username,
-                plotId = 0,
-                crop = "nothing",
-                growthStage = 0,
-                growthStep = 0,
                 x = 320,
                 y = 616,
                 placed = True,
             )
             return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request):
         print(" delete request::::::::::::::::::::",request)
         print(request.data)
@@ -127,7 +125,7 @@ class HouseView(APIView):
 
 class TasksView(APIView):
     def get(self, request):
-        username = request.data.get('usernameId', None)
+        username = request.GET.get('usernameId', None)
         userTasks = Tasks.objects.filter(usernameId=username)
         serializer = TasksSerializer(userTasks, many=True)
         return Response(serializer.data)
@@ -139,10 +137,10 @@ class TasksView(APIView):
             userInstance.delete()
         except Tasks.DoesNotExist:
             print("Task not found, making new")
-        serializer = TasksSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
+            serializer = TasksSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
     def delete(self, request):
         plotId = request.data.get('plotId', None)
         username = request.data.get('usernameId', None)
@@ -174,7 +172,8 @@ class TasksView(APIView):
 
 class UserDatesView(APIView):
     def get(self, request):
-        userDates = UserDates.objects.all()
+        username = request.GET.get("usernameId")
+        userDates = UserDates.objects.all(usernameId = username)
         serializer = UserDatesSerializer(userDates, many=True)
         return Response(serializer.data)
 
@@ -205,7 +204,7 @@ class UserDatesView(APIView):
 
 class UserDecorationsView(APIView):
     def get(self, request):
-        username = request.data.get('usernameId')
+        username = request.GET.get('usernameId')
         userDecorations = UserDecorations.objects.filter(usernameId = username)
         serializer = UserDecorationsSerializer(userDecorations, many=True)
         print(serializer)
@@ -242,9 +241,10 @@ class UserDecorationsView(APIView):
 
 class UserPlotsView(APIView):
     def get(self, request):
-        username = request.data.get('usernameId')
+        username = request.GET.get('usernameId')
         userPlots = UserPlots.objects.filter(usernameId = username)
         serializer = UserPlotsSerializer(userPlots, many=True)
+        print(username, serializer, userPlots)
         return Response(serializer.data)
     def post(self, request):
         print("plots request::::::::::", request.data)
@@ -252,13 +252,21 @@ class UserPlotsView(APIView):
         plotid = request.data.get('plotId')
         try:
             userInstance = UserPlots.objects.get(usernameId=user, plotId=plotid)
-            userInstance.delete()
+            userInstance.crop = request.data.get("crop")
+            userInstance.growthStage = request.data.get("growthStage")
+            userInstance.growthStage = request.data.get("growthStage")
+            userInstance.growthStep = request.data.get("growthStep")
+            userInstance.x = request.data.get("x")
+            userInstance.y = request.data.get("y")
+            userInstance.placed = request.data.get("placed")
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
         except UserPlots.DoesNotExist:
             print("user plot not found, making new")
-        serializer = UserPlotsSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer = UserPlotsSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     def delete(self, request):
             plotId = request.data.get('plotId', None)
@@ -320,7 +328,7 @@ class UserSeedsView(APIView):
 
 class UserFurnitureView(APIView):
     def get(self, request):
-        username = request.data.get('usernameId')
+        username = request.GET.get('usernameId')
         userFurniture = UserFurniture.objects.filter(usernameId = username)
         serializer = UserFurnitureSerializer(userFurniture, many=True)
         #print(serializer)
@@ -358,9 +366,12 @@ class UserFurnitureView(APIView):
 
 class UserSettingsView(APIView):
     def get(self, request):
-        username = request.data.get('usernameId')
-        userSettings = UserSettings.objects.filter(usernameId = username)
-        serializer = UserSettingsSerializer(userSettings, many=True)
+        username = request.GET.get('usernameId')
+        print(username)
+        user = UserFarm.objects.filter(usernameId = username).first()
+        print(user)
+        userSettings = UserSettings.objects.filter(usernameId = user)
+        serializer = UserSettingsSerializer(userSettings, many = True)
         #print(serializer)
         return Response(serializer.data)
 

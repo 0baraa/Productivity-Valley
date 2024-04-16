@@ -3,6 +3,8 @@ from django.db import models
 
 from django.core.validators import MaxValueValidator
 
+class Users(models.Model):
+    usernameId = models.CharField(max_length=150, unique=True, primary_key=True)
 
 class UserFarm(models.Model):    #table for users
     usernameId = models.CharField(max_length=150, unique=True, primary_key=True)
@@ -29,7 +31,7 @@ class UserPlots(models.Model):
         unique_together = [['plotId', 'usernameId']]
 
 class Tasks(models.Model):   #table for tasks
-    taskName = models.CharField(max_length=30)
+    name = models.CharField(max_length=30)
     usernameId = models.CharField(max_length=150, default=False)
     completed = models.BooleanField(default=False)
     plotId = models.PositiveIntegerField(default=0, primary_key=True)

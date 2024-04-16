@@ -52,7 +52,7 @@ export default class AccessUserData {
     static loadDefaults(userFarm, userSeeds, tasks, userDecs, userFurniture, userPlots, userSettings){
         if (userFarm === 404) {
             console.log("Hello Guest")
-            userFarm = {usernameId: "guest", coins: 999999, farmHouseLevel: 2, x: 70, y: 570}
+            userFarm = {usernameId: "guest", coins: 999999, farmHouseLevel: 1, x: 70, y: 570}
 
             //window.location.replace()
         }

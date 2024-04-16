@@ -138,7 +138,7 @@ export default class FarmScene extends Phaser.Scene {
             loop: true
         });
 
-        this.add.image(320, 550, 'farmground');
+        this.add.image(320, 600, 'farmground');
         this.add.image(320, 550, 'fence');
 
 
@@ -858,22 +858,21 @@ export default class FarmScene extends Phaser.Scene {
         if (!editing) {
             Utility.setPlotReady(false)
             let cropChoice = document.getElementById("cropChoice");
-            let seedsOwned = Object.values(this.farm.getOwnedSeeds());
+            let seedsOwned = this.farm.getOwnedSeeds();
             let taskable = false;
             let neverBought = true;
-            
 
-            for (let i = 0; i < seedsOwned.length; i++) {
-                if (seedsOwned[i][1] > 0) {
+            for (let i = 0; i < 5; i++) {
+                let count = seedsOwned[cropChoice.options[i].value.toString()]
+                if (count > 0) {
                     cropChoice.options[i].style.display = "display";
                     taskable = true;
-                    neverBought = false
-
-                } else if (seedsOwned[i][1] == 0) {
+                    neverBought = false;
+                    cropChoice.value = cropChoice.options[i].value
+                } else if (count == 0) {
                     neverBought = false;
                     cropChoice.options[i].style.display = "none";
-                }
-                else (cropChoice.options[i].style.display = "none");
+                } else {cropChoice.options[i].style.display = "none";}
             }
             let price = 50
             if (neverBought) {
@@ -883,8 +882,9 @@ export default class FarmScene extends Phaser.Scene {
                 this.openAlertWindow("You have no seeds!", "You can buy some from the Market.")
                 return;
             } else if (!taskable) {
+                console.log("for some reason not taskable")
                 this.openAlertWindow("You have no seeds!", "But we're very generous and have given you some sunflower seeds. Use it well");
-                this.farm.addSeedToInventory("sunflower");
+                this.farm.addSeedToInventory("carrot");
                 return;
             }
         }
@@ -2073,7 +2073,7 @@ class Task {
         this.subtasksCompleted = config.subtasksCompleted  || [];
         this.completed = config.completed || false;
         this.timerState = config.timerState || 0; // 0 : working, 1: short break, 2 : long break
-        this.time = config.time || []; // in seconds
+        this.time = config.time || 0; // in seconds
 
         if (this.noOfPomodors <= this.pomodorosCompleted) {
             this.completed = true;
@@ -2148,12 +2148,11 @@ class Task {
     }
 
     updateTime(currentTime){ // in milliseconds
-        this.time[this.plotId] = currentTime
+        this.time = currentTime
     }
 
     getTime(){
-        let time = this.time[this.plotId];
-        return time;
+        return this.time;
     }
 
 }
