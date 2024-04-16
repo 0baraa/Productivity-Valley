@@ -1,5 +1,5 @@
 import Utility from "./Utility.js";
-
+import AccessUserData from "./connection/AccessUserData.js";
 
 export default class FarmScene extends Phaser.Scene {
     constructor() {
@@ -35,6 +35,7 @@ export default class FarmScene extends Phaser.Scene {
 
     preload() {
         // 辅助函数，自动添加 STATIC_URL 前缀
+        this.gatherData();
         const loadStatic = (key, file) => this.load.image(key, STATIC_URL + file);
 
         // 对于特殊资源类型，如 bitmapFont 或 spritesheet，可以创建专门的辅助函数或直接使用 STATIC_URL
@@ -96,9 +97,12 @@ export default class FarmScene extends Phaser.Scene {
         loadStatic('play-button', 'assets/clock/play-button.png');
         loadStatic('pause-button', 'assets/clock/pause-button.png');
         loadStatic('skip-button', 'assets/clock/skip-button.png');
+        console.log(currentUsername);
     }
 
 
+
+    
     create() {
         // this.add.image(320, 550, 'farmBackground').setDepth(-2);
         this.add.image(320, 550, 'sky').setDepth(-5);
@@ -113,6 +117,16 @@ export default class FarmScene extends Phaser.Scene {
         this.clouds = [];
         this.cloudImages = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5', 'cloud6'];
         
+
+        // Launch the FarmhouseScene (which is hidden at first)
+        this.scene.launch('InsideFarmhouseScene');
+        //get scene
+        this.insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
+        // wait for scene to load then close it
+        this.insideFarmhouseScene.load.on('complete', () => {
+            this.farmReady = true;
+        });
+
         //Generate initial cloud
         generateCloud(this);
         
@@ -740,14 +754,9 @@ export default class FarmScene extends Phaser.Scene {
             Utility.toggleMenu(this.scene.get('MarketScene'), "plotShopMenu");
         });
 
-        // Launch the FarmhouseScene (which is hidden at first)
-            this.scene.launch('InsideFarmhouseScene');
+        
         // Get the InsideFarmhouseScene instance
-        let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
-        // wait for scene to load then close it
-        insideFarmhouseScene.load.on('complete', () => {
-            this.farm = new PlayerFarm(this);
-        });
+        
 
         
 
@@ -761,6 +770,22 @@ export default class FarmScene extends Phaser.Scene {
         this.events.on('creatingTask', this.createTaskMenu, this);
         this.events.on('editingTask', this.editTaskMenu, this);
     }
+
+    async gatherData() {
+        AccessUserData.getAllUserData(currentUsername)
+            .then((result) => {
+                console.log("resulting dataaaa" , result);
+                this.awaitData(result);
+            })
+            .catch((error) =>
+                console.error("could not resolve UserData:", error)
+            )
+    }
+
+    awaitData(dataConfig) {
+        if (this.farmReady) {console.log("not ready")}
+        this.farm = new PlayerFarm(this, dataConfig);
+    } 
 
     updateSelector() {
         //makes the selector jump to the plot if its moved in edit mode
@@ -805,6 +830,8 @@ export default class FarmScene extends Phaser.Scene {
     harvestPlot() {
         this.farm.plots[this.selector.plotSelected].harvest();
         this.farm.tasks.splice(this.farm.findSelectedTaskIndex(), 1);
+        this.farm.savePlot(this.selector.plotSelected)
+        this.farm.saveTask(this.farm.tasks[this.farm.findSelectedTaskIndex()])
     }
 
     editTaskMenu() {
@@ -831,7 +858,7 @@ export default class FarmScene extends Phaser.Scene {
         if (!editing) {
             Utility.setPlotReady(false)
             let cropChoice = document.getElementById("cropChoice");
-            let seedsOwned = Object.entries(this.farm.saveseedsOwned());
+            let seedsOwned = Object.values(this.farm.getOwnedSeeds());
             let taskable = false;
             let neverBought = true;
             
@@ -988,15 +1015,13 @@ export default class FarmScene extends Phaser.Scene {
                     Utility.setPlotReady(true);
                     taskConfig.plotId = this.selector.plotSelected, 
                     this.farm.addTask(taskConfig);
-                    this.farm.removeCropFromInventory(cropType);
-                    this.farm.saveseedsOwned();
+                    this.farm.removeSeedFromInventory(cropType);
+                    this.farm.saveSeedsOwned();
                     this.events.emit("taskCreated");
 
                 }
                 console.log(this.farm.tasks, taskConfig);
                 console.log(document.getElementById("taskName").value)
-                this.farm.saveTasks();
-                this.farm.savePlots();
             }
             else if (event.type == "click") {
                 if (!this.farm.plots[this.selector.plotSelected].occupied){
@@ -1375,7 +1400,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         
         this.initBreakInterval = longBreakInterval;
         //times are stored in seconds.
-        this.updateTimeSettings();
+        this.updateTimeSettings(true);
         this.noOfPomodoros = noOfPomodoros;
         
         this.setupPomodoro();
@@ -1419,13 +1444,38 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.playButton.setVisible(false);
     }
 
-    updateTimeSettings() {
+    updateTimeSettings(dont_save) {
         this.workTime = document.getElementById("workTime").value * 60;
         this.shortBreakTime = document.getElementById("shortBreakTime").value * 60;
         this.longBreakTime = document.getElementById("longBreakTime").value * 60;
         this.longBreakInterval = document.getElementById("longBreakInterval").value;
         this.autoStartBreak = document.getElementById("autoStartBreak").checked;
         this.autoStartPomodoro = document.getElementById("autoStartPomodoro").checked;
+        
+        if (dont_save) {
+            return;
+        }
+        //save settings to database
+        let fontSize = document.getElementById("fontSize").value.toLowerCase()
+        if (fontSize == "small") {
+            fontSize = 0
+        } else if (fontSize == "large") {
+            fontSize = 2
+        } else {
+            fontSize = 1
+        }
+
+        AccessUserData.updateUserSettings({
+            usernameId: this.scene.farm.userName,
+            workTime: Math.floor(this.workTime/60),
+            shortBreakTime: Math.floor(this.shortBreakTime/60),
+            longBreakTime: Math.floor(this.longBreakTime/60),
+            longBreakInterval: this.longBreakInterval,
+            autoStartBreak: this.autoStartBreak,
+            autoStartPomodoro: this.autoStartPomodoro,
+            font: document.getElementById("fontStyle").value,
+            fontSize: fontSize
+        })
     }
 
     drawBackCircle() {
@@ -1672,7 +1722,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
-    constructor(scene){
+    constructor(scene, data){
         // load playerstate from database
         this.scene = scene;
         this.coins = 0;
@@ -1687,17 +1737,24 @@ class PlayerFarm {
 
         let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
 
-        let data = Utility.getUserData();
-        this.userName = data.userData.usernameId;
+        console.log(data);
+        console.log(data.userFarm);
+        console.log()
+        if (data.userFarm.usernameId == "guest") 
+            {   this.userName = null}
+        else{   this.userName = currentUsername;}
+
         this.loadOwnedSeeds(data.seedsOwned);
-        this.createPlots(data);
-        this.createTasks(data);
-        this.createDecorations(data);
-        this.createFarmhouse(data.userData);
-        this.createFurniture(insideFarmhouseScene, data);
-        this.showCoins(data.userData.coins);
+        this.createPlots(data.plots);
+        this.createTasks(data.tasks);
+        this.createDecorations(data.decorations);
+        this.createFarmhouse(data.userFarm);
+        this.createFurniture(insideFarmhouseScene, data.furniture);
+        this.showCoins(data.userFarm.coins);
+        this.loadSettings(data.userSettings);
 
     }
+
     loadOwnedSeeds(seedsOwned) {
         this.seedsOwned = seedsOwned;
     }
@@ -1705,15 +1762,15 @@ class PlayerFarm {
         return this.seedsOwned;
     }
 
-    createPlots(data) {
-        for (let i = 0; i < data.plots.length; i++) {
-
+    createPlots(plots) {
+        for (let i = 0; i < plots.length; i++) {
             let plot = new Plot({ scene: this.scene, 
-                                x: data.plots[i].x, y: data.plots[i].y, 
-                                id: data.plots[i].plotId, crop: data.plots[i].crop, 
-                                counter: data.plots[i].growthStage,
-                                step: data.plots[i].growthStep,
-                                placed: data.plots[i].placed});
+                                x: plots[i].x, y: plots[i].y, 
+                                id: plots[i].plotId, 
+                                crop: plots[i].crop, 
+                                counter: plots[i].growthStage,
+                                step: plots[i].growthStep,
+                                placed: plots[i].placed});
             this.plots.push(plot);
         }
     }
@@ -1726,11 +1783,9 @@ class PlayerFarm {
         }
     }
 
-    createTasks(data) {
+    createTasks(tasksData) {
         this.tasks = []
-
-        let tasksData = data.tasks;
-        console.log(tasksData);
+        //console.log(tasksData);
         for (let i =0; i < tasksData.length; i++) {
             let task = tasksData[i];
             let subtasks = [];
@@ -1756,21 +1811,24 @@ class PlayerFarm {
     addTask(taskConfig) {
         taskConfig.scene = this.scene;
         this.tasks.push(new Task(taskConfig));
+        this.saveTask(taskConfig);
     }
 
     editTask(taskConfig) {
         this.tasks[this.findSelectedTaskIndex()].updateTask(taskConfig);
+        this.farm.saveTask(taskConfig);
     }
 
-    createDecorations(data) {
-        for(let i = 0; i < data.decorations.length; i++){
+    createDecorations(decorations) {
+        for(let i = 0; i < decorations.length; i++){
             let decoration = new Decoration({scene: this.scene, x: data.decorations[i].x, y: data.decorations[i].y, type: data.decorations[i].type, texture: data.decorations[i].type, placed: data.decorations[i].placed});
             this.decorations.push(decoration);
         }
     }
 
     createFarmhouse(data) {
-        this.farmhouse = new Farmhouse({scene: this.scene, x: data.x, y: data.y, level: data.farmhouseLevel, texture: 'level' + data.farmhouseLevel + 'farmhouse'});
+        //console.log('level' + data.farmHouseLevel + 'farmhouse')
+        this.farmhouse = new Farmhouse({scene: this.scene, x: data.x, y: data.y, level: data.farmHouseLevel, texture: "level" + data.farmHouseLevel + "farmhouse"});
     }
     getCoins(){
         return this.coins;
@@ -1787,31 +1845,54 @@ class PlayerFarm {
         this.saveCoins();
     }
 
-    createFurniture(scene, data) {
-        for(let i = 0; i < data.furniture.length; i++){
-            let furniture = new Furniture({scene: scene, 
-                                           x: data.furniture[i].x, 
-                                           y: data.furniture[i].y, 
-                                           type: data.furniture[i].type, 
-                                           texture: data.furniture[i].type,
-                                           placed: data.furniture[i].placed});
-            this.furniture.push(furniture);
+    createFurniture(scene, furniture) {
+        for(let i = 0; i < furniture.length; i++){
+            let new_furniture = new Furniture({scene: scene, 
+                                           x: furniture[i].x, 
+                                           y: furniture[i].y, 
+                                           type: furniture[i].type, 
+                                           texture: furniture[i].type,
+                                           placed: furniture[i].placed});
+            this.furniture.push(new_furniture);
         }
+    }
+
+    loadSettings(settingsConfig) {
+        document.getElementById("workTime").value = settingsConfig.workTime;
+        document.getElementById("shortBreakTime").value = settingsConfig.shortBreakTime;
+        document.getElementById("longBreakTime").value = settingsConfig.longBreakTime;
+        document.getElementById("longBreakInterval").value = settingsConfig.longBreakInterval;
+        document.getElementById("autoStartBreak").checked = settingsConfig.autoStartBreak;
+        document.getElementById("autoStartPomodoro").checked = settingsConfig.autoStartPomodoro;
+        document.getElementById("fontStyle").value = settingsConfig.font;
+        let fontSize = document.getElementById("fontSize")
+        switch(settingsConfig.fontSize) {
+            case 0:
+                fontSize.value = "small"
+            case 1:
+                fontSize.value = "normal"
+            case 2:
+                fontSize.value = "large"
+        }
+        //
     }
 
     addFurnitureToInventory(scene, type) {
         let furniture = new Furniture({scene: scene, x: -1000, y: -1000, type: type, texture: type, placed: false});
         this.furniture.push(furniture);
-        }
+        this.saveSingleFurniture(furniture)
+    }
 
     addDecorationToInventory(scene, type) {
         let decoration = new Decoration({scene: scene, x: -1000, y: -1000, type: type, texture: type, placed: false});
         this.decorations.push(decoration);
+        this.saveSingleDecoration(decoration)
     }
 
     addPlotToInventory(scene) {
         let plot = new Plot({scene: scene, x: -1000, y: -1000, id: this.plots.length, crop: "nothing", counter: 0, placed: false});
         this.plots.push(plot);
+        this.savePlot(plot)
     }
 
     addSeedToInventory(cropsIn) {
@@ -1821,77 +1902,98 @@ class PlayerFarm {
         }
         this.seedsOwned[cropsIn] ++;
         console.log(this.seedsOwned);
+        this.saveSeedsOwned()
     }
-    removeCropFromInventory(cropsIn) {
+    removeSeedFromInventory(cropsIn) {
         if (this.seedsOwned[cropsIn] > 0) {
             this.seedsOwned[cropsIn] --;
         }
+        this.saveSeedsOwned()
     }
 
-    saveseedsOwned() {
+    saveSeedsOwned() {
         if (this.userName == null) {return;}
-        return this.seedsOwned;
+        let seedsOwned = this.seedsOwned;
+        seedsOwned.usernameId = this.userName;
+        AccessUserData.amendUserSeeds(seedsOwned)
     }
 
-    savePlots() {
+    savePlot(plot) {
         if (this.userName == null) {return;}
-        let plotsData = [];
-        for (let plot in this.plots) {
-            let data = {
-                usernameId: this.userName,
-                plotId: plot.id,
-                crop: plot.crop,
-                growthStage: plot.growthStage,
-                growthStep: plot.growthStep,
-                x: plot.x,
-                y: plot.y,
-                placed: plot.placed
-            }
-            plotsData.push(data);
+        let data = {
+            usernameId: this.userName,
+            plotId: plot.id,
+            crop: plot.crop,
+            growthStage: plot.growthStage,
+            growthStep: plot.growthStep,
+            x: plot.x,
+            y: plot.y,
+            placed: plot.placed
         }
-        return plotsData;
+        AccessUserData.updateSinglePlot(data)
     }
-    saveTasks() {
+
+
+    saveAllPlots() {
         if (this.userName == null) {return;}
-        let tasksData = [];
+        for (let plot in this.plots) {
+            this.savePlot(plot);
+        }
+        
+    }
+    saveTask(task) {
+        let taskData = {
+            usernameId: this.userName,
+            plotId: task.plotId,
+            taskName: task.name,
+            pomodoros: task.pomodoros,
+            pomodorosCompleted: task.pomodorosCompleted,
+            completed: task.completed,
+            timerState: task.timerState,
+            timerTime: task.time,
+            "subTask1": null,
+            "subTask1Completed": null,
+            "subTask2": null,
+            "subTask2Completed": null,
+            "subTask3": null,
+            "subTask3Completed":null,
+            "subTask4": null,
+            "subTask4Completed":null,
+            "subTask5": null,
+            "subTask5Completed":null,
+            "subTask6": null,
+            "subTask6Completed":null,
+            "subTask7": null,
+            "subTask7Completed":null,
+            "subTask8": null,
+            "subTask8Completed":null,
+            "subTask9": null,
+            "subTask9Completed":null,
+            "subTask10": null,
+            "subTask10Completed": null,
+        }
+        for (let i = 0; i < task.subtasks.length; i++) {
+            taskData["subTask"+(i+1)] = task.subtasks[i];
+            taskData["subTask"+(i+1)+"Completed"] = task.subtasksCompleted[i]
+        }
+        AccessUserData.updateSingleTask(taskData)
+    }
+    saveAllTasks() {
+        if (this.userName == null) {return;}
         for (let i = 0; i < this.tasks.length; i++) {
             let task = this.tasks[i];
-            let data = {
-                usernameId: this.userName,
-                plotId: task.plotId,
-                taskName: task.name,
-                pomodoros: task.pomodoros,
-                pomodorosCompleted: task.pomodorosCompleted,
-                completed: task.completed,
-                subTask1: null,
-                subTask1Completed: null,
-                subTask2: null,
-                subTask2Completed: null,
-                subTask3: null,
-                subTask3Completed:null,
-                subTask4: null,
-                subTask4Completed:null,
-                subTask5: null,
-                subTask5Completed:null,
-                subTask6: null,
-                subTask6Completed:null,
-                subTask7: null,
-                subTask7Completed:null,
-                subTask8: null,
-                subTask8Completed:null,
-                subTask9: null,
-                subTask9Completed:null,
-                subTask10: null,
-                subTask10Completed:null,
-            }
-            for (let i = 1; i <= task.subtasks.length; i++) {
-                data["subTask" + i] = task.subtasks[i-1];
-                data["subTask"+i+"Completed"] = task.subtasksCompleted[i-1];
-            }
-            console.log(data);
-            tasksData.push(data);
+            this.saveTask(task)
         }
-        return tasksData;
+    }
+    saveSingleFurniture() {
+        if (this.userName == null) {return;}
+        AccessUserData.updateSingleFurniture({
+            usernameId: this.userName,
+            type: furniture.type,
+            x: furniture.x,
+            y: furniture.y,
+            placed: furniture.placed
+        })
     }
     saveFurniture() {
         if (this.userName == null) {return;}
@@ -1906,7 +2008,17 @@ class PlayerFarm {
             }
             furnitureData.push(data);
         }
-        return furnitureData;
+        AccessUserData.updateAllUserFurniture(furnitureData)
+    }
+    saveSingleDecoration(decoration) {
+        if (this.userName == null) {return;}
+        AccessUserData.updateSingleUserDecoration({
+            usernameId: this.userName,
+            type: decoration.type,
+            x: decoration.x,
+            y: decoration.y,
+            placed: decoration.placed
+        })
     }
     saveDecorations() {
         if (this.userName == null) {return;}
@@ -1921,11 +2033,11 @@ class PlayerFarm {
             }
             decorationData.push(data);
         }
-        return decorationData;
+        AccessUserData.updateAllUserDecorations(decorationData);
     }
     saveCoins() {
         if (this.userName == null) {return;}
-        return {usernameId: this.userName, coins: this.coins};
+        AccessUserData.updateCoins({usernameId: this.userName, coins: this.coins});
     }
 
     addTaskToDB(taskConfig) {
@@ -2108,10 +2220,11 @@ class Plot extends Phaser.GameObjects.Container {
         this.lastValidPosition = {x: 0, y: 0};
         this.wasDeleted = false;
         this.remainingTime = config.remainingTime || 0;
-
+        
         // Create the plot sprite and add it to the container
         this.plotSprite = this.scene.add.sprite(0, 0, 'plot');
         this.add(this.plotSprite);
+        this.scene.add.existing(this);
 
         if (this.crop === "nothing") {
             this.occupied = false;
@@ -2206,7 +2319,7 @@ class Plot extends Phaser.GameObjects.Container {
                 }
             }
         });
-        this.scene.add.existing(this);
+        
 
         if(!this.placed) {
             this.setVisible(false); // make the sprite invisible
@@ -2231,6 +2344,7 @@ class Plot extends Phaser.GameObjects.Container {
     setupCrops(cropType) {
         this.crop = cropType;
         this.plantCrops();
+        this.scene.farm.savePlot(this)
         //this.playGrowth();
     }
 
@@ -2328,6 +2442,8 @@ class Plot extends Phaser.GameObjects.Container {
         }
         this.growSelectedCrop(this.findCrop()) //find and grow one of the crops
         this.stepGrowth();
+        this.scene.farm.savePlot(this)
+        this.scene.farm.saveTask(this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()])
         }
 
     findCrop() {
@@ -2405,6 +2521,7 @@ class Plot extends Phaser.GameObjects.Container {
         while (this.growthStage != this.maxFrame) {
             this.progressCrops();
         }
+        this.scene.farm.savePlot(this)
     }
 
     harvest() {
@@ -2616,6 +2733,7 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
     constructor(config) {
         super(config.scene, config.x, config.y, config.texture);
 
+        console.log(config.texture)
         // Set the type of this furniture
         this.level = config.level;
 
@@ -2627,6 +2745,8 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
 
         this.wasDeleted = false;
 
+        this.setDepth(1)
+
         // Enable input for this object
         this.setInteractive({ draggable: true });
 
@@ -2634,8 +2754,11 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
         Utility.addTintOnHover(this);
 
         // Add this object to the scene
+        console.log(this.x, this.y)
+        console.log(this)
         this.scene.add.existing(this);
-
+        console.log("should have added")
+        this.setVisible(true)
 
         // Add a pointerdown event listener
         this.on('pointerdown', this.handleClick, this);

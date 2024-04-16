@@ -103,6 +103,8 @@ def register(request):
 
             send_activation_email(user, request)
 
+
+
             messages.add_message(request, messages.SUCCESS,
                                  'We sent you an email to verify your account')
             return redirect('login')
