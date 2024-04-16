@@ -239,29 +239,6 @@ export default class FarmScene extends Phaser.Scene {
                     this.pomodoro.updateTimeSettings();
 
 
-
-                    let fontStyle = document.getElementById("fontStyle").value;
-                    let elements = document.querySelectorAll('button, input, select');
-
-                    if (fontStyle == "standard") {
-                        document.body.style.fontFamily = "Helvetica, sans-serif";
-                        for (let i = 0; i < elements.length; i++) {
-                            elements[i].style.fontFamily = "Helvetica, sans-serif";
-                        }
-
-                    } else if (fontStyle == "pixel") {
-                        document.body.style.fontFamily = "pixel-font, Helvetica, sans-serif";
-                        for (let i = 0; i < elements.length; i++) {
-                            elements[i].style.fontFamily = "pixel-font, Helvetica, sans-serif";
-                        }
-                    }
-                    else {
-                        document.body.style.fontFamily = "open-dyslexic, Helvetica, sans-serif";
-                        for (let i = 0; i < elements.length; i++) {
-                            elements[i].style.fontFamily = "open-dyslexic, Helvetica, sans-serif";
-                        }
-                    }
-
                     let fontSize = document.getElementById("fontSize").value;
                     if (fontSize == "large") {
                         document.documentElement.style.setProperty('--scale-factor', '1.3');
