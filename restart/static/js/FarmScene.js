@@ -1089,6 +1089,11 @@ export default class FarmScene extends Phaser.Scene {
             }
         }
 
+        const saveState = () => {
+            this.getTimeState();
+            this.updateTimeState();
+        }
+
 
         //add subtask listener
         subtasksCheck.addEventListener('click', showHideSubtasks);
@@ -1096,6 +1101,7 @@ export default class FarmScene extends Phaser.Scene {
         form.addEventListener('keydown', addSubtask);
         //add submit listener
         form.addEventListener('submit', close);
+        form.addEventListener('submit', saveState);
 
         harvestButton.addEventListener('click', close);
         //add exit listener
@@ -1654,13 +1660,13 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 this.scene.events.emit("shortBreak");
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, elapsedTime, 0, this, this.pauseFlag, 0x7CFC00);
                 Utility.setWorkingState(false);
-                task1.timerState = 0;
+                this.workFlag = false;
             } else if (task1.timerState == 2) {
                 console.log("in long break");
                 this.scene.events.emit("longBreak");
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.longBreakTime, elapsedTime, 0, this, this.pauseFlag, 0x7CFC00);
                 Utility.setWorkingState(false);
-                task1.timerState = 0;
+                this.workFlag = false;
             } else {
                 console.log("not in break");
                 this.scene.events.emit("working");
@@ -1704,11 +1710,6 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 console.log(timerElapsed, totalTimeElapsed, percentageComplete);
                 this.loadTimer(timerElapsed);
             }
-            // else {
-            //     let breakTime = this.shortBreakTime;
-            //     let timerElapsed = Math.floor(breakTime - this.timer1.elapsedTime);
-            //     this.loadTimer(timerElapsed);
-            // }
         } else if (state == 1) {  //  short break
             let timerElapsed = Math.floor(this.shortBreakTime - remainingTime);
             this.loadTimer(timerElapsed);
