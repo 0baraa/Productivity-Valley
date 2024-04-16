@@ -45,8 +45,6 @@ class UserFarmView(APIView):
         return Response(output)
     #@csrf_exempt
     def post (self, request):
-        print("\n\n\n\n\n\n\n\n\n notice me senpai\n\n\n\n\n\n\n\n\n")
-        print("\n\n\n this is request data to post \n")
         #print(request, "\n", data, "\n\n")
 
         serializer = UserFarmSerializer(data=request.data)
@@ -88,8 +86,9 @@ class UserFarmView(APIView):
 class MoneyView(APIView):
      def post(self, request):
         usernameId = request.data.get('usernameId', None)
+        print(usernameId)
         coins = request.data.get('coins', None)
-        if usernameId is None or money is None:
+        if usernameId is None or coins is None:
             return Response({"error": "Username or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             user = UserFarm.objects.get(usernameId=usernameId)
@@ -110,7 +109,7 @@ class HouseView(APIView):
         if usernameId is None:
             return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = UserFarm.objects.get(usernameId=usernameId)
+            user = UserFarm.objects.filter(usernameId=usernameId)
             user.farmHouseLevel = farmHouseLevel
             user.x = farm_x
             user.y = farm_y
@@ -217,6 +216,7 @@ class UserDecorationsView(APIView):
         try:
             userInstance = UserDecorations.objects.get(usernameId=user, type=type)
             userInstance.delete()
+
         except UserDecorations.DoesNotExist:
             print("user decoration not found, making new")
         serializer = UserDecorationsSerializer(data=request.data)

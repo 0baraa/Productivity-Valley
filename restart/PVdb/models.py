@@ -16,7 +16,7 @@ class UserFarm(models.Model):    #table for users
 
 class UserPlots(models.Model):
     usernameId = models.CharField(max_length=150, default=False)
-    plotId = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(7)], primary_key=True)
+    plotId = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(7)])
     crop = models.CharField(default="nothing", max_length=12)
     growthStage = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(10)])
     growthStep = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(36)])
@@ -31,7 +31,7 @@ class Tasks(models.Model):   #table for tasks
     name = models.CharField(max_length=30)
     usernameId = models.CharField(max_length=150, default=False)
     completed = models.BooleanField(default=False)
-    plotId = models.PositiveIntegerField(default=0, primary_key=True)
+    plotId = models.PositiveIntegerField(default=0)
     pomodoros = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(20)])
     pomodorosCompleted = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(20)])
     timerState = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(2)])
@@ -80,7 +80,7 @@ class Crops(models.Model):   #table for crops
 
 class UserDecorations(models.Model):    #table for users' decorations
     usernameId = models.CharField(max_length=150, default=False)
-    type = models.CharField(max_length=30, primary_key=True)
+    type = models.CharField(max_length=30)
     x = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(640)])
     y = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(1200)])
     placed = models.BooleanField(default=False)
@@ -90,7 +90,7 @@ class UserDecorations(models.Model):    #table for users' decorations
 
 class UserFurniture(models.Model):    #table for users' decorations
     usernameId = models.CharField(max_length=150, default=False)
-    type = models.CharField(max_length=30, primary_key=True)
+    type = models.CharField(max_length=30)
     x = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(640)])
     y = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(1200)])
     placed = models.BooleanField(default=False)

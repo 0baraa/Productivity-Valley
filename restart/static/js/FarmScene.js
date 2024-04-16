@@ -2092,7 +2092,7 @@ class PlayerFarm {
     }
     saveCoins() {
         if (this.userName == null) {return;}
-        AccessUserData.amendCoins({usernameId: this.userName, coins: this.coins});
+        AccessUserData.amendCoins(this.userName,this.coins);
     }
 
     addTaskToDB(taskConfig) {
@@ -2847,5 +2847,6 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
         this.level++;
         this.setTexture('level' + this.level + 'farmhouse');
         this.anims.play('level' + this.level + 'farmhouseAnimation');
+        AccessUserData.amendHouseState(this.scene.farm.userName, {x: this.x, y: this.y, farmHouseLevel: this.level});
     }
 }

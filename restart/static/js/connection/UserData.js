@@ -386,7 +386,7 @@ export default class UserData {     //works
             coins: coins
         };
 
-        axios.post(userFarmTable, requestData, {
+        axios.post(userFarmTable+"change-money/", requestData, {
             headers: {'X-CSRFToken': csrftoken}
         })
             .then(response => {
@@ -410,7 +410,7 @@ export default class UserData {     //works
             y: yIn
         };
         console.log(requestData)
-        axios.post(userFarmTable, requestData, {
+        axios.post(userFarmTable+"change-house/", requestData, {
             headers: {'X-CSRFToken': csrftoken}
         })
         .then(response => {
