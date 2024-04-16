@@ -15,7 +15,9 @@ class UserFarm(models.Model):    #table for users
 
 
 class UserPlots(models.Model):
-    usernameId = models.CharField(max_length=150, default=False)
+    #id = models.PositiveIntegerField(default = 0, null = True)
+    id = models.PositiveIntegerField(default = 0, primary_key=True)
+    usernameId = models.CharField(max_length=150, default="guest")
     plotId = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(7)])
     crop = models.CharField(default="nothing", max_length=12)
     growthStage = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(10)])
@@ -28,8 +30,9 @@ class UserPlots(models.Model):
         unique_together = [['plotId', 'usernameId']]
 
 class Tasks(models.Model):   #table for tasks
+    id = models.PositiveIntegerField(default = 0, primary_key=True)
     name = models.CharField(max_length=30)
-    usernameId = models.CharField(max_length=150, default=False)
+    usernameId = models.CharField(max_length=150, default="false")
     completed = models.BooleanField(default=False)
     plotId = models.PositiveIntegerField(default=0)
     pomodoros = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(20)])
@@ -79,6 +82,7 @@ class Crops(models.Model):   #table for crops
     worth = models.PositiveIntegerField(default=0)
 
 class UserDecorations(models.Model):    #table for users' decorations
+    id = models.PositiveIntegerField(default = 0, primary_key=True)
     usernameId = models.CharField(max_length=150, default=False)
     type = models.CharField(max_length=30)
     x = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(640)])
@@ -89,6 +93,7 @@ class UserDecorations(models.Model):    #table for users' decorations
         unique_together = [['usernameId', 'type']]
 
 class UserFurniture(models.Model):    #table for users' decorations
+    id = models.PositiveIntegerField(default = 0, primary_key=True)
     usernameId = models.CharField(max_length=150, default=False)
     type = models.CharField(max_length=30)
     x = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(640)])

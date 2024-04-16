@@ -100,8 +100,8 @@ export default class AccessUserData {
     static amendCoins(usernameId, coins) {
         UserData.updateUserMoney(usernameId, coins);
     }
-    static amendHouseState(usernameId, farmState) {
-        UserData.updateHouse(usernameId, farmState.farmHouseLevel, farmState.x, farmState.y);
+    static amendHouseState(farmState) {
+        UserData.updateHouse(farmState);
     }
     static async amendUserSeeds(seeds) {
         console.log(currentUsername)

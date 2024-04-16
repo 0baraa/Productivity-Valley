@@ -106,13 +106,17 @@ class HouseView(APIView):
         farmHouseLevel = request.data.get('farmHouseLevel', 1)
         farm_x = request.data.get('x', 70)
         farm_y = request.data.get('y', 570)
+        counts = request.data.get('coins')
         if usernameId is None:
             return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             user = UserFarm.objects.filter(usernameId=usernameId)
+            user.delete()
+            user = UserFarm.objects.create(usernameId=usernameId)
             user.farmHouseLevel = farmHouseLevel
             user.x = farm_x
             user.y = farm_y
+            user.coins = coins
             user.save()
             return Response({"message": f"Money updated successfully for user {usernameId}"}, status=status.HTTP_200_OK)
         except UserFarm.DoesNotExist:

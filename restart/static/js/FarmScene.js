@@ -1663,9 +1663,16 @@ class Pomodoro extends Phaser.GameObjects.Container {
         let task = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()];
         let plot = this.scene.farm.plots[this.scene.selector.plotSelected]
         if (!plot.occupied || !task ) {
+            this.playButton.setVisible(false);
+            this.pauseButton.setVisible(false);
+            this.skipButton.setVisible(false);
             //no task to load
+            
             return;
         } else if (task.time == 0){
+            this.playButton.setVisible(true);
+            this.pauseButton.setVisible(false);
+            this.skipButton.setVisible(false);
             return;
             //no timer to load: it's just finished a timer
         }
@@ -2092,7 +2099,7 @@ class PlayerFarm {
     }
     saveCoins() {
         if (this.userName == null) {return;}
-        AccessUserData.amendCoins(this.userName,this.coins);
+        this.farmhouse.saveHouseState()
     }
 
     addTaskToDB(taskConfig) {
@@ -2847,6 +2854,9 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
         this.level++;
         this.setTexture('level' + this.level + 'farmhouse');
         this.anims.play('level' + this.level + 'farmhouseAnimation');
-        AccessUserData.amendHouseState(this.scene.farm.userName, {x: this.x, y: this.y, farmHouseLevel: this.level});
+        this.saveHouseState()
+    }
+    saveHouseState() {
+        AccessUserData.amendHouseState({usernameId: this.scene.farm.userName, x: this.x, y: this.y, farmHouseLevel: this.level});
     }
 }

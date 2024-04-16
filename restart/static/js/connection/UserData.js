@@ -400,17 +400,8 @@ export default class UserData {     //works
             });
     }
 
-    static updateHouse(usernameId, farmHouseLevel, xIn, yIn) {      //works
-        const url = `${userFarmTable}change-house/`;
-    
-        const requestData = {
-            usernameId: usernameId,
-            farmHouseLevel:farmHouseLevel,
-            x: xIn,
-            y: yIn
-        };
-        console.log(requestData)
-        axios.post(userFarmTable+"change-house/", requestData, {
+    static updateHouse(data) {      //works
+        axios.post(userFarmTable+"change-house/", data, {
             headers: {'X-CSRFToken': csrftoken}
         })
         .then(response => {
