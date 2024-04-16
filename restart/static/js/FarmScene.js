@@ -760,6 +760,30 @@ export default class FarmScene extends Phaser.Scene {
         this.events.on('harvestCrops', this.harvestPlot, this);
         this.events.on('creatingTask', this.createTaskMenu, this);
         this.events.on('editingTask', this.editTaskMenu, this);
+
+        this.events.on('timerPaused', this.updateTimeState, this);
+        this.events.on('plotSelected', this.getTimeState, this);
+    }
+
+    updateTimeState(){ //  when the pause button is pressed
+        // get the time
+        // save it in array based on the index of the plot
+        let index = this.farm.findSelectedTaskIndex();
+        console.log(this.farm.tasks[index]);
+        
+        this.farm.tasks[index].time = this.pomodoro.timer1.remainingTime;
+    }
+
+    getTimeState(){ //  when a plot is selected
+        let index = this.farm.findSelectedTaskIndex();
+        let time = this.farm.tasks[index].time;
+
+        console.log("time", time);
+        
+        if (this.pomodoro.timer1){  //  assume it's in a working state
+            this.pomodoro.createTimer(time);
+            this.pomodoro.timer1.timeString.setVisible(false);   
+        }
     }
 
     updateSelector() {
@@ -1275,11 +1299,11 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         }
     }
 
-    updateTimeString() {
+    updateTimeString(remainingTime = this.remainingTime) {
         // Calculate hours, minutes, and remaining seconds
-        const hours = Math.floor(this.remainingTime / 3600);
-        const minutes = Math.floor((this.remainingTime % 3600) / 60);
-        const seconds = this.remainingTime % 60;
+        const hours = Math.floor(remainingTime / 3600);
+        const minutes = Math.floor((remainingTime % 3600) / 60);
+        const seconds = remainingTime % 60;
 
         // Format hours, minutes, and seconds with leading zeros if needed
         const formattedHours = String(hours).padStart(2, '0');
@@ -1395,15 +1419,20 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.add(this.graphics);
     }
 
-    createTimer(){
+    destroyTimer(){
         if (this.timer1){
             this.timer1.clear();
             this.timer1.fillCircle.destroy();
             this.timer1.destroy();
+            this.timer1.timeString.destroy();
         }
+    }
+
+    createTimer(remainingTime = this.workTime){
+        this.destroyTimer();
         this.workFlag = true;
         this.playButton.setVisible(true);
-        this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, 0, this, this.pauseFlag, 0xffa500, this.autoStartPomodoro);
+        this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, remainingTime, 0, 0, this, this.pauseFlag, 0xffa500, this.autoStartPomodoro);
     }
 
     onVisibility(){
@@ -1601,8 +1630,8 @@ class Pomodoro extends Phaser.GameObjects.Container {
     }
 
     loadTask() {
-        console.log(this.scene.farm.findSelectedTaskIndex())
-        console.log(this.scene.farm.tasks);
+        // console.log(this.scene.farm.findSelectedTaskIndex())
+        // console.log(this.scene.farm.tasks);
         let task = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()];
         let plot = this.scene.farm.plots[this.scene.selector.plotSelected]
 
@@ -1961,7 +1990,7 @@ class Task {
         this.subtasksCompleted = config.subtasksCompleted  || [];
         this.completed = config.completed || false;
         this.timerState = config.timerState || 0; // 0 : working, 1: short break, 2 : long break
-        this.time = config.time || []; // in seconds
+        this.time = config.time; // in seconds
 
         if (this.noOfPomodors <= this.pomodorosCompleted) {
             this.completed = true;
@@ -2222,6 +2251,7 @@ class Plot extends Phaser.GameObjects.Container {
         
         if (this.occupied && !this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].completed){
             this.scene.events.emit('plotSelected');
+            console.log("plot selected!");
         }
         else {
             this.scene.events.emit('hideButtons');
