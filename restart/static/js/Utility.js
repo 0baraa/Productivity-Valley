@@ -188,9 +188,9 @@ export default class Utility {
               {"plotId": 3, "crop": "nothing", "growthStage": 0, "growthStep": 0, "x": 464, "y": 616, "placed": true},
             ],
             "tasks": [
-                {"plotId": 0, "taskName": "Maths Homework", "pomodoros": 3, "pomodorosCompleted": 2, "elapsedTime": 1, "completed": true, "subTask1": "week 7", "subTask1Completed": false, subTask2: "week 8", "subTask2Completed": true},
-                {"plotId": 1, "taskName": "Operating Systems CW", "pomodoros": 3, "pomodorosCompleted": 2, "completed": false, "subtasks": ["download files", "start work", "catch up on notes bruh"], "subtasksCompleted": [true,false,false]},
-                {"plotId": 2, "taskName": "go to bed", "pomodoros": 1, "pomodorosCompleted": 0, "completed": false, "subtasks": ["tidy desk", "brush teeth", "get changed", "go piss girl go piss girl go piss girl go piss girl go piss girl"], "subtasksCompleted": [true,false,false,false]},
+                {"plotId": 0, "taskName": "Maths Homework", "pomodoros": 3, "pomodorosCompleted": 2, "elapsedTime": 1, "completed": true, "subTask1": "watch videos", "subTask1Completed": true, subTask2: "exercise sheet 18", "subTask2Completed": false},
+                {"plotId": 1, "taskName": "Operating Systems CW", "pomodoros": 3, "pomodorosCompleted": 2, "completed": false, "subtasks": ["download files", "start work", "catch up on notes"], "subtasksCompleted": [true,false,false]},
+                {"plotId": 2, "taskName": "go to bed", "pomodoros": 1, "pomodorosCompleted": 0, "completed": false, "subtasks": ["tidy desk", "brush teeth", "get changed"], "subtasksCompleted": [true,false,false,false]},
             ],
             "furniture": [
             //   {"type": "carpet1", "x": 320, "y": 612, "placed": true},
