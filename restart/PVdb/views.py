@@ -106,7 +106,7 @@ class HouseView(APIView):
         farmHouseLevel = request.data.get('farmHouseLevel', 1)
         farm_x = request.data.get('x', 70)
         farm_y = request.data.get('y', 570)
-        counts = request.data.get('coins')
+        coins = request.data.get('coins')
         if usernameId is None:
             return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
