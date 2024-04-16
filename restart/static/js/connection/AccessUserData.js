@@ -77,7 +77,7 @@ export default class AccessUserData {
                 longBreakInterval : 4,
                 autoStartBreak : true,
                 autoStartPomodoro : false,
-                font: 'pixelArt',
+                font: 'pixel',
                 fontSize: 'normal'
             };
         }

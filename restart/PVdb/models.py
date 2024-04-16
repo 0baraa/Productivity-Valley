@@ -3,9 +3,6 @@ from django.db import models
 
 from django.core.validators import MaxValueValidator
 
-class Users(models.Model):
-    usernameId = models.CharField(max_length=150, unique=True, primary_key=True)
-
 class UserFarm(models.Model):    #table for users
     usernameId = models.CharField(max_length=150, unique=True, primary_key=True)
     coins = models.PositiveIntegerField(default=0)
@@ -117,5 +114,5 @@ class UserSettings(models.Model):    #table for users' crops
     longBreakInterval = models.IntegerField(default=5, validators=[MaxValueValidator(20)])
     autoStartPom = models.BooleanField(default=False)
     autoStartBreak = models.BooleanField(default=False)
-    fontStyle = models.CharField(max_length=15, default="pixelArt")
+    fontStyle = models.CharField(max_length=15, default="pixel")
     fontSize = models.IntegerField(default=5, validators=[MaxValueValidator(15)])

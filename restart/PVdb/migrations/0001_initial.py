@@ -14,6 +14,17 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='UserFarm',
+            fields=[
+                ('usernameId', models.CharField(max_length=150, primary_key=True, serialize=False, unique=True)),
+                ('coins', models.PositiveIntegerField(default=0)),
+                ('farmHouseLevel', models.PositiveIntegerField(default=1, validators=[django.core.validators.MaxValueValidator(10)])),
+                ('x', models.PositiveIntegerField(default=70, validators=[django.core.validators.MaxValueValidator(640)])),
+                ('y', models.PositiveIntegerField(default=570, validators=[django.core.validators.MaxValueValidator(1200)])),
+                ('email', models.EmailField(default='blank', max_length=254)),
+            ],
+        ),
+        migrations.CreateModel(
             name='Crops',
             fields=[
                 ('name', models.CharField(max_length=30, primary_key=True, serialize=False, unique=True)),
@@ -28,17 +39,7 @@ class Migration(migrations.Migration):
                 ('price', models.PositiveIntegerField(default=0)),
             ],
         ),
-        migrations.CreateModel(
-            name='UserFarm',
-            fields=[
-                ('usernameId', models.CharField(max_length=150, primary_key=True, serialize=False, unique=True)),
-                ('coins', models.PositiveIntegerField(default=0)),
-                ('farmHouseLevel', models.PositiveIntegerField(default=1, validators=[django.core.validators.MaxValueValidator(10)])),
-                ('x', models.PositiveIntegerField(default=70, validators=[django.core.validators.MaxValueValidator(640)])),
-                ('y', models.PositiveIntegerField(default=570, validators=[django.core.validators.MaxValueValidator(1200)])),
-                ('email', models.EmailField(default='blank', max_length=254)),
-            ],
-        ),
+        
         migrations.CreateModel(
             name='Tasks',
             fields=[
@@ -115,7 +116,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserSettings',
             fields=[
-                ('usernameId', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='PVdb.users')),
+                ('usernameId', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='PVdb.userfarm')),
                 ('pomTimer', models.IntegerField(default=25, validators=[django.core.validators.MaxValueValidator(120)])),
                 ('shortBreak', models.IntegerField(default=5, validators=[django.core.validators.MaxValueValidator(120)])),
                 ('longBreak', models.IntegerField(default=20, validators=[django.core.validators.MaxValueValidator(120)])),
