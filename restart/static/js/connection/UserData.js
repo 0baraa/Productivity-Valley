@@ -362,9 +362,8 @@ export default class UserData {     //works
             });
     }
     static deleteUserSettings(usernameId) {    //works
-        axios.delete(userSettTable, {
-            headers: {'X-CSRFToken': csrftoken},
-            data: {usernameId: usernameId}
+        axios.delete(userSettTable, {usernameId: usernameId}, {
+            headers: {'X-CSRFToken': csrftoken}
         })
             .then(response => {
                 if (!response.ok) {
@@ -386,24 +385,19 @@ export default class UserData {     //works
             usernameId: usernameId,
             coins: coins
         };
-    
-        fetch(url, {    
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                headers: {'X-CSRFToken': csrftoken},
-            },
-            body: JSON.stringify(requestData)
+
+        axios.post(userFarmTable, requestData, {
+            headers: {'X-CSRFToken': csrftoken}
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            console.log('Money updated successfully');
-        })
-        .catch(error => {
-            console.error('Error updating money:', error);
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('Money updated successfully');
+            })
+            .catch(error => {
+                console.error('Error updating money:', error);
+            });
     }
 
     static updateHouse(usernameId, farmHouseLevel, xIn, yIn) {      //works
@@ -416,13 +410,8 @@ export default class UserData {     //works
             y: yIn
         };
         console.log(requestData)
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                headers: {'X-CSRFToken': csrftoken},
-            },
-            body: JSON.stringify(requestData)
+        axios.post(userFarmTable, requestData, {
+            headers: {'X-CSRFToken': csrftoken}
         })
         .then(response => {
             if (!response.ok) {

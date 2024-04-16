@@ -135,6 +135,7 @@ class TasksView(APIView):
         try:
             userInstance = Tasks.objects.get(usernameId=user, plotId=plotid)
             userInstance.delete()
+            task = Tasks.objects.create(request.data)
         except Tasks.DoesNotExist:
             print("Task not found, making new")
             serializer = TasksSerializer(data=request.data)
@@ -259,7 +260,8 @@ class UserPlotsView(APIView):
             userInstance.x = request.data.get("x")
             userInstance.y = request.data.get("y")
             userInstance.placed = request.data.get("placed")
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            userInstance.save()
+            return Response(status=status.HTTP_201_CREATED)
         
         except UserPlots.DoesNotExist:
             print("user plot not found, making new")

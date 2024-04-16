@@ -97,7 +97,6 @@ export default class FarmScene extends Phaser.Scene {
         loadStatic('play-button', 'assets/clock/play-button.png');
         loadStatic('pause-button', 'assets/clock/pause-button.png');
         loadStatic('skip-button', 'assets/clock/skip-button.png');
-        console.log(currentUsername);
     }
 
 
@@ -649,8 +648,6 @@ export default class FarmScene extends Phaser.Scene {
                     gameObject.x = Math.round(dragX / 8) * 8;
                     gameObject.y = Math.round(dragY / 8) * 8;
 
-                    console.log(gameObject.x, gameObject.y);
-
                     // Keep the plots within the bounds of the farm
 
                     if(gameObject.x + 42 + gameObject.width / 2 > 640) {
@@ -764,6 +761,7 @@ export default class FarmScene extends Phaser.Scene {
         this.events.on('pomodoroResumed', this.playPlot, this);
         this.events.on('pomodoroPaused', this.pausePlot, this);
         this.events.on('pomodoroSkipped', this.pausePlot, this);
+        this.events.on('pomodoroFinished', this.incrementPomodoroCount), this;
         this.events.on('taskCompleted', this.completePlot, this);
 
         this.events.on('harvestCrops', this.harvestPlot, this);
@@ -774,7 +772,6 @@ export default class FarmScene extends Phaser.Scene {
     async gatherData() {
         AccessUserData.getAllUserData(currentUsername)
             .then((result) => {
-                console.log("resulting dataaaa" , result);
                 this.awaitData(result);
             })
             .catch((error) =>
@@ -814,6 +811,11 @@ export default class FarmScene extends Phaser.Scene {
         
     }
 
+    incrementPomodoroCount() {
+        this.farm.tasks[this.farm.findSelectedTaskIndex()].pomodorosCompleted ++;
+        
+    }
+
     playPlot() {
         this.farm.plots[this.selector.plotSelected].playGrowth()
     }
@@ -829,7 +831,7 @@ export default class FarmScene extends Phaser.Scene {
 
     harvestPlot() {
         this.farm.plots[this.selector.plotSelected].harvest();
-        this.farm.tasks.splice(this.farm.findSelectedTaskIndex(), 1);
+        this.farm.tasks[this.farm.findSelectedTaskIndex()].reset();
         this.farm.savePlot(this.selector.plotSelected)
         this.farm.saveTask(this.farm.tasks[this.farm.findSelectedTaskIndex()])
     }
@@ -1002,7 +1004,7 @@ export default class FarmScene extends Phaser.Scene {
                     }
                 }
                 //connect up to pomodoro timer;
-                let taskConfig = {taskName: document.getElementById("taskName").value,
+                let taskConfig = {name: document.getElementById("taskName").value,
                                   pomodoros: document.getElementById("repetitions").value,
                                   subtasks: subtasksData }
                 if (editing) {
@@ -1633,18 +1635,23 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.playButton.setVisible(false);
         } else {
             this.playButton.setVisible(true);
-            if (task1.inShortBreak){
+            if (task1.timerState == 1){
                 console.log("in short break");
-                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, elapsedTime, 0, this, this.pauseFlag, 0x7CFC00);
+                this.workFlag = true;
+                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, elapsedTime, 0, this, this.pauseFlag, 0x7CFC00).setDepth(-2);
                 Utility.setWorkingState(false);
-            } else {
+            } else if (task1.timerState == 0){
                 console.log("not in break");
+                this.workFlag = false;
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, elapsedTime, 0, this, this.pauseFlag, 0xffa500).setDepth(-2);
+            } else {
+                console.log("long break");
+                this.workFlag = true;
+                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.longBreakTime, elapsedTime, 0, this, this.pauseFlag, 0x228B22).setDepth(-2)
             }
         }
         this.scene.events.emit("timerPaused");
         this.pauseFlag = true;
-        this.workFlag = true;
         if(this.timer1){
             this.timer1.updateCircle();
         }
@@ -1655,35 +1662,66 @@ class Pomodoro extends Phaser.GameObjects.Container {
         console.log(this.scene.farm.tasks);
         let task = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()];
         let plot = this.scene.farm.plots[this.scene.selector.plotSelected]
+        if (!plot.occupied || !task ) {
+            //no task to load
+            return;
+        } else if (task.time == 0){
+            return;
+            //no timer to load: it's just finished a timer
+        }
 
         this.noOfPomodoros = task.pomodoros - task.pomodorosCompleted;
-        let percentageComplete = (plot.growthStage * plot.cropSprites.length + plot.growthStep) / (plot.maxFrame * plot.cropSprites.length);
-        let totalTimeElapsed = this.workTime * task.pomodoros * percentageComplete;
-        console.log(totalTimeElapsed);
-        if (totalTimeElapsed != 0 && task.timerState == 0) {
-            this.noOfPomodoros--;
-            let timerElapsed = Math.floor(totalTimeElapsed - this.workTime * task.pomodorosCompleted);
+        if (task.timer != 0 && this.noOfPomodoros != 0) {
+            if (task.timerState == 0 && task.timer < this.workTime) {
+                //middle of pomodoro
+                this.workFlag = false
+                this.noOfPomodoros--;
+                this.loadTimer(task.time)
 
-            console.log(timerElapsed, totalTimeElapsed, percentageComplete);
-            this.loadTimer(timerElapsed);
+            }
+            else if (task.timerState == 0) {
+                this.workFlag = false
+                //switch to break but don't start
+            }
+
+            if (task.timerState == 1 && task.timer < this.shortBreakTime) {
+                //load timer state for short break
+                this.workFlag = true
+                this.loadTimer(task.timer)
+            }
+            else if (task.timerState == 1){
+                //jump to next pomodoro
+                this.workFlag = true
+            }
+
+            if (task.timerState == 2 && task.timer < this.longBreakTime) {
+                //load timer state for long break
+                this.workFlag = true
+                this.loadTimer(task.timer)
+            }
+            else if (task.timerState == 2) {
+                //jump to next pomodoro
+                this.workFlag = true;
+            }
         }
-        else {
-            let breakTime = this.shortBreakTime;
-            let timerElapsed = Math.floor(breakTime - this.timer1.elapsedTime);
-            this.loadTimer(timerElapsed);
+        else if (this.noOfPomodoros == 0){
+            //make sure it's just play flag shown:
+            this.scene.events.emit("hideButtons")
+            this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].completed = true
+
+        } else {
+            this.playButton.setVisible(true);
+            this.pauseButton.setVisible(false);
+            this.skipButton.setVisible(false);
         }
     }
 
     skipTimer() {
-        let task = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()];
         if (this.timer1){
             this.timer1.destroy();
             this.timer1.clear();
             this.timer1.fillCircle.destroy();
             this.timer1.timeString.setVisible(false);
-        }
-        if (this.workFlag) {
-            this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].pomodorosCompleted ++;
         }
         this.workFlag = !this.workFlag;
         if (this.workFlag) {  // if transitioning to work
@@ -1693,12 +1731,12 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
                 console.log("pomodoro started");
                 
-                task.timerState = 0;
+                this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].timerState = 0;
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, 0, this, this.pauseFlag, 0xffa500, this.autoStartPomodoro);
                 this.scene.events.emit('pomodoroStarted');
                 
             } else {
-                task.timerState = 1;
+                this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].timerState = 1;
                 this.playButton.setVisible(false);
                 this.pauseButton.setVisible(false);
                 this.skipButton.setVisible(false);
@@ -1709,11 +1747,11 @@ class Pomodoro extends Phaser.GameObjects.Container {
             Utility.setWorkingState(false);
             this.longBreakInterval--;
             if (this.longBreakInterval == 0) {
-                task.timerState = 2;
+                this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].timerState = 2;
                 this.longBreakInterval = this.initBreakInterval;
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.longBreakTime, 0, 0, this, this.pauseFlag, 0x228B22, this.autoStartBreak);
             } else {
-                task.timerState = 1;
+                this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].timerState = 1;
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, 0, 0, this, this.pauseFlag, 0x7CFC00, this.autoStartBreak);
             }
         }
@@ -1773,6 +1811,7 @@ class PlayerFarm {
                                 placed: plots[i].placed});
             this.plots.push(plot);
         }
+        console.log(this.plots[0].plotSprite)
     }
 
     findSelectedTaskIndex() {
@@ -1806,11 +1845,23 @@ class PlayerFarm {
             tasksData[i].scene = this.scene;
             this.tasks.push(new Task(tasksData[i]));
         }
+        for (let i = 0; i < (8-tasksData.length); i++) {
+            let name = null;
+            let plotId = 8 //impossible to load
+            let scene = this.scene
+
+
+        }
     }
     
     addTask(taskConfig) {
         taskConfig.scene = this.scene;
         this.tasks.push(new Task(taskConfig));
+        let subtasksCompleted = []
+        for (let subtask in taskConfig.subtasks) {
+            subtasksCompleted.push(false)
+        }
+        taskConfig.subtasksCompleted = subtasksCompleted
         this.saveTask(taskConfig);
     }
 
@@ -1828,7 +1879,11 @@ class PlayerFarm {
 
     createFarmhouse(data) {
         //console.log('level' + data.farmHouseLevel + 'farmhouse')
-        this.farmhouse = new Farmhouse({scene: this.scene, x: data.x, y: data.y, level: data.farmHouseLevel, texture: "level" + data.farmHouseLevel + "farmhouse"});
+        let sprite_texture = "level1farmhouse"
+        if (data.farmHouseLevel == 2) {
+            sprite_texture = "level2farmhouse"
+        }
+        this.farmhouse = new Farmhouse({scene: this.scene, x: data.x, y: data.y, level: data.farmHouseLevel, texture: sprite_texture});
     }
     getCoins(){
         return this.coins;
@@ -1945,7 +2000,7 @@ class PlayerFarm {
         let taskData = {
             usernameId: this.userName,
             plotId: task.plotId,
-            taskName: task.name,
+            name: task.name,
             pomodoros: task.pomodoros,
             pomodorosCompleted: task.pomodorosCompleted,
             completed: task.completed,
@@ -2037,7 +2092,7 @@ class PlayerFarm {
     }
     saveCoins() {
         if (this.userName == null) {return;}
-        AccessUserData.updateCoins({usernameId: this.userName, coins: this.coins});
+        AccessUserData.amendCoins({usernameId: this.userName, coins: this.coins});
     }
 
     addTaskToDB(taskConfig) {
@@ -2065,9 +2120,9 @@ class Task {
     constructor(config) {
         this.scene = config.scene;
         this.plotId = config.plotId;
-        this.name = config.taskName;
+        this.name = config.name;
         this.elapsedTime = config.elapsedTime || 0;
-        this.pomodoros = config.pomodoros;
+        this.pomodoros = config.pomodoros || 1;
         this.pomodorosCompleted = config.pomodorosCompleted || 0;
         this.subtasks = config.subtasks || [];
         this.subtasksCompleted = config.subtasksCompleted  || [];
@@ -2086,7 +2141,7 @@ class Task {
     }
 
     updateTask(config) {
-        this.name = config.taskName || this.name;
+        this.name = config.name || this.name;
         if (config.pomodoros <= this.pomodorosCompleted) {
             this.completed = true;
             super.scene.events.emit("taskCompleted");
@@ -2153,6 +2208,18 @@ class Task {
 
     getTime(){
         return this.time;
+    }
+
+    reset() {
+        this.name = null
+        this.elapsedTime =  0;
+        this.pomodoros = 1;
+        this.pomodorosCompleted = 0;
+        this.subtasks = [];
+        this.subtasksCompleted = [];
+        this.completed = false;
+        this.timerState = 0; // 0 : working, 1: short break, 2 : long break
+        this.time = 0;
     }
 
 }
@@ -2331,12 +2398,17 @@ class Plot extends Phaser.GameObjects.Container {
         this.scene.selector.setPosition(this.x, this.y);
         this.scene.selector.plotSelected = this.id;
         this.scene.selector.setVisible(true);
-        
-        if (this.occupied && !this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].completed){
-            this.scene.events.emit('plotSelected');
+        try {
+            if (this.occupied && !this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()].completed){
+                this.scene.events.emit('plotSelected');
+            }
+            else {
+                this.scene.events.emit('hideButtons');
+            }
         }
-        else {
-            this.scene.events.emit('hideButtons');
+        catch (error) {
+            console.log("no attached task found")
+            this.harvest(true)
         }
     }
 
@@ -2523,23 +2595,15 @@ class Plot extends Phaser.GameObjects.Container {
         this.scene.farm.savePlot(this)
     }
 
-    harvest() {
+    harvest(invalid) {
         //todo: remove this once we 'lock' the plots when in pomodoro mode.
         if (this.tick) {
             clearInterval(this.tick);
         }
-        //calculate coins
-        let multiplier = 1;
-
-        if (this.growthStage != this.maxFrame) {
-            multiplier = 0.5;
+        
+        if (!invalid) {
+            this.scene.farm.updateCoins(this.calculateCoins());
         }
-        else {
-            multiplier = 1;
-        }
-
-        this.scene.farm.updateCoins(this.calculateCoins());
-
         //remove crops
         for (let cropSprite of this.cropSprites) {
             cropSprite.destroy();
