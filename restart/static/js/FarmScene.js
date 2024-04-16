@@ -1649,11 +1649,18 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.playButton.setVisible(false);
         } else {
             this.playButton.setVisible(true);
-            if (task1.inShortBreak) {
+            if (task1.timerState == 1) {
                 console.log("in short break");
-                this.events.emit("shortBreak");
+                this.scene.events.emit("shortBreak");
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, elapsedTime, 0, this, this.pauseFlag, 0x7CFC00);
                 Utility.setWorkingState(false);
+                task1.timerState = 0;
+            } else if (task1.timerState == 2) {
+                console.log("in long break");
+                this.scene.events.emit("longBreak");
+                this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.longBreakTime, elapsedTime, 0, this, this.pauseFlag, 0x7CFC00);
+                Utility.setWorkingState(false);
+                task1.timerState = 0;
             } else {
                 console.log("not in break");
                 this.scene.events.emit("working");
@@ -1673,10 +1680,17 @@ class Pomodoro extends Phaser.GameObjects.Container {
         // console.log(this.scene.farm.tasks);
         let task = this.scene.farm.tasks[this.scene.farm.findSelectedTaskIndex()];
         let plot = this.scene.farm.plots[this.scene.selector.plotSelected];
-        
+
         //  fetch from task class
         let state = task.timerState;
         let remainingTime = task.time;
+
+        if (!plot.occupied || !task) {
+            return;
+        } else if (task.time == 0) {
+            return;
+            //  no timer to load
+        }
 
         if (state == 0) { // in a working state
             this.noOfPomodoros = task.pomodoros - task.pomodorosCompleted;
