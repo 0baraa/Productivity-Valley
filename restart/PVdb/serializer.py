@@ -10,7 +10,7 @@ class UserPlotsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserPlots
         fields = ['usernameId', 'plotId', 'crop', 'growthStage', 'growthStep', 'x', 'y', 'placed']
-
+        
 class TasksSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tasks
@@ -26,10 +26,10 @@ class UserDatesSerializer(serializers.ModelSerializer):
 #         model = Decorations
 #         fields = ['name', 'price']
 
-class CropsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Crops
-        fields = ['name', 'price', 'worth']
+# class CropsSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Crops
+#         fields = ['name', 'price', 'worth']
 
 class UserDecorationsSerializer(serializers.ModelSerializer):
     class Meta:

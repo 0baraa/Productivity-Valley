@@ -50,8 +50,25 @@ class UserFarmView(APIView):
         #print(request, "\n", data, "\n\n")
 
         serializer = UserFarmSerializer(data=request.data)
+        username = data.request.get("usernameId")
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            new_user = serializer.save()
+            UserSeeds.objects.create(
+                usernameId = new_user
+            )
+            UserSettings.objects.create(
+                usernameId = new_user
+            )
+            UserPlots.objects.create(
+                usernameId = username,
+                plotId = 0,
+                crop = "nothing",
+                growthStage = 0,
+                growthStep = 0,
+                x = 320,
+                y = 616,
+                placed = True,
+            )
             return Response(serializer.data, status=status.HTTP_200_OK)
     def delete(self, request):
         print(" delete request::::::::::::::::::::",request)
@@ -261,40 +278,30 @@ class UserPlotsView(APIView):
 
 class UserSeedsView(APIView):
     def get(self, request):
-        username = request.data.get("usernameId")
-        userSeeds = UserSeeds.objects.filter(usernameId = username)
+        username = request.GET.get("usernameId")
+        print(username)
+        user = UserFarm.objects.get(usernameId = username)
+        userSeeds = UserSeeds.objects.filter(usernameId = user)
         serializer = UserSeedsSerializer(userSeeds, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        user = request.data.get("usernameId")
-        seed_data = {
-            'usernameId': UserFarm.objects.get(usernameId = user),
-            'tomato': request.data.get("tomato"),
-            'sunflower': request.data.get("sunflower"),
-            'carrot': request.data.get("carrot"),
-            'pumpkin': request.data.get("pumpkin"),
-            'tulip': request.data.get("tulip"),
-        }
-        #user = user.replace("'", "")
-        print("user: "+user)
-        #print(request.data)
+        username = request.data.get("usernameId")
+        user = UserFarm.objects.get(usernameId = username)
         try:
             userInstance = UserSeeds.objects.get(usernameId=user)
-            userInstance.delete()
+            userInstance.tomato = request.data.get('tomato')
+            userInstance.sunflower = request.data.get('sunflower')
+            userInstance.carrot = request.data.get("carrot")
+            userInstance.pumpkin = request.data.get("pumpkin")
+            userInstance.tulip = request.data.get("tulip")
+            userInstance.save()
+            return Response(status=status.HTTP_200_OK)
         except UserSeeds.DoesNotExist:
-            print("user seeds not found, making new")
+            print("user seeds not found")
+            return Response(status=status.HTTP_400_BAD_REQUEST)
             ##return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        #dataIn = json.loads(str(request.data, encoding='utf-8'))
-        serializer = UserSeedsSerializer(data=seed_data)
-        print(serializer)
-        if serializer.is_valid():
-            print("fields are valid")
-            serializer.save(owner=request.user.usernameId)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
         
     def delete(self, request):
         usernameId = request.data.get('usernameId', None)
@@ -361,17 +368,25 @@ class UserSettingsView(APIView):
         user = request.data.get('usernameId')
         try:
             userInstance = UserSettings.objects.get(usernameId=user)
-            userInstance.delete()
+            userInstance.pomTimer = request.data.get('workTime')
+            userInstance.shortBreak = request.data.get('shortBreakTime')
+            userInstance.longBreak = request.data.get('longBreakTime')
+            userInstance.longBreakInterval = request.data.get('longBreakInterval')
+            userInstance.autoStartPom = request.data.get('autoStartPomodoro')
+            userInstance.autoStartBreak = request.data.get('autoStartBreak')
+            userInstance.fontSize = request.data.get('fontSize')
+            userInstance.fontStyle = request.data.get('font')
+            userInstance.save()
+            return Response(status=status.HTTP_201_CREATED)
         except UserSettings.DoesNotExist:
-            print("No User settings found, creating new")
+            print("No User settings found")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             #return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = UserSettingsSerializer(data=request.data)
         if serializer.is_valid():
             #serializer.validated_data['usernameId'] = userInstance
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
     def delete(self, request):
         usernameId = request.data.get('usernameId', None)
         if usernameId is None:

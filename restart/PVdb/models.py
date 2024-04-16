@@ -1,21 +1,22 @@
 from django.db import models
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
+
 from django.core.validators import MaxValueValidator
 
 
 class UserFarm(models.Model):    #table for users
     usernameId = models.CharField(max_length=150, unique=True, primary_key=True)
     coins = models.PositiveIntegerField(default=0)
-    farmHouseLevel = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(10)])
-    x = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(640)])
-    y = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(1200)])
+    farmHouseLevel = models.PositiveIntegerField(default=1, validators=[MaxValueValidator(10)])
+    x = models.PositiveIntegerField(default=70, validators=[MaxValueValidator(640)])
+    y = models.PositiveIntegerField(default=570, validators=[MaxValueValidator(1200)])
 
     ##Please Remove
     email = models.EmailField(default="blank")
 
 
 class UserPlots(models.Model):
-    usernameId = models.ForeignKey(UserFarm, on_delete=models.CASCADE, to_field='usernameId', default=False)
+    usernameId = models.CharField(max_length=150, default=False)
     plotId = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(7)], primary_key=True)
     crop = models.CharField(default="nothing", max_length=12)
     growthStage = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(10)])
@@ -29,7 +30,7 @@ class UserPlots(models.Model):
 
 class Tasks(models.Model):   #table for tasks
     taskName = models.CharField(max_length=30)
-    usernameId = models.ForeignKey(UserFarm, on_delete=models.CASCADE, to_field='usernameId', default=False)
+    usernameId = models.CharField(max_length=150, default=False)
     completed = models.BooleanField(default=False)
     plotId = models.PositiveIntegerField(default=0, primary_key=True)
     pomodoros = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(20)])
@@ -64,7 +65,7 @@ class Tasks(models.Model):   #table for tasks
         unique_together = [['plotId', 'usernameId']]
 
 class UserDates(models.Model):
-    usernameId = models.ForeignKey(UserFarm, on_delete=models.CASCADE, to_field='usernameId', default=False)
+    usernameId = models.CharField(max_length=150, default=False)
     date = models.DateField(default=False)
     timeSpent = models.PositiveIntegerField(default=0)  #total time spent on tasks on a given day
     class Meta:
@@ -79,7 +80,7 @@ class Crops(models.Model):   #table for crops
     worth = models.PositiveIntegerField(default=0)
 
 class UserDecorations(models.Model):    #table for users' decorations
-    usernameId = models.ForeignKey(UserFarm, on_delete=models.CASCADE, to_field='usernameId')
+    usernameId = models.CharField(max_length=150, default=False)
     type = models.CharField(max_length=30, primary_key=True)
     x = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(640)])
     y = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(1200)])
@@ -89,7 +90,7 @@ class UserDecorations(models.Model):    #table for users' decorations
         unique_together = [['usernameId', 'type']]
 
 class UserFurniture(models.Model):    #table for users' decorations
-    usernameId = models.ForeignKey(UserFarm, on_delete=models.CASCADE, to_field='usernameId')
+    usernameId = models.CharField(max_length=150, default=False)
     type = models.CharField(max_length=30, primary_key=True)
     x = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(640)])
     y = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(1200)])
@@ -114,5 +115,5 @@ class UserSettings(models.Model):    #table for users' crops
     longBreakInterval = models.IntegerField(default=5, validators=[MaxValueValidator(20)])
     autoStartPom = models.BooleanField(default=False)
     autoStartBreak = models.BooleanField(default=False)
-    fontStyle = models.CharField(max_length=15)
+    fontStyle = models.CharField(max_length=15, default="pixelArt")
     fontSize = models.IntegerField(default=5, validators=[MaxValueValidator(15)])

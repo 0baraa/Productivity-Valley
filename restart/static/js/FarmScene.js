@@ -852,7 +852,7 @@ export default class FarmScene extends Phaser.Scene {
                     cropChoice.options[i].style.display = "display";
                     taskable = true;
                 } else {
-                    cropChoice.options[i].style.display = "none";
+                    //cropChoice.options[i].style.display = "none";
                 }
             }
             if (!taskable && this.farm.coins >= 50) {
@@ -1720,7 +1720,7 @@ class PlayerFarm {
 
     createFarmhouse(data) {
         //console.log('level' + data.farmHouseLevel + 'farmhouse')
-        this.farmhouse = new Farmhouse({scene: this.scene, x: data.x, y: data.y, level: data.farmHouseLevel, texture: 'level' + data.farmHouseLevel + 'farmhouse'});
+        this.farmhouse = new Farmhouse({scene: this.scene, x: data.x, y: data.y, level: data.farmHouseLevel, texture: "level" + data.farmHouseLevel + "farmhouse"});
     }
     getCoins(){
         return this.coins;
@@ -2601,6 +2601,8 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
 
         this.wasDeleted = false;
 
+        this.setDepth(1)
+
         // Enable input for this object
         this.setInteractive({ draggable: true });
 
@@ -2608,8 +2610,11 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
         Utility.addTintOnHover(this);
 
         // Add this object to the scene
+        console.log(this.x, this.y)
+        console.log(this)
         this.scene.add.existing(this);
-
+        console.log("should have added")
+        this.setVisible(true)
 
         // Add a pointerdown event listener
         this.on('pointerdown', this.handleClick, this);
