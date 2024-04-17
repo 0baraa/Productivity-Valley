@@ -25,6 +25,7 @@ export default class AccessUserData {
             return UserData.createUser({usernameId: currentUsername})
             .then (bool => {
                 console.log(bool)
+                location.reload();
                 return this.loadDefaults(userFarm, null, null, null, null, null)
             })
             .catch(error => {
