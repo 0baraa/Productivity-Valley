@@ -789,7 +789,7 @@ export default class FarmScene extends Phaser.Scene {
 
     sendData(dataConfig) {
         this.farm = new PlayerFarm(this, dataConfig);
-        this.insideFarmhouseScene.createFurniture(dataConfig.furniture)
+        this.insideFarmhouseScene.setFurnitureData(dataConfig.furniture)
     } 
 
     updateSelector() {
@@ -1863,9 +1863,6 @@ class PlayerFarm {
         this.animals = [];
         this.farmhouse = null;
         this.seedsOwned = [];
-
-
-        let insideFarmhouseScene = this.scene.scene.get('InsideFarmhouseScene');
 
         console.log(data);
         console.log(data.userFarm);

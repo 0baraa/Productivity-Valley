@@ -94,18 +94,28 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
 
         this.children.each(child => child.setVisible(false));
         this.hidden = true;
+        this.ready = true;
+        if (this.dataready) {
+            this.createFurniture();
+        }
     }
-
+    setFurnitureData(furnitureData) {
+        this.furnitureData = furnitureData;
+        this.dataready = true;
+        if (this.ready) {
+            this.createFurniture()
+        }
+    }
     
-    createFurniture(furniture) {
+    createFurniture() {
         this.furniture = []
-        for(let i = 0; i < furniture.length; i++){
+        for(let i = 0; i < this.furnitureData.length; i++){
             let new_furniture = new Furniture({scene: this, 
-                                           x: furniture[i].x, 
-                                           y: furniture[i].y, 
-                                           type: furniture[i].type, 
-                                           texture: furniture[i].type,
-                                           placed: furniture[i].placed});
+                                           x: this.furnitureData[i].x, 
+                                           y: this.furnitureData[i].y, 
+                                           type: this.furnitureData[i].type, 
+                                           texture: this.furnitureData[i].type,
+                                           placed: this.furnitureData[i].placed});
             this.furniture.push(new_furniture);
         }
     }
