@@ -1142,7 +1142,7 @@ class Selector extends Phaser.GameObjects.Sprite {
 class SectorCircle extends Phaser.GameObjects.Graphics {
     constructor(scene, x, y, radius, startAngle, endAngle, color) {
         super(scene);
-                    this.setDepth(-2);
+        this.setDepth(-2);
         scene.add.existing(this);
 
         this.x = x
@@ -1231,13 +1231,22 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
     reset(){
         console.log("in reset");
+        console.log(this.active);
         this.hideTime();
         this.fillCircle.destroy();
+        if (this.timerEvent) {
+            this.timerEvent.paused = true;
+            this.timerEvent.remove();
+            this.scene.time.removeEvent(this.timerEvent);
+            delete this.timerEvent
+        }
         this.clear();
+
     }
 
     skipTimer() {
         this.timeString.destroy();
+        this.reset();
     }
 
     showTime() {
@@ -1278,12 +1287,14 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
     }
 
     startTimer() {
-        this.timerEvent = this.scene.time.addEvent({
-            delay: 1000, // Update every second
-            callback: this.updateTimer,
-            callbackScope: this,
-            loop: true
-        });
+        if (this.active) {
+            this.timerEvent = this.scene.time.addEvent({
+                delay: 1000, // Update every second
+                callback: this.updateTimer,
+                callbackScope: this,
+                loop: true
+            });
+        }
     }
 
     pauseTimer() {
@@ -1302,7 +1313,7 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
     updateTimeLeft(timeIn, elapsedTime) {
         this.totalTimeInSeconds = timeIn; 
-        console.log(this.timeElapsed);
+        console.log(this.elapsedTime);
         this.remainingTime = timeIn - elapsedTime;
         console.log(this.remainingTime);
         this.updateTimeString()
@@ -1325,11 +1336,17 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
     calculateAngle() {
         // Calculate angle for timer hand
+        
         let angle = (this.elapsedTime / this.totalTimeInSeconds) * Phaser.Math.PI2 - Phaser.Math.PI2 / 4;
 
         // Change the fill circle area
-        this.fillCircle = new SectorCircle(this.scene, this.x, this.y, this.radius - 30, -90, Phaser.Math.RadToDeg(angle), this.color);
-        return angle;
+        if (this.elapsedTime != this.totalTimeInSeconds) {
+            if (this.fillCircle) {
+                this.fillCircle.destroy();
+            }
+            this.fillCircle = new SectorCircle(this.scene, this.x, this.y, this.radius - 30, -90, Phaser.Math.RadToDeg(angle), this.color);
+        }
+            return angle;
     }
 
     updateCircle() {
@@ -1349,10 +1366,12 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
 
     updateTimer() {
         // Check if the timer has been destroyed
+        console.log("1 second has passed");
         if (!this.active) {
             this.fillCircle.destroy();
             return;
         }
+
 
         // Clear previous timer hand
         this.clear();
@@ -1362,18 +1381,12 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         this.scene.farm.tasks[this.scene.selector.plotSelected].updateTime(this.elapsedTime)
         this.remainingTime--;
 
-        this.updateTimeString();
-
-        this.updateCircle();
-
-        // Constant check for the state of the timer to update pomodoro
-        if (this.timerEvent.paused) {
-            this.pauseFlag = true;
-        } else {
-            // this.scene.events.emit('timerResumed');
-            this.pauseFlag = false;
+        if (this.elapsedTime % 20 == 0 && !this.scene.pomodoro.workFlag) {
+            this.scene.farm.saveTask(this.scene.farm.tasks[this.scene.selector.plotSelected])
         }
-
+        
+        this.updateCircle();
+        this.updateTimeString();
         // Check if timer is completed
         if (this.remainingTime <= 0) {
             this.scene.events.emit('timerCompleted');
@@ -1389,10 +1402,25 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
             }
             else {
                 this.timerEvent.remove();
+                delete this.timerEvent
                 this.fillCircle.destroy();
                 console.log("Timer completed!");
             }
         }
+
+        // Constant check for the state of the timer to update pomodoro
+        if (this.timerEvent.paused) {
+            this.pauseFlag = true;
+        } else {
+            // this.scene.events.emit('timerResumed');
+            this.pauseFlag = false;
+        }
+
+        
+    }
+
+    complete() {
+        this.reset()
     }
 }
 
@@ -1435,13 +1463,15 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
     createTimer(){
         if (this.timer1){
-            this.timer1.clear();
+            this.timer1.reset();
             this.timer1.fillCircle.destroy();
             this.timer1.destroy();
+            delete this.timer1;
         }
         this.workFlag = true;
         this.playButton.setVisible(true);
         this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, 0, 0, this, this.pauseFlag, 0xffa500, this.autoStartPomodoro);
+        this.scene.events.emit("timerPaused");
     }
 
     onVisibility(){
@@ -1565,14 +1595,17 @@ class Pomodoro extends Phaser.GameObjects.Container {
             console.log("playButton clicked");
             console.log(Utility.plotReady())
             console.log(Utility.isEditMode())
-
             if (this.timer1 && Utility.plotReady && !Utility.isEditMode()){
-                if (this.timer1.remainingTime == 0){
+                console.log(this.timer1.active);
+                if (this.timer1.remainingTime == 0 || !this.timer1.active){
+                    this.playButton.setVisible(false);
+                    this.pauseButton.setVisible(true);
+                    this.skipButton.setVisible(true);
                     this.nextTimer();
                 } else {
                     if (this.workFlag) {
-                        this.scene.events.emit("pomodoroResumed");
                         Utility.setWorkingState(true);
+                        this.scene.events.emit("pomodoroResumed");
                     }
                     this.scene.events.emit('timerResumed');
                     this.pauseFlag = false;
@@ -1580,8 +1613,10 @@ class Pomodoro extends Phaser.GameObjects.Container {
                     this.pauseButton.setVisible(true);
                     this.skipButton.setVisible(true);
                 }
+                
             } else if (Utility.plotReady() && !Utility.isEditMode()){
                 this.nextTimer();
+                this.scene.events.emit("timerStarted");
                 this.playButton.setVisible(false);
                 this.pauseButton.setVisible(true);
                 this.skipButton.setVisible(true);
@@ -1634,14 +1669,18 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
     autoStart() {
         if (this.timer1){
+            this.timer1.reset();
             this.timer1.destroy();
             this.timer1.clear();
             this.timer1.timeString.destroy();
-            this.timer1.updateCircle()
+            delete this.timer1;
         }
+
+        this.scene.farm.tasks[this.scene.selector.plotSelected].updateTime(0)
 
         if (this.workFlag) {
             if (!this.autoStartPomodoro) {
+                this.scene.farm.tasks[this.scene.selector.plotSelected].timeState = 0;
                 this.playButton.setVisible(true); 
                 this.pauseButton.setVisible(false);
                 this.skipButton.setVisible(false);
@@ -1655,12 +1694,14 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 this.playButton.setVisible(true); 
                 this.pauseButton.setVisible(false);
                 this.skipButton.setVisible(false);
+                this.scene.farm.tasks[this.scene.selector.plotSelected].timeState = 1;
                 return; 
             } else {
                 this.nextTimer();
                 
             }
         }
+        this.scene.farm.saveTask(this.scene.farm.tasks[this.scene.selector.plotSelected])
     }
 
     loadTimer(elapsedTime, state) {
@@ -1670,6 +1711,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
             this.timer1.destroy();
             this.timer1.timeString.destroy();
             this.timer1.clear();
+            delete this.timer1;
         }
         console.log("load timer");
         
@@ -1721,9 +1763,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         console.log(this.scene.farm.findSelectedTaskIndex())
         console.log(this.scene.farm.tasks);
         let task = this.scene.farm.tasks[index];
-        console.log(task);
         let plot = this.scene.farm.plots[index]
-        console.log(plot);
         if (!plot.occupied || !task || task.completed) {
             console.log("nothing to load");
             this.playButton.setVisible(false);
@@ -1734,6 +1774,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 this.timer1.clear();
                 this.timer1.fillCircle.destroy();
                 this.timer1.timeString.destroy();
+                delete this.timer1;
             }
             //no task to load
             return;
@@ -1756,6 +1797,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 this.timer1.clear()
                 this.timer1.fillCircle.destroy()
                 this.timer1.timeString.destroy()
+                delete this.timer1;
             }
             this.playButton.setVisible(true);
             this.pauseButton.setVisible(false);
@@ -1804,10 +1846,11 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
     nextTimer() {
         if (this.timer1){
+            this.timer1.reset();
             this.timer1.destroy();
-            this.timer1.clear();
             this.timer1.fillCircle.destroy();
             this.timer1.timeString.setVisible(false);
+            delete this.timer1;
         }
         this.workFlag = !this.workFlag;
         if (this.workFlag) {  // if transitioning to work
@@ -1824,6 +1867,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
                     this.scene.events.emit('timerStarted');
                 }
             } else {
+                console.log("taskComplete!");
                 this.scene.farm.tasks[this.scene.selector.plotSelected].timerState = 1;
                 this.scene.farm.tasks[this.scene.selector.plotSelected].completed = true;
                 this.playButton.setVisible(false);
@@ -1833,6 +1877,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 this.scene.events.emit('taskCompleted');
             }
         } else {  // if transitioning to break
+            console.log()
             Utility.setWorkingState(false);
             this.longBreakInterval--;
             if (this.longBreakInterval == 0) {
@@ -1842,7 +1887,6 @@ class Pomodoro extends Phaser.GameObjects.Container {
             } else {
                 this.scene.farm.tasks[this.scene.selector.plotSelected].timerState = 1;
                 this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, 0, 0, this, this.pauseFlag, 0x7CFC00, this.autoStartBreak);
-                
             }
             if (this.autoStartBreak) {
                 this.scene.events.emit('timerStarted');
@@ -2157,7 +2201,7 @@ class PlayerFarm {
             completed: task.completed,
             timerState: task.timerState,
             timerTime: task.time,
-            timeElapsed: task.timeElapsed,
+            elapsedTime: task.elapsedTime,
             "subTask1": null,
             "subTask1Completed": null,
             "subTask2": null,
@@ -2277,6 +2321,7 @@ class Task {
         this.scene = config.scene;
         this.plotId = config.plotId;
         this.name = config.name;
+        console.log(config.elapsedTime);
         this.elapsedTime = config.elapsedTime || 0;
         this.pomodoros = config.pomodoros || 1;
         this.pomodorosCompleted = config.pomodorosCompleted || 0;
@@ -2359,6 +2404,7 @@ class Task {
 
     updateElapsedTime(interval) { //in milliseconds
         this.elapsedTime +=  interval / 3600000; //hours
+        console.log(this.elapsedTime);
     }
 
     updateTime(currentTime){ //directly from pomodoro timer
