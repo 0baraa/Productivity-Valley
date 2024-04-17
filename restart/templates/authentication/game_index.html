@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -18,22 +18,26 @@
     
     <script src="{% static 'js/libs/phaser.js' %}"></script>
 
-{#    <script type="module" src="{% static 'js/libs/phaser.js' %}"></script>#}
+    {#
+    <script type="module" src="{% static 'js/libs/phaser.js' %}"></script>#}
 </head>
+
 <body>
     <div id="game-container"></div>
     </div>
-        <script type="module" src="{% static 'js/game.js' %}"></script>
+    <script type="module" src="{% static 'js/game.js' %}"></script>
 
-{#<div id="game-container"></div>#}
+    {#<div id="game-container"></div>#}
     <div class="menu-container chart-menu" style="display: none;">
         <dialog class="menu chart-menu" style="display: inline-flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button type="button" class="menu-top-spacer">X</button>
-                <h1>Working Hours</h1>
-                <button class="exit-button" id="chart-exit-button">X</button>
+                <p>Working Hours
+                <p>
+                    <button class="exit-button" id="chart-exit-button">X</button>
             </div>
-            <div id="chart-content" style="flex: 1; overflow: auto; display: flex; justify-content: center; align-items: center;">
+            <div id="chart-content"
+                style="flex: 1; overflow: auto; display: flex; justify-content: center; align-items: center;">
                 <canvas id="Chart"></canvas>
             </div>
         </dialog>
@@ -51,7 +55,7 @@
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
                 <form id="task-form" style="display: flex; justify-content: center;">
                     <table id="task-menu-table">
-                        <tr class = "uneditable">
+                        <tr class="uneditable">
                             <td>
                                 <label for="preset">Preset:</label>
                                 <select id="preset" name="preset">
@@ -62,16 +66,18 @@
                         <tr>
                             <td>
                                 <label for="taskName">Task Name:</label>
-                                <input type="text" id="taskName" class="editable" name="taskName" maxlength="25" value="Task" required><br>
+                                <input type="text" id="taskName" class="editable" name="taskName" maxlength="25"
+                                    value="Task" required><br>
                             </td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="repetitions">Sessions:</label>
-                                <input type="number" id="repetitions" class="editable" name="repetitions" style="width: 70px" min="1" max="20" step="1" value="1" required>
+                                <input type="number" id="repetitions" class="editable" name="repetitions"
+                                    style="width: 70px" min="1" max="20" step="1" value="1" required>
                             </td>
                         </tr>
-                        <tr class = "uneditable">
+                        <tr class="uneditable">
                             <td>
                                 <label for="cropChoice">Crop:</label>
                                 <select id="cropChoice" name="cropChoice">
@@ -92,10 +98,11 @@
                         <tr class="subtask-row" style="display: none;">
                             <td>
                                 <label for="subtask0">- </label>
-                                <input type="text" id="subtask0" class="subtask editable" name="subtask" maxlength="32" ></input>
+                                <input type="text" id="subtask0" class="subtask editable" name="subtask"
+                                    maxlength="32"></input>
                             </td>
                         </tr>
-                        <tr id="save-preset-row" class = "uneditable">
+                        <tr id="save-preset-row" class="uneditable">
                             <td>
                                 <input type="checkbox" id="save-preset" name="savePreset">
                                 <label for="save-preset">Save Preset</label>
@@ -106,9 +113,12 @@
                         <tr>
                             <td>
                                 <div style="display: flex; justify-content: center;">
-                                    <p id="harvest-coins-text" style="display: none;"></p><img id="harvest-coins-image" src="{% static 'assets/coin-medium.png' %}" alt="coins" style="width: 3vw; height: 3vw; display: none;">
-                                    <button type="button" id = "harvest-task" style="display: none; background-color: red;">Harvest</button>
-                                    <button type="submit" id = "create-task">Create</button>
+                                    <p id="harvest-coins-text" style="display: none;"></p><img id="harvest-coins-image"
+                                        src="{% static 'assets/coin-medium.png' %}" alt="coins"
+                                        style="width: 3vw; height: 3vw; display: none;">
+                                    <button type="button" id="harvest-task"
+                                        style="display: none; background-color: red;">Harvest</button>
+                                    <button type="submit" id="create-task">Create</button>
                                 </div>
                             </td>
                         </tr>
@@ -124,78 +134,94 @@
         <dialog class="menu shop-menu" style="display: flex; flex-direction: column;">
             <div class="menu-top-container">
                 <button type="button" class="menu-top-spacer">X</button>
-                <h1>Crop Shop</h1>
-                <button type="button" class="exit-button" id="shop-exit-button">X</button>
+                <p>Crop Shop
+                <p>
+                    <button type="button" class="exit-button" id="shop-exit-button">X</button>
             </div>
             <div style="flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center;">
                 <table class="menu-table" id="seed-menu" style="display: none;">
                     <tr class="menu-row" id="sunflower">
                         <tc>
                             <td>
-                                <img class="seed-bags" id="sunflower-bag" src="{% static '/assets/seed-bags/sunflower-seeds-4x(1).png' %}">
+                                <img class="seed-bags" id="sunflower-bag"
+                                    src="{% static '/assets/seed-bags/sunflower-seeds-4x(1).png' %}">
                             </td>
                         </tc>
-                            <tc>
-                                <td>
-                                <button id="sunflower-button" class="sunflower"><span class="sunflower">50</span><span class="coin sunflower"><img class="sunflower"
-                                        src="{% static 'assets/coin-medium.png' %}" alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
-                                
-                                </td>
-                            </tc>
+                        <tc>
+                            <td>
+                                <button id="sunflower-button" class="sunflower"><span class="sunflower">50</span><span
+                                        class="coin sunflower"><img class="sunflower"
+                                            src="{% static 'assets/coin-medium.png' %}" alt="coins"
+                                            style="width: 3vw; height: 3vw"></span></button><br>
+
+                            </td>
+                        </tc>
                     </tr>
                     <tr class="menu-row" id="carrot">
                         <tc>
                             <td>
-                                <img class="seed-bags" id="carrot-bag" src="{% static '/assets/seed-bags/carrot-seeds-4x(1).png' %}">
+                                <img class="seed-bags" id="carrot-bag"
+                                    src="{% static '/assets/seed-bags/carrot-seeds-4x(1).png' %}">
                             </td>
                         </tc>
                         <tc>
                             <td>
-                                <button id="carrot-button" class="carrot"><span class="carrot">50</span><span class="coin carrot"><img class="carrot"
-                                        src="{% static 'assets/coin-medium.png' %}" alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
-                                
+                                <button id="carrot-button" class="carrot"><span class="carrot">50</span><span
+                                        class="coin carrot"><img class="carrot"
+                                            src="{% static 'assets/coin-medium.png' %}" alt="coins"
+                                            style="width: 3vw; height: 3vw"></span></button><br>
+
                             </td>
                         </tc>
                     </tr>
                     <tr class="menu-row" id="pumpkin">
                         <tc>
                             <td>
-                                <img class="seed-bags" id="pumpkin-bag" src="{% static '/assets/seed-bags/pumpkin-seeds-4x(1).png' %}">
+                                <img class="seed-bags" id="pumpkin-bag"
+                                    src="{% static '/assets/seed-bags/pumpkin-seeds-4x(1).png' %}">
                             </td>
                         </tc>
                         <tc>
                             <td>
-                                <button id="pumpkin-button" class="pumpkin"><span class="pumpkin">50</span><span class="coin pumpkin"><img class="pumpkin"
-                                        src="{% static 'assets/coin-medium.png' %}" alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
-                                
+                                <button id="pumpkin-button" class="pumpkin"><span class="pumpkin">50</span><span
+                                        class="coin pumpkin"><img class="pumpkin"
+                                            src="{% static 'assets/coin-medium.png' %}" alt="coins"
+                                            style="width: 3vw; height: 3vw"></span></button><br>
+
                             </td>
                         </tc>
                     </tr>
                     <tr class="menu-row" id="tulip">
                         <tc>
                             <td>
-                                <img class="seed-bags" id="tulip-bag" src="{% static '/assets/seed-bags/tulip-seeds-4x.png' %}">
+                                <img class="seed-bags" id="tulip-bag"
+                                    src="{% static '/assets/seed-bags/tulip-seeds-4x.png' %}">
                             </td>
                         </tc>
                         <tc>
                             <td>
-                                <button id="tulip-button" class="tulip"><span class="tulip">50</span><span class="coin tulip"><img class="tulip"
-                                        src="{% static 'assets/coin-medium.png' %}" alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
-                                
+                                <button id="tulip-button" class="tulip"><span class="tulip">50</span><span
+                                        class="coin tulip"><img class="tulip"
+                                            src="{% static 'assets/coin-medium.png' %}" alt="coins"
+                                            style="width: 3vw; height: 3vw"></span></button><br>
+
                             </td>
                         </tc>
                     </tr>
-                    <tr class="menu-row" id="tomato" style = "display:none">
+                    <tr class="menu-row" id="tomato" style="display:none">
                         <tc>
                             <td>
-                                <img class="seed-bags" id="tomato-bag" src="{% static 'assets/seed-bags/pumpkin-seeds-4x.png' %}">
+                                <img class="seed-bags" id="tomato-bag"
+                                    src="{% static 'assets/seed-bags/pumpkin-seeds-4x.png' %}">
                             </td>
                         </tc>
                         <tc>
                             <td>
-                                <button id="tomato-button" class="tomato"><span class="tomato">50</span><span class="coin tomato"><img class="tomato"
-                                        src="{% static 'assets/coin-medium.png' %}" alt="coins" style="width: 3vw; height: 3vw"></span></button><br>
-                                
+                                <button id="tomato-button" class="tomato"><span class="tomato">50</span><span
+                                        class="coin tomato"><img class="tomato"
+                                            src="{% static 'assets/coin-medium.png' %}" alt="coins"
+                                            style="width: 3vw; height: 3vw"></span></button><br>
+
                             </td>
                         </tc>
                     </tr>
@@ -287,18 +313,22 @@
 
     <div id="edit-buttons-container">
         <button class="edit" id="edit-button"><img src="{% static 'assets/edit/edit.png' %}" alt="Edit icon"></button>
-        <button class="edit" id="tick-button" style="display: none;"><img src="{% static 'assets/edit/tick.png' %}" alt="Tick icon"></button>
-        <button class="edit" id="plus-button" style="display: none;"><img src="{% static 'assets/edit/plus.png' %}" alt="Plus icon"></button>
-        <button class="edit" id="trash-button" style="display: none;"><img src="{% static 'assets/edit/trash.png' %}" alt="Cross icon"></button>
-        <button class="edit" id="cross-button" style="display: none;"><img src="{% static 'assets/edit/cross.png' %}" alt="Cross icon"></button>
+        <button class="edit" id="tick-button" style="display: none;"><img src="{% static 'assets/edit/tick.png' %}"
+                alt="Tick icon"></button>
+        <button class="edit" id="plus-button" style="display: none;"><img src="{% static 'assets/edit/plus.png' %}"
+                alt="Plus icon"></button>
+        <button class="edit" id="trash-button" style="display: none;"><img src="{% static 'assets/edit/trash.png' %}"
+                alt="Cross icon"></button>
+        <button class="edit" id="cross-button" style="display: none;"><img src="{% static 'assets/edit/cross.png' %}"
+                alt="Cross icon"></button>
     </div>
-    
+
     <!--Settings-->
     <div class="settings-icon-container">
-{#        <img src="{% static 'assets/settings.png' %}" alt="Settings Icon">#}
+        {# <img src="{% static 'assets/settings.png' %}" alt="Settings Icon">#}
         <img src="{% static 'assets/edit/cross.png' %}" alt="Settings Icon">
     </div>
-<!--Settings Popup-->
+    <!--Settings Popup-->
     <div class="menu-container settings-menu" style="display: none;">
         <dialog class="menu settings-menu" style="display: inline-flex; flex-direction: column;">
             <div class="menu-top-container">
@@ -351,16 +381,6 @@
                         </tr>
                         <tr>
                             <td>
-                                <label for="fontStyle">Font Style:</label>
-                                <select id="fontStyle" name="fontStyle">
-                                    <option value="pixel">Pixel (Default)</option>
-                                    <option value="standard">Standard</option>
-                                    <option value="dyslexic">Dyslexic</option>
-                                </select><br>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
                                 <label for="fontSize">Font Size:</label>
                                 <select id="fontSize" name="fontSize">
                                     <option value="normal">Normal (Default)</option>
@@ -383,23 +403,24 @@
 
     <!--Coins-->
     <div class="coins-container">
-        <p id="current-coins-value" style="font-size: 30px;">1000</p>
+        <p id="current-coins-value" style="font-size: calc(30px * var(--scale-factor));">1000</p>
         <img src="{% static 'assets/coin-large.png' %}" alt="coins">
     </div>
 
     <!--Top left-->
     <div class="top-left-container">
         <div id="home-icon-container">
-{#            <img src="/assets/question.png" alt="Question Icon">#}
+            {# <img src="/assets/question.png" alt="Question Icon">#}
             <img src="{% static 'assets/question.png' %}" alt="Question Icon">
         </div>
         <div id="settings-icon-container">
-{#            <img src="/assets/settings.png" alt="Settings Icon">#}
+            {# <img src="/assets/settings.png" alt="Settings Icon">#}
             <img src="{% static 'assets/settings.png' %}" alt="Settings Icon">
         </div>
         <div id="soundToggle" onclick="toggleSound()">
             <img src="{% static 'assets/audio/sound-on.png' %}" alt="Sound On" id="soundOnIcon">
-            <img src="{% static 'assets/audio/sound-off.png' %}" alt="Sound Off" id="soundOffIcon" style="display: none">
+            <img src="{% static 'assets/audio/sound-off.png' %}" alt="Sound Off" id="soundOffIcon"
+                style="display: none">
         </div>
     </div>
 
@@ -439,21 +460,28 @@
             </div>
             <div id="furniture-container"
                 style="flex: 1; overflow: auto; display: flex; justify-content: space-around; flex-wrap: wrap;">
-                <p>Welcome to the tutorial!</p>
+                <div style="display: block; margin: 20px;">
+                    <p>1. Purchase seeds from the market</p>
+                    <p>2. Create task by clicking the plot</p>
+                    <p>3. Start your work! Change the time in settings</p>
+                    <p>4. Harvest when you are done to collect your money!</p>
+                </div>
             </div>
         </dialog>
     </div>
 
     <!--Confirmation Popup Screen-->
     <div class="menu-container confirmation" style="display: none;">
-        <dialog class="menu confirmation" style="display: flex; flex-direction: column; height: calc(50vh * var(--scale-factor));">
-            <div id="confirmation-container" style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
+        <dialog class="menu confirmation"
+            style="display: flex; flex-direction: column; height: calc(50vh * var(--scale-factor));">
+            <div id="confirmation-container"
+                style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
                 <p id="confirmation-message" style="float:none; text-align: center"></p>
                 <br>
                 <p id="confirmation-note" style="font-size: 2vw; float:none; text-align: center"></p>
                 <br>
                 <div id="confirmation-buttons-container" style="clear:both">
-                    <button type="button" id = "accept-confirmation">Yes</button>
+                    <button type="button" id="accept-confirmation">Yes</button>
                     <button type="button" id="deny-confirmation">No</button>
                 </div>
             </div>
@@ -470,13 +498,15 @@
             <button id="house-upgrade-button">Upgrade</button>
         </dialog>
     </div>
-    
+
     <div class="menu-container alertWindow" style="display: none;">
-        <dialog class="menu alertWindow" style="display: flex; flex-direction: column; height: calc(50vh * var(--scale-factor));">
-            <div id="alertWindow-container" style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
+        <dialog class="menu alertWindow"
+            style="display: flex; flex-direction: column; height: calc(50vh * var(--scale-factor));">
+            <div id="alertWindow-container"
+                style="flex: 1; overflow: auto; display: flex; justify-content: center; flex-wrap: wrap;">
                 <p id="alertWindow-message" style="float:none; text-align: center;"></p>
                 <p id="alertWindow-note" style="float:none; text-align: center;"></p>
-                <div style = "flex-basis: 100%; height: 0;"></div>
+                <div style="flex-basis: 100%; height: 0;"></div>
                 <div id="alertWindow-buttons-container" style="clear:both">
                     <button type="button" id="okButton">OK</button>
                 </div>
@@ -497,4 +527,5 @@
 
 
 </body>
+
 </html>
