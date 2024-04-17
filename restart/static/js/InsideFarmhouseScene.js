@@ -96,6 +96,26 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
         this.hidden = true;
     }
 
+    
+    createFurniture(furniture) {
+        this.furniture = []
+        for(let i = 0; i < furniture.length; i++){
+            let new_furniture = new Furniture({scene: this, 
+                                           x: furniture[i].x, 
+                                           y: furniture[i].y, 
+                                           type: furniture[i].type, 
+                                           texture: furniture[i].type,
+                                           placed: furniture[i].placed});
+            this.furniture.push(new_furniture);
+        }
+    }
+
+    addFurnitureToInventory(farm, type) {
+        let furniture = new Furniture({scene: this, x: 2000, y: 2000, type: type, texture: type, placed: false});
+        this.furniture.push(furniture);
+        farm.saveSingleFurniture(furniture);
+    }
+
     toggleHideScene(farmScene) {
         if(!Utility.isEditMode()) {
             farmScene.input.enabled = !farmScene.input.enabled;
@@ -142,6 +162,119 @@ export default class InsideFarmhouseScene extends Phaser.Scene {
             for(let image of images) {
                 image.classList.remove("inverted-colour");
             }
+        }
+    }
+}
+
+
+
+class Furniture extends Phaser.GameObjects.Sprite {
+    constructor(config) {
+        super(config.scene, config.x, config.y, config.texture);
+
+        // Set the type of this furniture
+        this.type = config.type;
+
+        // Store a reference to the scene
+        this.scene = config.scene;
+
+        if (this.scene.hidden) {
+            this.setVisible(false)
+        }
+
+        // Whether or not the furniture is currently placed on the scene
+        this.placed = config.placed;
+
+        this.wasDeleted = false;
+
+        // Enable input for this object
+        this.setInteractive({ draggable: true });
+
+        // Add a hover effect to the furniture
+        Utility.addTintOnHover(this);
+        this.setDepth(10);
+        console.log(config.texture)
+
+        // Add this object to the scene
+        this.scene.add.existing(this);
+
+        if(!this.placed) {
+            this.setVisible(false); // make the sprite invisible
+            this.setActive(false); // make the sprite inactive
+            this.setPosition(2000, 2000); // move it off-screen
+        }
+
+        // Add a pointerdown event listener
+        this.on('pointerdown', this.handleClick, this);
+
+        this.scene.input.on('drag', function(pointer, gameObject, dragX, dragY) {
+            if(Utility.isEditMode()) {
+                // Snap the furniture to a grid
+                gameObject.x = Math.round(dragX / 4) * 4;
+                gameObject.y = Math.round(dragY / 4) * 4;
+
+                // Keep the furniture within the bounds of the room
+                if(gameObject.x + gameObject.width / 2 > 464) {
+                    gameObject.x = 464 - gameObject.width / 2;
+                }
+                if(gameObject.x - gameObject.width / 2 < 176) {
+                    gameObject.x = 176 + gameObject.width / 2;
+                }
+                if(gameObject.y + gameObject.height / 2 > 674) {
+                    gameObject.y = 674 - gameObject.height / 2;
+                }
+                if(gameObject.y - gameObject.height / 2 < 526) {
+                    gameObject.y = 526 + gameObject.height / 2;
+                }
+            }
+
+
+        });
+
+        this.scene.input.on('dragstart', function (pointer, gameObject) {
+            // Bring the gameObject to the top of the display list
+            if(Utility.isEditMode()){
+            this.children.bringToTop(gameObject);
+            }
+        }, this.scene);
+
+        if (this.type === "fireplace") {
+            this.anims.play('fireplaceAnimation');
+        }
+
+    }
+
+    handleClick() {
+        if (!Utility.isDeleteMode()) {
+        if(this.type === "fireplace"){
+            if(!this.scene.fireplaceTurnedOn) {
+                this.anims.resume();
+                this.scene.fireplaceTurnedOn = true
+            }
+            else {
+                this.anims.pause();
+                this.setTexture('fireplace');
+                this.scene.fireplaceTurnedOn = false;
+            }
+        }
+
+        else if(this.type === "lamp") {
+            if(!this.scene.lampTurnedOn) {
+                this.setTexture('lamp-on');
+                this.scene.lampTurnedOn = true;
+            }
+            else {
+                this.setTexture('lamp');
+                this.scene.lampTurnedOn = false;
+            }
+        }
+        }
+        else{ 
+            this.wasDeleted = true;
+            this.setVisible(false); // make the sprite invisible
+            this.setActive(false); // make the sprite inactive
+            this.setPosition(2000, 2000); // move it off-screen
+            this.placed = false;
         }
     }
 }

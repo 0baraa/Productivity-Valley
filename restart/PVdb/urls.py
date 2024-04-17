@@ -22,7 +22,7 @@ from .views import UserFarmView,PomodoroStatsView
 urlpatterns = [
 # path('admin/', admin.site.urls),
 path('user-farm/', UserFarmView.as_view(), name='user_farm'),
-path('user-farm/change-money/', MoneyView().as_view(), name='user_money'),
+path('user-farm/change-money/', MoneyPartialView().as_view(), name='user_money'),
 path('user-farm/change-house/', HouseView().as_view(), name='user_house'),
 # path('decorations', Decorations.as_view(), name='Decorations'),
 # path('crops', CropsView.as_view(), name='Crops'),

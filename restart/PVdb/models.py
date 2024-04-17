@@ -5,32 +5,31 @@ from django.core.validators import MaxValueValidator
 
 class UserFarm(models.Model):    #table for users
     usernameId = models.CharField(max_length=150, unique=True, primary_key=True)
-    coins = models.PositiveIntegerField(default=0)
-    farmHouseLevel = models.PositiveIntegerField(default=1, validators=[MaxValueValidator(10)])
-    x = models.PositiveIntegerField(default=70, validators=[MaxValueValidator(640)])
-    y = models.PositiveIntegerField(default=570, validators=[MaxValueValidator(1200)])
+    coins = models.PositiveIntegerField(default=0, blank=True)
+    farmHouseLevel = models.PositiveIntegerField(default=1, blank=True, validators=[MaxValueValidator(10)])
+    x = models.PositiveIntegerField(default=70, blank=True, validators=[MaxValueValidator(2000)])
+    y = models.PositiveIntegerField(default=570, blank=True, validators=[MaxValueValidator(2000)])
 
     ##Please Remove
     email = models.EmailField(default="blank")
 
-
 class UserPlots(models.Model):
     #id = models.PositiveIntegerField(default = 0, null = True)
-    id = models.PositiveIntegerField(default = 0, primary_key=True)
+    id = models.AutoField(primary_key=True)
     usernameId = models.CharField(max_length=150, default="guest")
     plotId = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(7)])
     crop = models.CharField(default="nothing", max_length=12)
     growthStage = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(10)])
     growthStep = models.PositiveIntegerField(default=0, validators=[MaxValueValidator(36)])
-    x = models.PositiveIntegerField(default=-1000, validators=[MaxValueValidator(640)])
-    y = models.PositiveIntegerField(default=-1000, validators=[MaxValueValidator(1200)])
+    x = models.PositiveIntegerField(default=2000, validators=[MaxValueValidator(2000)])
+    y = models.PositiveIntegerField(default=2000, validators=[MaxValueValidator(2000)])
     placed = models.BooleanField(default=False)
     class Meta:
         # Define composite primary key using unique_together
         unique_together = [['plotId', 'usernameId']]
 
 class Tasks(models.Model):   #table for tasks
-    id = models.PositiveIntegerField(default = 0, primary_key=True)
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=30)
     usernameId = models.CharField(max_length=150, default="false")
     completed = models.BooleanField(default=False)
@@ -82,22 +81,22 @@ class Crops(models.Model):   #table for crops
     worth = models.PositiveIntegerField(default=0)
 
 class UserDecorations(models.Model):    #table for users' decorations
-    id = models.PositiveIntegerField(default = 0, primary_key=True)
+    id = models.AutoField(primary_key=True)
     usernameId = models.CharField(max_length=150, default=False)
     type = models.CharField(max_length=30)
-    x = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(640)])
-    y = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(1200)])
+    x = models.PositiveIntegerField(default=2000, validators=[MaxValueValidator(2000)])
+    y = models.PositiveIntegerField(default=2000, validators=[MaxValueValidator(2000)])
     placed = models.BooleanField(default=False)
     class Meta:
         # Define composite primary key using unique_together
         unique_together = [['usernameId', 'type']]
 
 class UserFurniture(models.Model):    #table for users' decorations
-    id = models.PositiveIntegerField(default = 0, primary_key=True)
+    id = models.AutoField(primary_key=True)
     usernameId = models.CharField(max_length=150, default=False)
     type = models.CharField(max_length=30)
-    x = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(640)])
-    y = models.PositiveIntegerField(default=None, validators=[MaxValueValidator(1200)])
+    x = models.PositiveIntegerField(default=2000, validators=[MaxValueValidator(2000)])
+    y = models.PositiveIntegerField(default=2000, validators=[MaxValueValidator(2000)])
     placed = models.BooleanField(default=False)
     class Meta:
         # Define composite primary key using unique_together

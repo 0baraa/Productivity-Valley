@@ -378,15 +378,9 @@ export default class UserData {     //works
 
 
 
-    static updateUserMoney(usernameId, coins) {      //works
-        const url = `${userFarmTable}change-money/`;
-    
-        const requestData = {
-            usernameId: usernameId,
-            coins: coins
-        };
+    static updateUserMoney(data) {      //works
 
-        axios.post(userFarmTable+"change-money/", requestData, {
+        axios.patch(userFarmTable+"change-money/", data, {
             headers: {'X-CSRFToken': csrftoken}
         })
             .then(response => {
@@ -411,7 +405,7 @@ export default class UserData {     //works
             console.log('House status updated successfully');
         })
         .catch(error => {
-            console.error('Error updating money:', error);
+            console.error('Error updating house: ', error);
         });
     }
 

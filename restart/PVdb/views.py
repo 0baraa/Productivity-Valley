@@ -1,17 +1,20 @@
+from datetime import timedelta
+from django.utils import timezone
+from django.http import JsonResponse
 from django.db.models.functions import TruncDay
 from django.db.models.functions import TruncDay
 from django.shortcuts import render
+from django.db.models import F, Sum
+from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
+from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
-from .models import *
-from .serializer import *
+from rest_framework.generics import UpdateAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import F, Sum
-from django.utils import timezone
-from datetime import timedelta
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.shortcuts import get_object_or_404
+from .models import *
+from .serializer import *
 
 #might not be necessary
 from django.views.decorators.csrf import csrf_exempt
@@ -19,37 +22,21 @@ from django.views.decorators.csrf import csrf_exempt
 #debugging
 import json
 
-class NewUserFarmView(APIView):
-    def post(self, request):
-        data = {"usernameId": request.data.get("usernameId"),
-                "email": request.data.get("email"),
-                "coins": request.data.get("coins"),
-                "farmHouseLevel": request.data.get("farmHouseLevel"),
-                "x": request.data.get("x"),
-                "y": request.data.get("y")
-                }
-        
 
 class UserFarmView(APIView):
     def get(self, request):
-        #print("\n\n\n\nthis is the request: \n\n\n\n",request.GET.get('usernameId'))
-        #userId = request.GET.get.('usernameId')
-        #data = Users.objects.filter(usernameId = userId).values()
-        output = [{"usernameId":output.usernameId,
-                  "email":output.email,
-                  "coins":output.coins,
-                  "farmHouseLevel":output.farmHouseLevel,
-                  "x":output.x,
-                  "y":output.y}
-                  for output in UserFarm.objects.filter(usernameId = request.GET.get('usernameId'))]
-        return Response(output)
-    #@csrf_exempt
+        username = request.GET.get("usernameId")
+        print(username)
+        user = UserFarm.objects.filter(usernameId = username)
+        print(user)
+        serializer = UserFarmSerializer(user, many=True)
+        return Response(serializer.data)
+
     def post (self, request):
         #print(request, "\n", data, "\n\n")
-
         serializer = UserFarmSerializer(data=request.data)
         username = request.data.get("usernameId")
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             new_user = serializer.save()
             UserSeeds.objects.create(
                 usernameId = new_user
@@ -66,6 +53,7 @@ class UserFarmView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request):
         print(" delete request::::::::::::::::::::",request)
         print(request.data)
@@ -81,50 +69,173 @@ class UserFarmView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class MoneyPartialView(UpdateAPIView):
+    queryset = UserFarm.objects.all()
+    def update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        try:
+            username = request.data.get('usernameId')
+            userfarm = UserFarm.objects.get(usernameId=username)
+            print(username)
+        except UserFarm.DoesNotExist:
+            return Response({"error": "UserFarm not found"}, status = status.HTTP_400_BAD_REQUEST) 
+        serializer = UserFarmSerializer(userfarm, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(**serializer.validated_data)
 
 
-class MoneyView(APIView):
+        return Response(status = status.HTTP_200_OK)
+
+class HouseView(APIView):
      def post(self, request):
         usernameId = request.data.get('usernameId', None)
         print(usernameId)
         coins = request.data.get('coins', None)
-        if usernameId is None or coins is None:
-            return Response({"error": "Username or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        if usernameId is None:
+            return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = UserFarm.objects.get(usernameId=usernameId)
-            user.coins = coins
-            user.save()
-            return Response({"message": f"Money updated successfully for user {usernameId}"}, status=status.HTTP_200_OK)
+            user = UserFarm.objects.get(usernameId = usernameId)
+            if coins is None:
+                xIn = request.data.get("x"),
+                yIn = request.data.get("y"),
+                level = request.data.get("farmHouseLevel")
+                if xIn is None or yIn is None or level is None:
+                    return Response({"error": "Inadequate data provided"}, status=status.HTTP_400_BAD_REQUEST)
+                email = user.email
+                coins = user.coins
+                user.delete()
+                updated = UserFarm.objects.create(
+                    usernameId = usernameId,
+                    farmHouseLevel = request.data.get("farmHouseLevel"),
+                    x = request.data.get("x"),
+                    y = request.data.get("y"),
+                    email = email,
+                    coins = coins
+                )
+                updated.save()
+            else:
+                level = user.farmHouseLevel
+                x = user.x
+                y = user.y
+                email = user.email
+                user.delete()
+                updated = UserFarm.objects.create(
+                    usernameId = usernameId,
+                    farmHouseLevel = level,
+                    x = x,
+                    y = y,
+                    email = email,
+                    coins = coins
+                )
+                updated.save()
+            return Response(status=status.HTTP_201_CREATED)
         except UserFarm.DoesNotExist:
             return Response({"error": f"User with username {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class HouseView(APIView):
-     def post(self, request):
-        usernameId = request.data.get('usernameId', None)
-        farmHouseLevel = request.data.get('farmHouseLevel', 1)
-        farm_x = request.data.get('x', 70)
-        farm_y = request.data.get('y', 570)
-        coins = request.data.get('coins')
-        if usernameId is None:
-            return Response({"error": "Username not provided"}, status=status.HTTP_400_BAD_REQUEST)
+class UserSeedsView(APIView):
+    def get(self, request):
+        username = request.GET.get("usernameId")
+        print(username)
+        user = UserFarm.objects.get(usernameId = username)
+        userSeeds = UserSeeds.objects.filter(usernameId = user)
+        serializer = UserSeedsSerializer(userSeeds, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        username = request.data.get("usernameId")
         try:
-            user = UserFarm.objects.filter(usernameId=usernameId)
-            user.delete()
-            user = UserFarm.objects.create(usernameId=usernameId)
-            user.farmHouseLevel = farmHouseLevel
-            user.x = farm_x
-            user.y = farm_y
-            user.coins = coins
-            user.save()
-            return Response({"message": f"Money updated successfully for user {usernameId}"}, status=status.HTTP_200_OK)
+            user = UserFarm.objects.get(usernameId = username)
+            tomato = request.data.get('tomato')
+            sunflower = request.data.get('sunflower')
+            carrot = request.data.get("carrot")
+            pumpkin = request.data.get("pumpkin")
+            tulip = request.data.get("tulip")
+            userInstance = UserSeeds.objects.get(usernameId=user)
+            if tomato is None or sunflower is None or carrot is None or pumpkin is None or tulip is None:
+                return Response({"error": "Insufficient crop fields given"}, status=status.HTTP_400_BAD_REQUEST)
+            userInstance.delete()
+            newSeeds = UserSeeds.objects.create(
+                usernameId = user,
+                tomato = tomato,
+                carrot = carrot,
+                sunflower = sunflower,
+                pumpkin = pumpkin,
+                tulip = tulip
+                )
+            newSeeds.save()
+            return Response(status=status.HTTP_200_OK)
+        except UserSeeds.DoesNotExist:
+            userSeeds = UserSeeds.objects.create(
+                usernameId = user,
+                tomato = tomato,
+                carrot = carrot,
+                sunflower = sunflower,
+                pumpkin = pumpkin,
+                tulip = tulip
+                )
+            userSeeds.save()
+            return Response(status=status.HTTP_200_OK)
         except UserFarm.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            
+        
+    def delete(self, request):
+        usernameId = request.data.get('usernameId', None)
+        if usernameId is None:
+            return Response({"error": "usernameId not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = UserSeeds.objects.get(usernameId=usernameId)
+            user.delete()
+            return Response({"message": f"User with usernameId {usernameId} deleted successfully"}, status=status.HTTP_200_OK)
+        except UserDecorations.DoesNotExist:
             return Response({"error": f"User with usernameId {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class UserPlotsView(APIView):
+    def get(self, request):
+        username = request.GET.get('usernameId')
+        userPlots = UserPlots.objects.filter(usernameId = username)
+        serializer = UserPlotsSerializer(userPlots, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        user = request.data.get('usernameId')
+        plotid = request.data.get('plotId')
+        serializer = UserPlotsSerializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except ValidationError as e:
+            if "unique set" in str(e):
+                try:
+                    userPlotInstance = UserPlots.objects.get(usernameId=user, plotId = plotid)
+                    print()
+                    userPlotInstance.delete()
+                    serializer = UserPlotsSerializer(data=request.data)
+                    serializer.is_valid(raise_exception=True)
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                except UserPlots.DoesNotExist:
+                    return Response({"error": "Plot can't be replaced with given username and plotId"}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+    def delete(self, request):
+            plotId = request.data.get('plotId', None)
+            usernameId = request.data.get('usernameId', None)
 
+            if plotId is None or usernameId is None:
+                return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                plot = UserPlots.objects.get(plotId=plotId, usernameId=usernameId)
+                plot.delete()
+                return Response({"message": f"Task with name {plotId} deleted successfully"}, status=status.HTTP_200_OK)
+            except UserPlots.DoesNotExist:
+                return Response({"error": f"Task with name {plotId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class TasksView(APIView):
     def get(self, request):
@@ -135,22 +246,32 @@ class TasksView(APIView):
     def post (self, request):
         user = request.data.get('usernameId')
         plotid = request.data.get('plotId')
+        serializer = TasksSerializer(data=request.data)
         try:
-            userInstance = Tasks.objects.get(usernameId=user, plotId=plotid)
-            userInstance.delete()
-            task = Tasks.objects.create(request.data)
-        except Tasks.DoesNotExist:
-            print("Task not found, making new")
-            serializer = TasksSerializer(data=request.data)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(serializer.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except ValidationError as e:
+            if "unique set" in str(e):
+                try:
+                    userTaskInstance = Tasks.objects.get(usernameId=user, plotId=plotid)
+                    userTaskInstance.delete()
+                    serializer = TasksSerializer(data=request.data)
+                    serializer.is_valid(raise_exception=True)
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                except Tasks.DoesNotExist:
+                    return Response({"error": "Task can't be replaced with given username and plotId"}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                print(e)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+
     def delete(self, request):
         plotId = request.data.get('plotId', None)
         username = request.data.get('usernameId', None)
 
         if plotId is None or usernameId is None:
-            return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Insufficient Task fields provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             task = Tasks.objects.get(plotId=plotId, usernameId=username)
             task.delete()
@@ -159,20 +280,6 @@ class TasksView(APIView):
             return Response({"error": f"Task with name {plotId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-# class IncreasePomodoroView(APIView):
-#      def post(self, request):
-#         usernameId = request.data.get('usernameId', None)
-#         plotId=request.data.get('plotId', None)
-#         if usernameId is None or plotId is None:
-#             return Response({"error": "usernameId or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
-#         try:
-#             Tasks.objects.filter(usernameId=usernameId, plotId=plotId).update(pomodorosCompleted=F('pomodorosCompleted') + 1)
-#             return Response({"message": f"Task status updated successfully for user {usernameId}"}, status=status.HTTP_200_OK)
-#         except Users.DoesNotExist:
-#             return Response({"error": f"User with usernameId {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
-#         except Exception as e:
-#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserDatesView(APIView):
     def get(self, request):
@@ -214,159 +321,83 @@ class UserDecorationsView(APIView):
         print(serializer)
         return Response(serializer.data)
     def post(self, request):
-        print(request.data)
-        user = request.data.get('usernameId', None)
-        type = request.data.get('type', None)
-        try:
-            userInstance = UserDecorations.objects.get(usernameId=user, type=type)
-            userInstance.delete()
-
-        except UserDecorations.DoesNotExist:
-            print("user decoration not found, making new")
+        user = request.data.get('usernameId')
+        decType = request.data.get('type')
+        print(user, decType)
         serializer = UserDecorationsSerializer(data=request.data)
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        except ValidationError as e:
+            if "unique set" in str(e):
+                try:
+                    userDecInstance = UserDecorations.objects.get(usernameId=user, type=decType)
+                    userDecInstance.delete()
+                    serializer = UserDecorationsSerializer(data=request.data)
+                    serializer.is_valid(raise_exception=True)
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                except UserDecorations.DoesNotExist:
+                    return Response({"error": "Decoration can't be replaced with given username and plotId"}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     def delete(self, request):
-            type = request.data.get('type', None)
-            usernameId = request.data.get('usernameId', None)
-
-            if type is None or usernameId is None:
-                return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
-            try:
-                plot = UserDecorations.objects.get(type=type, usernameId=usernameId)
-                plot.delete()
-                return Response({"message": f"Task with name {type} deleted successfully"}, status=status.HTTP_200_OK)
-            except UserDecorations.DoesNotExist:
-                return Response({"error": f"Task with name {type} does not exist"}, status=status.HTTP_404_NOT_FOUND)
-            except Exception as e:
-                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class UserPlotsView(APIView):
-    def get(self, request):
-        username = request.GET.get('usernameId')
-        userPlots = UserPlots.objects.filter(usernameId = username)
-        serializer = UserPlotsSerializer(userPlots, many=True)
-        print(username, serializer, userPlots)
-        return Response(serializer.data)
-    def post(self, request):
-        print("plots request::::::::::", request.data)
-        user = request.data.get('usernameId')
-        plotid = request.data.get('plotId')
-        try:
-            userInstance = UserPlots.objects.get(usernameId=user, plotId=plotid)
-            userInstance.crop = request.data.get("crop")
-            userInstance.growthStage = request.data.get("growthStage")
-            userInstance.growthStage = request.data.get("growthStage")
-            userInstance.growthStep = request.data.get("growthStep")
-            userInstance.x = request.data.get("x")
-            userInstance.y = request.data.get("y")
-            userInstance.placed = request.data.get("placed")
-            userInstance.save()
-            return Response(status=status.HTTP_201_CREATED)
-        
-        except UserPlots.DoesNotExist:
-            print("user plot not found, making new")
-            serializer = UserPlotsSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
-    def delete(self, request):
-            plotId = request.data.get('plotId', None)
-            usernameId = request.data.get('usernameId', None)
-
-            if plotId is None or usernameId is None:
-                return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
-            try:
-                plot = UserPlots.objects.get(plotId=plotId, usernameId=usernameId)
-                plot.delete()
-                return Response({"message": f"Task with name {plotId} deleted successfully"}, status=status.HTTP_200_OK)
-            except UserPlots.DoesNotExist:
-                return Response({"error": f"Task with name {plotId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
-            except Exception as e:
-                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class UserSeedsView(APIView):
-    def get(self, request):
-        username = request.GET.get("usernameId")
-        print(username)
-        user = UserFarm.objects.get(usernameId = username)
-        userSeeds = UserSeeds.objects.filter(usernameId = user)
-        serializer = UserSeedsSerializer(userSeeds, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        username = request.data.get("usernameId")
-        user = UserFarm.objects.get(usernameId = username)
-        try:
-            userInstance = UserSeeds.objects.get(usernameId=user)
-            userInstance.tomato = request.data.get('tomato')
-            userInstance.sunflower = request.data.get('sunflower')
-            userInstance.carrot = request.data.get("carrot")
-            userInstance.pumpkin = request.data.get("pumpkin")
-            userInstance.tulip = request.data.get("tulip")
-            userInstance.save()
-            return Response(status=status.HTTP_200_OK)
-        except UserSeeds.DoesNotExist:
-            print("user seeds not found")
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-            ##return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-            
-        
-    def delete(self, request):
+        type = request.data.get('type', None)
         usernameId = request.data.get('usernameId', None)
-        if usernameId is None:
-            return Response({"error": "usernameId not provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if type is None or usernameId is None:
+            return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = UserSeeds.objects.get(usernameId=usernameId)
-            user.delete()
-            return Response({"message": f"User with usernameId {usernameId} deleted successfully"}, status=status.HTTP_200_OK)
+            plot = UserDecorations.objects.get(type=type, usernameId=usernameId)
+            plot.delete()
+            return Response({"message": f"Task with name {type} deleted successfully"}, status=status.HTTP_200_OK)
         except UserDecorations.DoesNotExist:
-            return Response({"error": f"User with usernameId {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": f"Task with name {type} does not exist"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 
 class UserFurnitureView(APIView):
     def get(self, request):
         username = request.GET.get('usernameId')
         userFurniture = UserFurniture.objects.filter(usernameId = username)
         serializer = UserFurnitureSerializer(userFurniture, many=True)
-        #print(serializer)
         return Response(serializer.data)
 
     def post(self, request):
         user = request.data.get('usernameId')
-        type = request.data.get('type')
-        try:
-            userInstance = UserFurniture.objects.get(usernameId=user, type=type)
-            userInstance.delete()
-        except UserFurniture.DoesNotExist:
-            print("user furniture not found, making new")
+        furnType = request.data.get('type')
         serializer = UserFurnitureSerializer(data=request.data)
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as e:
+            if "unique set" in str(e):
+                try:
+                    userFurnInstance = UserFurniture.objects.get(usernameId=user, type=furnType)
+                    userFurnInstance.delete()
+                    serializer = UserFurnitureSerializer(data=request.data)
+                    serializer.is_valid(raise_exception=True)
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                except UserFurniture.DoesNotExist:
+                    return Response({"error": "Furniture can't be replaced with given username and plotId"}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
     def delete(self, request):
-            type = request.data.get('type', None)
-            usernameId = request.data.get('usernameId', None)
-
-            if type is None or usernameId is None:
-                return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
-            try:
-                furniture = UserFurniture.objects.get(type=type, usernameId=usernameId)
-                furniture.delete()
-                return Response({"message": f"Furniture with name {type} deleted successfully"}, status=status.HTTP_200_OK)
-            except UserFurniture.DoesNotExist:
-                return Response({"error": f"Furniture with name {type} does not exist"}, status=status.HTTP_404_NOT_FOUND)
-            except Exception as e:
-                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        type = request.data.get('type', None)
+        usernameId = request.data.get('usernameId', None)
+        if type is None or usernameId is None:
+            return Response({"error": "Task name not provided"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            furniture = UserFurniture.objects.get(type=type, usernameId=usernameId)
+            furniture.delete()
+            return Response({"message": f"Furniture with name {type} deleted successfully"}, status=status.HTTP_200_OK)
+        except UserFurniture.DoesNotExist:
+            return Response({"error": f"Furniture with name {type} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
@@ -382,22 +413,47 @@ class UserSettingsView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        user = request.data.get('usernameId')
+        username = request.data.get('usernameId')
+        user = UserFarm.objects.get(usernameId = username)
         try:
+            pomTimer = request.data.get('workTime')
+            shortBreak = request.data.get('shortBreakTime')
+            longBreak = request.data.get('longBreakTime')
+            longBreakInterval = request.data.get('longBreakInterval')
+            autoStartPom = request.data.get('autoStartPomodoro')
+            autoStartBreak = request.data.get('autoStartBreak')
+            fontSize = request.data.get('fontSize')
+            fontStyle = request.data.get('font')
             userInstance = UserSettings.objects.get(usernameId=user)
-            userInstance.pomTimer = request.data.get('workTime')
-            userInstance.shortBreak = request.data.get('shortBreakTime')
-            userInstance.longBreak = request.data.get('longBreakTime')
-            userInstance.longBreakInterval = request.data.get('longBreakInterval')
-            userInstance.autoStartPom = request.data.get('autoStartPomodoro')
-            userInstance.autoStartBreak = request.data.get('autoStartBreak')
-            userInstance.fontSize = request.data.get('fontSize')
-            userInstance.fontStyle = request.data.get('font')
-            userInstance.save()
+            userInstance.delete()
+            newSettings = UserSettings.objects.create(
+                usernameId = user,
+                pomTimer = pomTimer,
+                shortBreak = shortBreak,
+                longBreak = longBreak,
+                longBreakInterval = longBreakInterval,
+                autoStartPom = autoStartPom,
+                autoStartBreak = autoStartBreak,
+                fontSize = fontSize,
+                fontStyle = fontStyle
+            )
+            newSettings.save()
             return Response(status=status.HTTP_201_CREATED)
         except UserSettings.DoesNotExist:
-            print("No User settings found")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            userInstance = UserSettings.objects.create(
+                usernameId = user,
+                pomTimer = pomTimer,
+                shortBreak = shortBreak,
+                longBreak = longBreak,
+                longBreakInterval = longBreakInterval,
+                autoStartPom = autoStartPom,
+                autoStartBreak = autoStartBreak,
+                fontSize = fontSize,
+                fontStyle = fontStyle,
+                )
+            userInstance.save()
+            print("No User settings found - creating new")
+            return Response(status=status.HTTP_201_CREATED)
             #return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = UserSettingsSerializer(data=request.data)
         if serializer.is_valid():
@@ -453,92 +509,3 @@ class PomodoroStatsView(APIView):
         # ]
         # response_data = data
         return JsonResponse(response_data, safe=False)
-
-
-# class TaskCompletedView(APIView):
-#      def post(self, request):
-#         username = request.data.get('usernameId', None)
-#         plotId = request.data.get('plotId', None)
-#         if usernameId is None or plotId is None:
-#             return Response({"error": "usernameId or amount of money not provided"}, status=status.HTTP_400_BAD_REQUEST)
-#         try:
-#             Tasks.objects.filter(usernameId=username, plotId=plotId).update(completed=True)
-#             return Response({"message": f"Task completed successfully for user {usernameId}"}, status=status.HTTP_200_OK)
-#         except Users.DoesNotExist:
-#             return Response({"error": f"User with usernameId {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
-#         except Exception as e:
-#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-# class PlotView(APIView):
-#      def post(self, request):
-#         usernameId = request.data.get('usernameId', None)
-#         plots = request.data.get('plots', None)
-#         if usernameId is None:
-#             return Response({"error": "usernameId not provided"}, status=status.HTTP_400_BAD_REQUEST)
-#         try:
-#             user = Users.objects.get(usernameId=usernameId)
-#             user.plots = plots
-#             user.save()
-#             return Response({"message": f"Plots updated successfully for user {usernameId}"}, status=status.HTTP_200_OK)
-#         except Users.DoesNotExist:
-#             return Response({"error": f"User with usernameId {usernameId} does not exist"}, status=status.HTTP_404_NOT_FOUND)
-#         except Exception as e:
-#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-# class DecorationsView(APIView):
-
-#     def post(self, request):
-#         serializer = DecorationsSerializer(data=request.data)
-#         if not serializer.is_valid():  # 检查序列化器是否有效
-#             print(serializer.errors)  # 打印错误信息
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # 返回错误信息和400状态码
-
-#         # 如果数据有效，保存装饰项并返回成功响应
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#     def get(self, request):
-#         output = [{"name":output.name,
-#                   "price":output.price}
-#                   for output in Decorations.objects.all()]
-#         return Response(output)
-#     # def post (self, request):
-#     #     serializer = DecorationsSerializer(data=request.data)
-#     #     if serializer.is_valid(raise_exception=True):
-#     #         serializer.save()
-#     #         return Response(serializer.data)
-#     def delete(self, request):
-#         name = request.data.get('name', None)
-#         if name is None:
-#             return Response({"error": "Decoration name not provided"}, status=status.HTTP_400_BAD_REQUEST)
-#         try:
-#             decoration = Decorations.objects.get(name=name)
-#             decoration.delete()
-#             return Response({"message": f"Decoration with name {name} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-#         except Decorations.DoesNotExist:
-#             return Response({"error": f"Decoration with name {name} does not exist"}, status=status.HTTP_404_NOT_FOUND)
-#         except Exception as e:
-#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-# class CropsView(APIView):
-#     def get(self, request):
-#         output = [{"name":output.name,
-#                   "price":output.price,
-#                   "worth":output.worth}
-#                   for output in Crops.objects.all()]
-#         return Response(output)
-#     def post (self, request):
-#         serializer = CropsSerializer(data=request.data)
-#         if serializer.is_valid(raise_exception=True):
-#             serializer.save()
-#             return Response(serializer.data)
-#     def delete(self, request):
-#         name = request.data.get('name', None)
-#         if name is None:
-#             return Response({"error": "Crop not provided"}, status=status.HTTP_400_BAD_REQUEST)
-#         try:
-#             crop = Crops.objects.get(name=name)
-#             crop.delete()
-#             return Response({"message": f"Crop with name {name} deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-#         except Crops.DoesNotExist:
-#             return Response({"error": f"Crop with name {name} does not exist"}, status=status.HTTP_404_NOT_FOUND)
-#         except Exception as e:
-#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-

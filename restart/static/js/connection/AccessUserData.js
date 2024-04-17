@@ -98,7 +98,7 @@ export default class AccessUserData {
     //changing data:
 
     static amendCoins(usernameId, coins) {
-        UserData.updateUserMoney(usernameId, coins);
+        UserData.updateUserMoney({usernameId: usernameId, coins: coins});
     }
     static amendHouseState(farmState) {
         UserData.updateHouse(farmState);

@@ -225,19 +225,6 @@ export default class Utility {
     //       return this.data;
     // }
 
-    static updateTaskProgress(plotID, step) {
-
-    }
-
-    static getPlotData() {
-        //get plot data specifically
-    }
-    static getFurnitureData() {
-        //get furniture data specifically
-    }
-    static getCropOwnedData() {
-        //get owned crops data
-    }
 
     static getWorkingState() {
         return this.working;

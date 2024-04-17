@@ -24,6 +24,7 @@ export default class MarketScene extends Phaser.Scene {
         editButton.style.display = 'none';
 
         this.farm = this.scene.get('FarmScene').farm;
+        this.farmhouse = this.scene.get('InsideFarmhouseScene');
 
         this.allFurniture = [
             { type: 'bookshelf', price: 100 },
@@ -94,7 +95,7 @@ export default class MarketScene extends Phaser.Scene {
 
 
                 let userFurniture = []
-                for(let furniture of this.farm.furniture) {
+                for(let furniture of this.farmhouse.furniture) {
                     userFurniture.push(furniture.type);
                 }
 
@@ -140,7 +141,7 @@ export default class MarketScene extends Phaser.Scene {
                                 this.farm.updateCoins(-furniture.price);
                                 let insideFarmhouseScene = this.scene.get('InsideFarmhouseScene');
                                 let farmScene = this.scene.get('FarmScene');
-                                farmScene.farm.addFurnitureToInventory(insideFarmhouseScene, furniture.type);
+                                farmScene.farm.addFurnitureToInventory(furniture.type);
                                 let furnitureShopContainer = document.getElementById('furniture-shop-container');
                                 while (furnitureShopContainer.firstChild) {
                                     furnitureShopContainer.removeChild(furnitureShopContainer.firstChild);
@@ -435,13 +436,10 @@ class Shop extends Phaser.GameObjects.Sprite {
 class Item {
     // represents a seedbag from the html
     constructor(name) {
-        const self = this;
-        console.log(name);
         this.name = name;
         this.button = document.getElementById(this.name+"-button");
         this.buttonPrice = this.button.getElementsByTagName("span")[0];
         this.price = 0;
-        console.log(this.button);
         if (this.button) {
             this.price = this.buttonPrice.innerText;
             console.log(this.price)
