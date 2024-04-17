@@ -1669,6 +1669,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
             if (this.workFlag) {
                 this.scene.events.emit('pomodoroSkipped');
                 this.timer1.paused = true;
+                this.savePomState();
                 Utility.setWorkingState(false);
             }
             console.log('work flag', this.workFlag)
