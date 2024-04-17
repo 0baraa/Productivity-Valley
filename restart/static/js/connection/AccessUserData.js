@@ -21,8 +21,7 @@ export default class AccessUserData {
         let userSettings;
         if (!userFarm || userFarm.length == 0) {
             console.log("no user found creating new one");
-            userFarm = {usernameId: currentUsername, coins: 0, farmHouseLevel: 1, x: 70, y: 570};
-            return UserData.createUser({usernameId: currentUsername})
+            UserData.createUser({usernameId: currentUsername})
             .then (bool => {
                 console.log(bool)
                 location.reload();
@@ -33,6 +32,8 @@ export default class AccessUserData {
                 alert("Could not find or create Data for you. You are in Guest Mode.")
                 return this.loadDefaults(404, null, null, null, null, null)
             });
+            userFarm = {usernameId: currentUsername, coins: 0, farmHouseLevel: 1, x: 70, y: 570};
+            return this.loadDefaults(userFarm, null, null, null, null, null)
         }
         else {
             userSeeds = await UserData.fetchUserSeeds(currentUsername)
