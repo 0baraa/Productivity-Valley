@@ -11,6 +11,10 @@ export default class AccessUserData {
         // console.log("passing new user", newUser);
         // UserData.createUser(newUser);
         //await UserData.deleteUser('mrsandman')
+        
+        if (currentUsername == "") {
+            return this.loadDefaults()
+        }
         let userFarm = await UserData.fetchUserFarm(currentUsername)
         console.log(userFarm);
         let userSeeds;
@@ -30,9 +34,8 @@ export default class AccessUserData {
             .catch(error => {
                 console.error("Error creating UserFarm: ", error)
                 alert("Could not find or create Data for you. You are in Guest Mode.")
-                return this.loadDefaults(404, null, null, null, null, null)
+                return this.loadDefaults(null, null, null, null, null, null)
             });
-            userFarm = {usernameId: currentUsername, coins: 0, farmHouseLevel: 1, x: 70, y: 570};
             return this.loadDefaults(userFarm, null, null, null, null, null)
         }
         else {
@@ -52,9 +55,10 @@ export default class AccessUserData {
         }
     }
     static loadDefaults(userFarm, userSeeds, tasks, userDecs, userFurniture, userPlots, userSettings){
-        if (userFarm === 404) {
+        
+        if (userFarm == null) {
             console.log("Hello Guest")
-            userFarm = {usernameId: "guest", coins: 999999, farmHouseLevel: 1, x: 70, y: 570}
+            userFarm = {usernameId: "guest", coins: 0, farmHouseLevel: 1, x: 70, y: 570}
 
             //window.location.replace()
         }

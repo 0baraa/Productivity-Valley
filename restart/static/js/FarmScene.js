@@ -1944,17 +1944,17 @@ class PlayerFarm {
         this.loadOwnedSeeds(data.seedsOwned);
         this.createPlots(data.plots);
         this.createTasks(data.tasks);
+        this.sortTasksAndPlots();
         this.createDecorations(data.decorations);
         this.createFarmhouse(data.userFarm);
         this.showCoins(data.userFarm.coins);
         this.loadSettings(data.userSettings);
-        this.sortTasksAndPlots();
     }
 
     sortTasksAndPlots() {
         console.log(this.plots, this.tasks)
-        this.plots = this.insertionSort(this.plots);
-        this.tasks = this.insertionSort(this.tasks);
+        this.plots = this.plots.length > 0 ? this.insertionSort(this.plots) : [];
+        this.tasks = this.tasks.length > 0 ? this.insertionSort(this.tasks) : [];
         
         console.log(this.plots, this.tasks)
     }
@@ -2106,7 +2106,7 @@ class PlayerFarm {
         document.getElementById("longBreakInterval").value = settingsConfig.longBreakInterval;
         document.getElementById("autoStartBreak").checked = settingsConfig.autoStartBreak;
         document.getElementById("autoStartPomodoro").checked = settingsConfig.autoStartPomodoro;
-        this.scene.pomodoro.updateTimeSettings(true)
+        
         console.log(settingsConfig.fontStyle);
         switch(settingsConfig.fontStyle) {
             case "pixel":
@@ -2154,6 +2154,7 @@ class PlayerFarm {
         else {
             document.documentElement.style.setProperty('--scale-factor', '1');
         }
+        this.scene.pomodoro.updateTimeSettings(true)
     }
 
     addFurnitureToInventory(type) {
