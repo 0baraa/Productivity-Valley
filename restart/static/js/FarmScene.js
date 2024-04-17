@@ -2036,6 +2036,7 @@ class PlayerFarm {
         document.getElementById("longBreakInterval").value = settingsConfig.longBreakInterval;
         document.getElementById("autoStartBreak").checked = settingsConfig.autoStartBreak;
         document.getElementById("autoStartPomodoro").checked = settingsConfig.autoStartPomodoro;
+        this.scene.pomodoro.updateTimeSettings(true)
         console.log(settingsConfig.fontStyle);
         switch(settingsConfig.fontStyle) {
             case "pixel":
