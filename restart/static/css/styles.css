@@ -225,22 +225,22 @@ select {
 
 #settings-icon-container img {
     cursor: pointer;
-    width: 40px;
+    width: calc(40px * var(--scale-factor));
     margin-right: 10px;
-    height: 40px;
+    height: calc(40px * var(--scale-factor));
 }
 
 #soundToggle img {
     cursor: pointer;
-    width: 40px;
-    height: 40px;
+    width: calc(40px * var(--scale-factor));
+    height: calc(40px * var(--scale-factor));
 }
 
 #home-icon-container img {
     cursor: pointer;
     margin-right: 10px;
-    width: 40px;
-    height: 40px;
+    width: calc(40px * var(--scale-factor));
+    height: calc(40px * var(--scale-factor));
 }
 
 .coins-container {
