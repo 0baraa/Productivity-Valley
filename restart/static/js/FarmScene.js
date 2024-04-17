@@ -1300,9 +1300,11 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         }
     }
 
-    updateTimeLeft(timeIn) {
+    updateTimeLeft(timeIn, elapsedTime) {
         this.totalTimeInSeconds = timeIn; 
-        this.remainingTime = timeIn;
+        console.log(this.timeElapsed);
+        this.remainingTime = timeIn - elapsedTime;
+        console.log(this.remainingTime);
         this.updateTimeString()
     }
 
@@ -1481,11 +1483,12 @@ class Pomodoro extends Phaser.GameObjects.Container {
                         updateTime = this.longBreakTime;
                         break;
                 }
-                this.timer1.updateTimeLeft(updateTime)
+                this.timer1.updateTimeLeft(updateTime, task.time)
                 //this.timer1.
-                this.scene.farm.plots[this.scene.selector.plotSelected].pauseGrowth()
-                this.scene.farm.plots[this.scene.selector.plotSelected].playGrowth()
-                
+                if (!this.pauseFlag){
+                    this.scene.farm.plots[this.scene.selector.plotSelected].pauseGrowth()
+                    this.scene.farm.plots[this.scene.selector.plotSelected].playGrowth()
+                }
 
             }
             catch (err) {
