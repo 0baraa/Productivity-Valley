@@ -477,26 +477,29 @@ export default class FarmScene extends Phaser.Scene {
                 for(let plot of this.farm.plots){
                     let plotButton = document.getElementById(plot.plotId + '-button');
                     if(plotButton){
-                for (let plot of this.farm.plots) {
-                    let plotButton = document.getElementById(plot.id + '-button');
-                    if (plotButton) {
-                        plotButton.onclick = () => {
-                            plot.placed = true;
-                            plot.setVisible(true);
-                            plot.setActive(true);
-                            plot.x = 320;
-                            plot.y = 620;
-                            // Clear the decorations and plot containers
-                            let decorationContainer = document.getElementById('decoration-container');
-                            while (decorationContainer.firstChild) {
-                                decorationContainer.removeChild(decorationContainer.firstChild);
+                        for (let plot of this.farm.plots) {
+                            let plotButton = document.getElementById(plot.id + '-button');
+                            if (plotButton) {
+                                plotButton.onclick = () => {
+                                    plot.placed = true;
+                                    plot.setVisible(true);
+                                    plot.setActive(true);
+                                    plot.x = 320;
+                                    plot.y = 620;
+                                    // Clear the decorations and plot containers
+                                    let decorationContainer = document.getElementById('decoration-container');
+                                    while (decorationContainer.firstChild) {
+                                        decorationContainer.removeChild(decorationContainer.firstChild);
+                                    }
+                                    let plotContainer = document.getElementById('plot-container');
+                                    while (plotContainer.firstChild) {
+                                        plotContainer.removeChild(plotContainer.firstChild);
+                                    }
+                                    Utility.toggleMenu(this, "decorationPlotMenu");
+                                    
+                                };
                             }
-                            let plotContainer = document.getElementById('plot-container');
-                            while (plotContainer.firstChild) {
-                                plotContainer.removeChild(plotContainer.firstChild);
-                            }
-                            Utility.toggleMenu(this, "decorationPlotMenu");
-                        };
+                        }
                     }
                 }
 
@@ -558,7 +561,7 @@ export default class FarmScene extends Phaser.Scene {
                 }
                 Utility.toggleMenu(this, "decorationPlotMenu");
             }
-        });
+    });
 
         tickButton.addEventListener('click', () => {
             if (Utility.isDeleteMode()) {
@@ -755,7 +758,6 @@ export default class FarmScene extends Phaser.Scene {
         this.events.on('pomodoroResumed', this.playPlot, this);
         this.events.on('pomodoroPaused', this.pausePlot, this);
         this.events.on('pomodoroSkipped', this.pausePlot, this);
-        this.events.on('pomodoroFinished', this.incrementPomodoroCount), this;
         this.events.on('taskCompleted', this.completePlot, this);
 
         this.events.on('harvestCrops', this.harvestPlot, this);
@@ -1926,7 +1928,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
 
 // A PlayerFarm object will store the state of everything specific to a user on the website
 class PlayerFarm {
-    constructor(scene) {
+    constructor(scene, data) {
         // load playerstate from database
         this.scene = scene;
         this.coins = 0;
@@ -1937,9 +1939,6 @@ class PlayerFarm {
         this.farmhouse = null;
         this.seedsOwned = [];
 
-        console.log(data);
-        console.log(data.userFarm);
-        console.log()
         if (data.userFarm.usernameId == "guest") 
             {   this.userName = null}
         else{   this.userName = currentUsername;}
