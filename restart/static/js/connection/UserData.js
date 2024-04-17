@@ -276,7 +276,7 @@ export default class UserData {     //works
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                console.log('User crop deleted successfully');
+                console.log('User task deleted successfully');
             })
             .catch(error => {
                 console.error('Error deleting user task:', error);
@@ -338,7 +338,7 @@ export default class UserData {     //works
 
         return await axios.get(userSettTable, {
             params: {
-                usernameId_id: usernameId
+                usernameId: usernameId
             }
         }).then(response => {
             console.log("successful access od data Users settings")
@@ -355,7 +355,7 @@ export default class UserData {     //works
             headers: {'X-CSRFToken': csrftoken},
         })
             .then(response => {
-                console.log('Crop added successfully:', response.data);
+                console.log('Settings added successfully:', response.data);
             })
             .catch(error => {
                 console.error('Error adding settings for user:', error);

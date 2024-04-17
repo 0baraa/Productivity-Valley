@@ -1300,6 +1300,12 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
         }
     }
 
+    updateTimeLeft(timeIn) {
+        this.totalTimeInSeconds = timeIn; 
+        this.remainingTime = timeIn;
+        this.updateTimeString()
+    }
+
     updateTimeString() {
         // Calculate hours, minutes, and remaining seconds
         const hours = Math.floor(this.remainingTime / 3600);
@@ -1467,12 +1473,15 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 switch (task.timerState) {
                     case 0:
                         updateTime = this.workTime;
+                        break;
                     case 1:
                         updateTime = this.shortBreakTime;
+                        break;
                     case 2:
                         updateTime = this.longBreakTime;
+                        break;
                 }
-                this.timer1.totalTimeInSeconds = updateTime
+                this.timer1.updateTimeLeft(updateTime)
                 //this.timer1.
                 this.scene.farm.plots[this.scene.selector.plotSelected].pauseGrowth()
                 this.scene.farm.plots[this.scene.selector.plotSelected].playGrowth()
@@ -1685,16 +1694,16 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 case 0: 
                     this.workFlag = true;
                     this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.workTime, this.workTime, 0, this, this.pauseFlag, 0xffa500).setDepth(-2);
+                    break;
                 case 1:
                     this.workFlag = false;
                     this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.shortBreakTime, this.shortBreakTime, 0, this, this.pauseFlag, 0x7CFC00).setDepth(-2);
-           
+                    break;
                 case 2:
                     this.workFlag = false;
                     this.longBreakInterval = this.initBreakInterval
                     this.timer1 = new AnalogTimer(this.scene, this.x, this.y, this.radius, this.longBreakTime, this.longBreakTime, 0, this, this.pauseFlag, 0x228B22).setDepth(-2)
-        
-                
+                    break;
             }
         }
         this.scene.events.emit("timerPaused");
@@ -1730,12 +1739,14 @@ class Pomodoro extends Phaser.GameObjects.Container {
             switch(task.timeState) {
                 case 0: 
                     this.workFlag = false;
+                    break;
                 case 1:
                     this.workFlag = true;
-
+                    break;
                 case 2:
                     this.workFlag = true;
                     this.longBreakInterval = 1
+                    break;
             }
             if (this.timer1) {
                 this.timer1.destroy()
@@ -2019,23 +2030,59 @@ class PlayerFarm {
     }
 
     loadSettings(settingsConfig) {
-        document.getElementById("workTime").value = settingsConfig.workTime;
-        document.getElementById("shortBreakTime").value = settingsConfig.shortBreakTime;
-        document.getElementById("longBreakTime").value = settingsConfig.longBreakTime;
+        document.getElementById("workTime").value = settingsConfig.pomTimer;
+        document.getElementById("shortBreakTime").value = settingsConfig.shortBreak;
+        document.getElementById("longBreakTime").value = settingsConfig.longBreak;
         document.getElementById("longBreakInterval").value = settingsConfig.longBreakInterval;
         document.getElementById("autoStartBreak").checked = settingsConfig.autoStartBreak;
         document.getElementById("autoStartPomodoro").checked = settingsConfig.autoStartPomodoro;
-        document.getElementById("fontStyle").value = settingsConfig.font;
-        let fontSize = document.getElementById("fontSize")
-        switch(settingsConfig.fontSize) {
-            case 0:
-                fontSize.value = "small"
-            case 1:
-                fontSize.value = "normal"
-            case 2:
-                fontSize.value = "large"
+        console.log(settingsConfig.fontStyle);
+        switch(settingsConfig.fontStyle) {
+            case "pixel":
+                document.getElementById("fontStyle").value = "pixel"
+                break;
+            case "standard":
+                document.getElementById("fontStyle").value = "standard"
+                break;
         }
-        //
+        switch(settingsConfig.fontSize) {
+            case 1:
+                document.getElementById("fontSize").value = "normal";
+                break;
+            case 2:
+                document.getElementById("fontSize").value = "large";
+                break;
+        }
+        
+        let fontStyle = document.getElementById("fontStyle").value;
+        let elements = document.querySelectorAll('button, input, select');
+
+        if (fontStyle == "standard") {
+            document.body.style.fontFamily = "Helvetica, sans-serif";
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].style.fontFamily = "Helvetica, sans-serif";
+            }
+            
+        } else if (fontStyle == "pixel") {
+            document.body.style.fontFamily = "pixel-font, Helvetica, sans-serif";
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].style.fontFamily = "pixel-font, Helvetica, sans-serif";
+            }
+        }
+        else {
+            document.body.style.fontFamily = "open-dyslexic, Helvetica, sans-serif";
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].style.fontFamily = "open-dyslexic, Helvetica, sans-serif";
+            }
+        }
+
+        let fontSize = document.getElementById("fontSize").value;
+        if(fontSize == "large") {
+            document.documentElement.style.setProperty('--scale-factor', '1.3');
+        }
+        else {
+            document.documentElement.style.setProperty('--scale-factor', '1');
+        }
     }
 
     addFurnitureToInventory(type) {
