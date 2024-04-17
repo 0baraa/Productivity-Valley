@@ -13,7 +13,7 @@ export default class AccessUserData {
         //await UserData.deleteUser('mrsandman')
         
         if (currentUsername == "") {
-            alert("guest mode isn't very functional rn (i tried loading defaults but no worky). much apologies");
+            alert("welcome to guest mode: please note that nothing from your session will be saved.");
             return this.loadDefaults()
         }
         let userFarm = await UserData.fetchUserFarm(currentUsername)

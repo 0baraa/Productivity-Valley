@@ -35,7 +35,7 @@ export default class FarmScene extends Phaser.Scene {
 
     preload() {
         // 辅助函数，自动添加 STATIC_URL 前缀
-        this.gatherData();
+        
         const loadStatic = (key, file) => this.load.image(key, STATIC_URL + file);
 
         // 对于特殊资源类型，如 bitmapFont 或 spritesheet，可以创建专门的辅助函数或直接使用 STATIC_URL
@@ -97,12 +97,18 @@ export default class FarmScene extends Phaser.Scene {
         loadStatic('play-button', 'assets/clock/play-button.png');
         loadStatic('pause-button', 'assets/clock/pause-button.png');
         loadStatic('skip-button', 'assets/clock/skip-button.png');
+        if (currentUsername != "") {
+            this.gatherData();
+        }
     }
 
 
 
     
     create() {
+        if (currentUsername == "") {
+            this.gatherData();
+        }
         // this.add.image(320, 550, 'farmBackground').setDepth(-2);
         this.add.image(320, 550, 'sky').setDepth(-5);
 
@@ -2018,11 +2024,9 @@ class PlayerFarm {
 
     createTasks(tasksData) {
         this.tasks = []
-        //console.log(tasksData);
         for (let i =0; i < 8; i++) {
             let subtasks = [];
             let subtasksCompleted = [];
-            console.log(tasksData[i])
             if (i < tasksData.length){
                 tasksData[i]['time'] = tasksData[i]['timerTime']
                 for (let j = 1; j <= 10; j++) {
@@ -2069,14 +2073,12 @@ class PlayerFarm {
 
     createDecorations(decorations) {
         for(let i = 0; i < decorations.length; i++){
-            console.log(decorations[i])
             let decoration = new Decoration({scene: this.scene, x: decorations[i].x, y: decorations[i].y, type: decorations[i].type, texture: decorations[i].type, placed: decorations[i].placed});
             this.decorations.push(decoration);
         }
     }
 
     createFarmhouse(data) {
-        //console.log('level' + data.farmHouseLevel + 'farmhouse')
         let sprite_texture = "level1farmhouse"
         if (data.farmHouseLevel == 2) {
             sprite_texture = "level2farmhouse"
@@ -2106,8 +2108,7 @@ class PlayerFarm {
         document.getElementById("longBreakInterval").value = settingsConfig.longBreakInterval;
         document.getElementById("autoStartBreak").checked = settingsConfig.autoStartBreak;
         document.getElementById("autoStartPomodoro").checked = settingsConfig.autoStartPomodoro;
-        
-        console.log(settingsConfig.fontStyle);
+
         switch(settingsConfig.fontStyle) {
             case "pixel":
                 document.getElementById("fontStyle").value = "pixel"
@@ -2348,7 +2349,6 @@ class Task {
         this.scene = config.scene;
         this.plotId = config.plotId;
         this.name = config.name;
-        console.log(config.elapsedTime);
         this.elapsedTime = config.elapsedTime || 0;
         this.pomodoros = config.pomodoros || 1;
         this.pomodorosCompleted = config.pomodorosCompleted || 0;
@@ -2393,8 +2393,6 @@ class Task {
         subtasksDiv.innerHTML = "";
         taskNameDiv.innerText = this.name;
 
-        console.log(currentUsername);
-
         const updateListener = (event) => {this.updateSubtasksCompleted(event)}
         
         if (this.subtasks.length == 0) {return;}
@@ -2425,13 +2423,11 @@ class Task {
         let index = event.target.id;
         this.subtasksCompleted[index] = event.target.checked;
         this.scene.farm.saveTask(this);
-        console.log(this.subtasksCompleted);
         
     }
 
     updateElapsedTime(interval) { //in milliseconds
         this.elapsedTime +=  interval / 3600000; //hours
-        console.log(this.elapsedTime);
     }
 
     updateTime(currentTime){ //directly from pomodoro timer
@@ -2529,7 +2525,6 @@ class Plot extends Phaser.GameObjects.Container {
         } else {
             this.occupied = true;
             this.plantCrops();
-            console.log(this.growthStep);
             for (let i = 0; i < this.growthStep; i++) {
                 this.growSelectedCrop(this.findCrop());
             }
@@ -2791,7 +2786,6 @@ class Plot extends Phaser.GameObjects.Container {
     }
     growSelectedCrop(index) {
         let frameNum = this.cropSprites[index].anims.getFrameName();
-        console.log("1st",frameNum, frameNum >= this.maxFrame);
         //actually increment the frame of the crop
         if (this.cropSprites.length != 0) { //here for safety's sake
             let frame_jump = 1;
@@ -2804,9 +2798,8 @@ class Plot extends Phaser.GameObjects.Container {
                 for (let i = 0; i < frame_jump; i++) {
                     this.cropSprites[index].anims.nextFrame();
                     //console.log("grownCrop");
+                }
             }
-        }
-            console.log(frameNum, frameNum >= this.maxFrame);
         }
     }
 
@@ -2921,7 +2914,6 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
     constructor(config) {
         super(config.scene, config.x, config.y, config.texture);
 
-        console.log(config.texture)
         // Set the type of this furniture
         this.level = config.level;
 
@@ -2942,10 +2934,7 @@ class Farmhouse extends Phaser.GameObjects.Sprite {
         Utility.addTintOnHover(this);
 
         // Add this object to the scene
-        console.log(this.x, this.y)
-        console.log(this)
         this.scene.add.existing(this);
-        console.log("should have added")
         this.setVisible(true)
 
         // Add a pointerdown event listener
