@@ -78,9 +78,9 @@ export default class AccessUserData {
         if (userSettings == null || Object.keys(userSettings).length === 0) {
             console.log("no userSettings, using default")
             userSettings = {
-                workTime : 25,
-                shortBreakTime : 5,
-                longBreakTime : 15,
+                pomTimer : 25,
+                shortBreak: 5,
+                longBreak: 15,
                 longBreakInterval : 4,
                 autoStartBreak : true,
                 autoStartPomodoro : false,

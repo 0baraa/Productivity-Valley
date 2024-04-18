@@ -390,16 +390,14 @@
     <!--Top left-->
     <div class="top-left-container">
         <div id="home-icon-container">
-{#            <img src="/assets/question.png" alt="Question Icon">#}
-            <img src="{% static 'assets/question.png' %}" alt="Question Icon">
+            <img src="{% static 'assets/question.png' %}" alt="Question Icon" class="top-button">
         </div>
         <div id="settings-icon-container">
-{#            <img src="/assets/settings.png" alt="Settings Icon">#}
-            <img src="{% static 'assets/settings.png' %}" alt="Settings Icon">
+            <img src="{% static 'assets/settings.png' %}" alt="Settings Icon" class="top-button">
         </div>
         <div id="soundToggle" onclick="toggleSound()">
-            <img src="{% static 'assets/audio/sound-on.png' %}" alt="Sound On" id="soundOnIcon">
-            <img src="{% static 'assets/audio/sound-off.png' %}" alt="Sound Off" id="soundOffIcon" style="display: none">
+            <img src="{% static 'assets/audio/sound-on.png' %}" alt="Sound On" id="soundOnIcon" class="top-button">
+            <img src="{% static 'assets/audio/sound-off.png' %}" alt="Sound Off" id="soundOffIcon" style="display: none" class="top-button">
         </div>
     </div>
 
@@ -430,8 +428,8 @@
     </script>
 
     <!--Home Menu Popup-->
-    <div class="menu-container home-menu" style="display: none; margin-top: 100px; margin-bottom: 100px;">
-        <dialog class="menu home-menu" style="display: inline-flex; flex-direction: column; height: 450px;">
+    <div class="menu-container home-menu" style="display: none; margin-top: 60px; margin-bottom: 60px;">
+        <dialog class="menu home-menu" style="display: inline-flex; flex-direction: column; ">
             <div class="menu-top-container">
                 <button type="button" class="menu-top-spacer">X</button>
                 <p>Tutorial</p>
@@ -442,9 +440,9 @@
                 <div style="display: block; margin: 20px;">
                     <p>1. Create a task! Click on the plot to set up a task. </p>
                     <p>2. Start your timer! - the sun will manage your crops while you will manage your work.  </p>
-                    <p>3. Take a break once you've done a session. (you can change the length of it in settings)</p>
+                    <p>3. Take a break once you've done a session. (you can change the length of both in settings)</p>
                     <p>4. Rinse and repeat until your task is done! </p>
-                    <p>5. Harvest when your task is finished to collect your money!</p>
+                    <p>5. Harvest your crops to collect your money!</p>
                     <p> Want more plots to manage more tasks? You can buy plots from the market! </p>
                 </div>
             </div>
@@ -492,10 +490,9 @@
     </div>
 
     <div class="wrapper-container" id="wrapperContainer"
-        style="position: absolute; top: 55px; right: 4%; width: 250px; align-items: center; justify-content: center; display: none; border: solid; border-color: black; background-color: yellow;">
-        <div class="task-name" id="taskNameDiv" style="font-size: 28px;"></div>
-        <div id="subtasksDiv" class="subtasks"
-            style="position: absolute; top: 30px; color: black; font-size: 24px; border: solid; border-color: black; background-color: yellowgreen; width: 250px;">
+        style="position: absolute; top: 55px; right: 20px; width: 250px; align-items: center; justify-content: center; display: none; border: solid; border-color: black; background-color: yellow;">
+        <div class="task-name" id="taskNameDiv"></div>
+        <div id="subtasksDiv" class="subtasks">
         </div>
     </div>
 

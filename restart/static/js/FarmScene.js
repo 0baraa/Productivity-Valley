@@ -250,7 +250,11 @@ export default class FarmScene extends Phaser.Scene {
                     event.preventDefault();
                     //Utility.sendSettingsData();
                     //update pomodoro timer settings;
-                    this.pomodoro.updateTimeSettings();
+                    let dont_save = false;
+                    if (currentUsername == "") {
+                        dont_save = true
+                    }
+                    this.pomodoro.updateTimeSettings(dont_save);
 
 
                     
@@ -278,7 +282,7 @@ export default class FarmScene extends Phaser.Scene {
 
                     let fontSize = document.getElementById("fontSize").value;
                     if(fontSize == "large") {
-                        document.documentElement.style.setProperty('--scale-factor', '1.3');
+                        document.documentElement.style.setProperty('--scale-factor', '1.4');
                     }
                     else {
                         document.documentElement.style.setProperty('--scale-factor', '1');
@@ -2220,6 +2224,7 @@ class PlayerFarm {
         }
     }
     saveTask(task) {
+        if (this.userName == null) {return;}
         let taskData = {
             usernameId: this.userName,
             plotId: task.plotId,

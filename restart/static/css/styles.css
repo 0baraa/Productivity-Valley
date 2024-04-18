@@ -102,9 +102,33 @@ button {
 .menu-top-container p {
     font-size: calc(4vw * var(--scale-factor));
 }
+.menu.home-menu {
+    height: calc(600px * var(--scale-factor));
+}
 
 .task-row {
     height: 24%;
+}
+
+.task-name {
+    font-size: calc(32px * var(--scale-factor));
+    width: 250px;
+    text-align: center;
+}
+.top-button {
+    height: calc(50px * var(--scale-factor));
+    width: calc(50px * var(--scale-factor));
+}
+
+.subtasks {
+    position: absolute; 
+    color: black; 
+    top: calc(33px * var(--scale-factor));
+    border: solid; 
+    border-color: black; 
+    background-color: yellowgreen; 
+    width: 250px;
+    font-size: calc(26px * var(--scale-factor));
 }
 
 .exit-button {
