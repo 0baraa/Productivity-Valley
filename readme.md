@@ -5,14 +5,12 @@ to run this you're going to need to install Django 5.0.3. note the version name.
 this might be a problem, but good luck to you anyway
 
 oh and everything in the requirements.txt in restart.
-
-
-(use a venv if u're not)
+(use a venv if u weren't going to)
 
 if you get any build errors. well good luck debugging them.
 
 but once it works,
-run- $python3 manage.py runserver
+run- $ python3 manage.py runserver (from within restart folder)
 
 from within the first 'restart' directory
 
