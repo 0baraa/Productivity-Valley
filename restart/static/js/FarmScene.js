@@ -1307,8 +1307,8 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
                 });
             }
             catch {
-                console.log("this bitch doesn't know what a scene is. what a loser. (old instance that is still listening to old events, got this here so that two seconds don't pass in one)")
                 console.log(this);
+                console.log("^^^ doesn't know what a scene is. what a loser. (old instance that is still listening to old events, got this here so that two seconds don't pass in one)")
             }
 
             console.log("timer started");
@@ -1408,12 +1408,19 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
             this.scene.farm.saveTask(this.scene.farm.tasks[this.scene.selector.plotSelected])
         }
         
+        // Constant check for the state of the timer to update pomodoro
+        if (this.timerEvent.paused) {
+            this.pauseFlag = true;
+        } else {
+            // this.scene.events.emit('timerResumed');
+            this.pauseFlag = false;
+        }
         
         this.updateTimeString();
         // Check if timer is completed
         if (this.remainingTime <= 0) {
             this.scene.events.emit('timerCompleted');
-            Utility.setWorkingState(false);
+            
             this.timeString.destroy();
             if (this.repeatDurationInSeconds > 0) {
                 // If repeat duration is specified, restart the timer
@@ -1430,19 +1437,13 @@ class AnalogTimer extends Phaser.GameObjects.Graphics {
                 }
                 this.fillCircle.destroy();
                 console.log("Timer completed!");
+                Utility.setWorkingState(false);
             }
         }
         else {
             this.updateCircle();
         }
 
-        // Constant check for the state of the timer to update pomodoro
-        if (this.timerEvent.paused) {
-            this.pauseFlag = true;
-        } else {
-            // this.scene.events.emit('timerResumed');
-            this.pauseFlag = false;
-        }
 
         
     }
@@ -1708,8 +1709,8 @@ class Pomodoro extends Phaser.GameObjects.Container {
         this.scene.farm.tasks[this.scene.selector.plotSelected].updateTime(0)
 
         if (this.workFlag) {
-            if (!this.autoStartPomodoro) {
-                this.scene.farm.tasks[this.scene.selector.plotSelected].timeState = 0;
+            if (!this.autoStartBreak) {
+                this.scene.farm.tasks[this.scene.selector.plotSelected].timeState = 1;
                 this.playButton.setVisible(true); 
                 this.pauseButton.setVisible(false);
                 this.skipButton.setVisible(false);
@@ -1719,11 +1720,16 @@ class Pomodoro extends Phaser.GameObjects.Container {
                 this.nextTimer(); 
             }
         } else {
-            if (!this.autoStartBreak) { 
+            if (!this.autoStartPomodoro) { 
                 this.playButton.setVisible(true); 
                 this.pauseButton.setVisible(false);
                 this.skipButton.setVisible(false);
-                this.scene.farm.tasks[this.scene.selector.plotSelected].timeState = 1;
+                this.scene.farm.tasks[this.scene.selector.plotSelected].timeState = 0;
+                Utility.setWorkingState(false);
+                if (this.noOfPomodoros == 0) {
+                    this.scene.events.emit("taskCompleted")
+                    this.playButton.setVisible(false);
+                }
                 return; 
             } else {
                 this.nextTimer();
@@ -1880,7 +1886,7 @@ class Pomodoro extends Phaser.GameObjects.Container {
         }
         this.workFlag = !this.workFlag;
         if (this.workFlag) {  // if transitioning to work
-            if (this.noOfPomodoros != 0) {
+            if (this.noOfPomodoros > 0) {
                 Utility.setWorkingState(true);
                 this.noOfPomodoros--;
 
@@ -2717,15 +2723,20 @@ class Plot extends Phaser.GameObjects.Container {
         let steps = this.cropSprites.length * (this.maxFrame-this.growthStage) - this.growthStep;
         
         let time = -50 + 1000 * (this.scene.pomodoro.timer1.remainingTime + this.scene.pomodoro.noOfPomodoros * workTime);
-        let interval = Math.floor(time/steps);
+        if (steps > 0 ) {
+            let interval = Math.floor(time/steps);
 
-        console.log(interval ,steps, this.scene.pomodoro.noOfPomodoros + 1);
+            console.log(interval ,steps, this.scene.pomodoro.noOfPomodoros + 1);
 
-        //repeating function to grow crops individually
-        this.tick = setInterval(() => {
-            this.scene.farm.tasks[this.scene.selector.plotSelected].updateElapsedTime(interval);
-            this.progressCrops(); 
-        }, interval);
+            //repeating function to grow crops individually
+            this.tick = setInterval(() => {
+                this.scene.farm.tasks[this.scene.selector.plotSelected].updateElapsedTime(interval);
+                this.progressCrops(); 
+            }, interval);
+        }
+        else {
+            console.log("crops already finished");
+        }
     }
 
     progressCrops() {
@@ -2757,7 +2768,7 @@ class Plot extends Phaser.GameObjects.Container {
         //check if any crops are left too far behind by the growthStage
         for (let j = 1; j <= this.cropSprites.length; j++) {
             if (this.cropSprites[j-1].anims.getFrameName() <= this.growthStage - 2) {
-                console.log("crop left behind");
+                console.log("crop left behind - brought forward");
                 return (j-1);
             }
         }

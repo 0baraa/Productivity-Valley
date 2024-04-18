@@ -13,7 +13,7 @@ export default class AccessUserData {
         //await UserData.deleteUser('mrsandman')
         
         if (currentUsername == "") {
-            alert("welcome to guest mode: please note that nothing from your session will be saved.");
+            alert("Welcome to Productivity Valley! You are in guest mode; please note that nothing from your session will be saved.");
             return this.loadDefaults()
         }
         let userFarm = await UserData.fetchUserFarm(currentUsername)
@@ -28,9 +28,8 @@ export default class AccessUserData {
             console.log("no user found creating new one");
             UserData.createUser({usernameId: currentUsername})
             .then (bool => {
-                console.log(bool)
-                location.reload();
-                return this.loadDefaults(userFarm, null, null, null, null, null)
+                alert("Welcome to Productivity Valley!")
+                return this.loadDefaults(null, null, null, null, null, null)
             })
             .catch(error => {
                 console.error("Error creating UserFarm: ", error)
