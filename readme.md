@@ -1,22 +1,51 @@
-this might be late, but we've spent far too long on this to not submit something that works. and this does work.
+<p align="center"><img width="50%" src="https://github.com/Baraa-Shaheen/Productivity-Valley/blob/final-submission/restart/static/assets/ProductivityValleyPoster.png" alt="Productivity Valley Poster"></p>
 
-to run this you're going to need to install Django 5.0.3. note the version name.
+# Productivity Valley
 
-this might be a problem, but good luck to you anyway
+**Productivity Valley** is a productivity website that combines the Pomodoro technique with a charming pixel art farming game. Complete Pomodoro sessions to grow crops, earn coins, and upgrade your farm. This project was designed collaboratively by a team of 5 students during our first year of university.
 
-oh and everything in the requirements.txt in restart.
-(use a venv if u weren't going to)
+## Technologies Used
+- **Frontend**: HTML, CSS, JavaScript ([Phaser.js](https://github.com/phaserjs/phaser))
+- **Backend**: Django, SQlite
+- **Art**: Original artwork created using [Aseprite](https://github.com/aseprite/aseprite), furniture assets sourced from an [online artist](https://penzilla.itch.io/top-down-retro-interior).
 
-if you get any build errors. well good luck debugging them.
+## Features
 
-but once it works,
-run- $ python3 manage.py runserver (from within restart folder)
+### Pomodoro Sessions
+- Engage in 25-minute Pomodoro sessions to boost focus and productivity, or select a custom duration that fits your workflow.
+- Each Pomodoro session is tied to the growth of crops in the game, creating a fun and motivating experience.
 
-from within the first 'restart' directory
+<p align="center"><img width="64%" src="https://github.com/Baraa-Shaheen/Productivity-Valley/blob/final-submission/restart/static/assets/farmhouse.webp" alt="Farmhouse"></p>
 
-u can go to 127.0.0.1:8000 and create a new account.
+### Farming Mechanic
+- Grow crops by successfully completing Pomodoro sessions.
+- Harvest crops to earn coins that can be spent on decorating and enhancing your virtual farm.
 
-(or login as guest)
+### Customisable Farm
+- Spend earned coins at the market to purchase decorations and customise your farm and farmhouse to reflect your personal style.
 
-to see what we've done.
+<p align="center"><img width="64%" src="https://github.com/Baraa-Shaheen/Productivity-Valley/blob/final-submission/restart/static/assets/marketscreenshot.png" alt="Market Screenshot"></p>
 
+<p align="center"><img width="65%" src="https://github.com/Baraa-Shaheen/Productivity-Valley/blob/final-submission/restart/static/assets/farm.webp" alt="Farm"></p>
+
+## Installation
+
+1. **Ensure Python is Installed**:
+   - Download the latest version of Python from [here](https://www.python.org/downloads/).
+
+2. **Clone the Repository**:
+   ```bash
+   
+   git clone https://github.com/Baraa-Shaheen/Productivity-Valley
+3. Navigate to the Project Directory:
+   ```bash
+   cd Productivity-Valley/restart
+
+4. Install Required Packages (Virtual Environment Recommended):
+   ```bash
+   pip install -r requirements.txt
+5. Run the Django Development Server:
+   ```bash
+   python manage.py runserver
+6. Access the Website:
+   - Go to http://127.0.0.1:8000 in your browser and get farming!
