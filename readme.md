@@ -36,7 +36,7 @@
 2. **Clone the Repository**:
    ```bash
    
-   git clone https://github.com/Baraa-Shaheen/Productivity-Valley
+   git clone https://github.com/0baraa/Productivity-Valley
 3. Navigate to the Project Directory:
    ```bash
    cd Productivity-Valley/restart
